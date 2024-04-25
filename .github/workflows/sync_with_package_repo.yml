@@ -13,7 +13,7 @@ jobs:
     - name: Checkout dest repository
       uses: actions/checkout@v2
       with:
-        path: 'dest_repo'
+        path: 'dest_repo1'
         fetch-depth: 0
       
     - name: Checkout shidahuilang repository
