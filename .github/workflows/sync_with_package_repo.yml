@@ -2,7 +2,7 @@ name: Sync Package Repo
 
 on:
   schedule:
-    - cron: '0 */6 * * *' # 每六小时同步一次，您可以根据需要调整
+    - cron: '*/10 * * * *' # 每六小时同步一次，您可以根据需要调整(0 */6 * * *)
 
 jobs:
   repo-sync:
@@ -13,7 +13,7 @@ jobs:
     - name: Checkout dest repository
       uses: actions/checkout@v2
       with:
-        path: 'dest_repo1'
+        path: 'dest_repo'
         fetch-depth: 0
       
     - name: Checkout shidahuilang repository
