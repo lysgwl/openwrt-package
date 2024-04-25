@@ -46,16 +46,17 @@ jobs:
       run: |
         function copy_repo_contents() {
           mkdir -p $3
-          git checkout $1/master #-- $2
-          ls -l $3
-          cp -a $2/. $3/
-          echo "4"
+          cd $3
+          
+          if [ -d ".git" ]; then
+            git pull origin master
+          else
+            git clone --branch master https://github.com/$2.git .
+          fi
+          
+          #git checkout $1/master #-- $2
+          #cp -a $2/. $3/
         }
-        
-        if [ ! -d "otherpackage" ]; then
-            mkdir -p "otherpackage"
-            echo "111111"
-        fi
         
         copy_repo_contents diskman luci-app-diskman ${GITHUB_WORKSPACE}/otherpackage/luci-app-diskman
         #copy_repo_contents ddns-go luci-app-ddns-go ${GITHUB_WORKSPACE}/otherpackage/luci-app-ddns-go
