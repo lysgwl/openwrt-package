@@ -23,6 +23,11 @@ jobs:
       run: |
         git fetch poweroff
         
+    - name: Configure Git
+      run: |
+        git config user.name "lysgwl"
+        git config user.email "lysgwl@163.com"    
+        
     - name: Merge code into specific directory
       run: |
         if [ ! -d "otherpackage" ]; then
@@ -38,4 +43,4 @@ jobs:
       uses: ad-m/github-push-action@master
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        branch: master   
+        branch: master
