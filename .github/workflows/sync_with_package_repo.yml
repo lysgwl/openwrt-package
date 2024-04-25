@@ -19,7 +19,7 @@ jobs:
     - name: Checkout shidahuilang repository
       uses: actions/checkout@v2
       with:
-        repository: 'shidahuilang/openwrt-package
+        repository: 'shidahuilang/openwrt-package'
         path: 'shidahuilang_repo'
         fetch-depth: 0
     
