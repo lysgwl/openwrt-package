@@ -58,7 +58,7 @@ jobs:
           #cp -a $2/. $3/
         }
         
-        copy_repo_contents diskman luci-app-diskman ${GITHUB_WORKSPACE}/otherpackage/luci-app-diskman
+        copy_repo_contents diskman lisaac/luci-app-diskman ${GITHUB_WORKSPACE}/otherpackage/luci-app-diskman
         #copy_repo_contents ddns-go luci-app-ddns-go ${GITHUB_WORKSPACE}/otherpackage/luci-app-ddns-go
         #copy_repo_contents openAppFilter OpenAppFilter ${GITHUB_WORKSPACE}/otherpackage/OpenAppFilter
         #copy_repo_contents poweroff luci-app-poweroff ${GITHUB_WORKSPACE}/otherpackage/luci-app-poweroff
