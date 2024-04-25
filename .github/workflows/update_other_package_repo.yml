@@ -37,10 +37,10 @@ jobs:
         }
         
         add_fetch_repo diskman lisaac/luci-app-diskman
-        # add_fetch_repo ddns-go sirpdboy/luci-app-ddns-go
-        # add_fetch_repo openAppFilter destan19/OpenAppFilter
-        # add_fetch_repo poweroff esirplayground/luci-app-poweroff
-        # add_fetch_repo socat chenmozhijin/luci-app-socat
+        add_fetch_repo ddns-go sirpdboy/luci-app-ddns-go
+        add_fetch_repo openAppFilter destan19/OpenAppFilter
+        add_fetch_repo poweroff esirplayground/luci-app-poweroff
+        add_fetch_repo socat chenmozhijin/luci-app-socat
 
     - name: Copy Repository Contents
       run: |
@@ -48,32 +48,39 @@ jobs:
           mkdir -p $3
           cd $3
           
+          # 检查目标目录是否已经是一个git仓库
           if [ -d ".git" ]; then
+            echo "Repository already cloned. Pulling latest changes..."
             git pull origin master
           else
-            git clone --branch master https://github.com/$2.git
+            echo "Cloning repository..."
+            git clone --branch $1 https://github.com/$2.git
           fi
           
           #git checkout $1/master #-- $2
           #cp -a $2/. $3/
         }
         
-        copy_repo_contents diskman lisaac/luci-app-diskman ${GITHUB_WORKSPACE}/otherpackage/luci-app-diskman
-        #copy_repo_contents ddns-go luci-app-ddns-go ${GITHUB_WORKSPACE}/otherpackage/luci-app-ddns-go
-        #copy_repo_contents openAppFilter OpenAppFilter ${GITHUB_WORKSPACE}/otherpackage/OpenAppFilter
-        #copy_repo_contents poweroff luci-app-poweroff ${GITHUB_WORKSPACE}/otherpackage/luci-app-poweroff
-        #copy_repo_contents socat luci-app-socat ${GITHUB_WORKSPACE}/otherpackage/luci-app-socat
+        copy_repo_contents master lisaac/luci-app-diskman ${GITHUB_WORKSPACE}/otherpackage/luci-app-diskman
+        copy_repo_contents main sirpdboy/luci-app-ddns-go ${GITHUB_WORKSPACE}/otherpackage/luci-app-ddns-go
+        copy_repo_contents master destan19/OpenAppFilter ${GITHUB_WORKSPACE}/otherpackage/OpenAppFilter
+        copy_repo_contents master esirplayground/luci-app-poweroff ${GITHUB_WORKSPACE}/otherpackage/luci-app-poweroff
+        copy_repo_contents main chenmozhijin/luci-app-socat ${GITHUB_WORKSPACE}/otherpackage/luci-app-socat
 
     - name: Commit and Push repository using SSH
       run: |
         current_date=$(date '+%Y-%m-%d')
         
-        git add .
-        git commit -a -m "Merge code repository on $current_date"
-        
-        # git push git@github.com:lysgwl/openwrt-package.git ${{ github.ref }}:master
-        git push git@github.com:lysgwl/openwrt-package.git HEAD:master    
-        
+        if git diff-index --quiet HEAD --; then
+            echo "No changes in the working tree. Skipping commit and push."
+        else
+            git add .
+            git commit -a -m "Merge code repository on $current_date"
+            
+            # git push git@github.com:lysgwl/openwrt-package.git ${{ github.ref }}:master
+            git push git@github.com:lysgwl/openwrt-package.git HEAD:master 
+        fi
+
     #- name: Push changes repository
     #  uses: ad-m/github-push-action@master
     #  with:
