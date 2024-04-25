@@ -38,7 +38,7 @@ jobs:
         
         add_fetch_repo diskman lisaac/luci-app-diskman
         add_fetch_repo ddns-go sirpdboy/luci-app-ddns-go
-        add_fetch_repo openAppFilter destan19/OpenAppFilter
+        add_fetch_repo OpenAppFilter destan19/OpenAppFilter
         add_fetch_repo poweroff esirplayground/luci-app-poweroff
         add_fetch_repo socat chenmozhijin/luci-app-socat
 
