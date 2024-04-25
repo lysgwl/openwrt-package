@@ -15,7 +15,7 @@ jobs:
       with:
         repository: 'lysgwl/openwrt-package'
         path: 'dest_repo'
-        token: ${{ github.token }}
+        token: ${{ secrets.GITHUB_TOKEN }} # ${{ github.token }}
         fetch-depth: 0
 
     - name: Checkout shidahuilang repository

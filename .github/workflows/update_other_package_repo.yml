@@ -1,0 +1,41 @@
+name: Update Other Package Repo
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'     # 每天凌晨运行 (0 0 * * *)
+    
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    
+    steps:
+    
+    - name: Checkout master branch
+      uses: actions/checkout@v2
+      with:
+        ref: master
+        
+    - name: Add remote repository
+      run: |
+        git remote add poweroff https://github.com/esirplayground/luci-app-poweroff.git || true
+        
+    - name: Fetch the latest code
+      run: |
+        git fetch poweroff
+        
+    - name: Merge code into specific directory
+      run: |
+        if [ ! -d "otherpackage" ]; then
+            mkdir -p "otherpackage"
+        fi
+        
+        git read-tree --prefix=otherpackage/luci-app-poweroff/ -u poweroff/master
+        
+        current_date=$(date '+%Y-%m-%d')
+        git commit -m "Merge code repository on $current_date"
+        
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: master   
