@@ -51,7 +51,7 @@ jobs:
           if [ -d ".git" ]; then
             git pull origin master
           else
-            git clone --branch master https://github.com/$2.git .
+            git clone --branch master https://github.com/$2.git
           fi
           
           #git checkout $1/master #-- $2
