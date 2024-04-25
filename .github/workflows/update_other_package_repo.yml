@@ -3,9 +3,13 @@ name: Update Other Package Repo
 #on:
 #  schedule:
 #    - cron: '*/5 * * * *'     # 每天凌晨运行 (0 0 * * *)
-    
+
+on:
+  repository_dispatch:
+  workflow_dispatch:
+  
 jobs:
-  update:
+  build:   # update
     runs-on: ubuntu-latest
     
     steps:
@@ -22,12 +26,7 @@ jobs:
     - name: Fetch the latest code
       run: |
         git fetch poweroff
-        
-    - name: Configure Git
-      run: |
-        git config user.name "lysgwl"
-        git config user.email "lysgwl@163.com"    
-        
+   
     - name: Merge code into specific directory
       run: |
         if [ ! -d "otherpackage" ]; then
@@ -36,17 +35,15 @@ jobs:
         
         git read-tree --prefix=otherpackage/luci-app-poweroff/ -u poweroff/master
         
+    - name: Commit info to Git
+      run: |
+        git config --local user.name "lysgwl"
+        git config --local user.email "lysgwl@163.com"
         current_date=$(date '+%Y-%m-%d')
         git commit -m "Merge code repository on $current_date"
 
-    #- name: Push changes
-    #  uses: ad-m/github-push-action@master
-    #  with:
-    #    github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-    #    branch: master
-    
-    - name: Push changes
-      env:
-        PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-      run: |
-        git push https://github.com/lysgwl/openwrt-package.git master
+    - name: Push changes repository
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+        branch: master
