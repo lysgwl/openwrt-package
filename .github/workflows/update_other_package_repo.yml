@@ -15,14 +15,9 @@ jobs:
       with:
         ref: master
         
-    - name: Setup SSH Keys and known_hosts
-      uses: webfactory/ssh-agent@v0.5.3
-      with:
-        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}    
-        
     - name: Add remote repository
       run: |
-        git remote add poweroff git@github.com:esirplayground/luci-app-poweroff.git || true
+        git remote add poweroff https://github.com/esirplayground/luci-app-poweroff.git || true
         
     - name: Fetch the latest code
       run: |
@@ -51,5 +46,7 @@ jobs:
     #    branch: master
     
     - name: Push changes
+      env:
+        PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
       run: |
-        git push poweroff master
+        git push https://github.com/lysgwl/openwrt-package.git master
