@@ -39,6 +39,10 @@ jobs:
         current_date=$(date '+%Y-%m-%d')
         git commit -m "Merge code repository on $current_date"
         
+    - name: Debug GitHub Token
+      run: |
+        echo "GitHub Token: ${{ secrets.GITHUB_TOKEN }}"
+        
     - name: Push changes
       uses: ad-m/github-push-action@master
       with:
