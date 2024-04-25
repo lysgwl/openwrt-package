@@ -41,7 +41,7 @@ jobs:
         git config --local user.email "lysgwl@163.com"
         current_date=$(date '+%Y-%m-%d')
         git commit -m "Merge code repository on $current_date"
-        git push https://lysgwl:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/lysgwl/openwrt-package.git
+        git push https://lysgwl:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/lysgwl/openwrt-package.git master
 
     #- name: Push changes repository
     #  uses: ad-m/github-push-action@master
