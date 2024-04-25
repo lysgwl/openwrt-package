@@ -1,15 +1,15 @@
 name: Update Other Package Repo
 
-#on:
-#  schedule:
-#    - cron: '*/5 * * * *'     # 每天凌晨运行 (0 0 * * *)
-
 on:
-  repository_dispatch:
-  workflow_dispatch:
+  schedule:
+    - cron: '*/2 * * * *'     # 每天凌晨运行 (0 0 * * *)
+
+#on:
+#  repository_dispatch:
+#  workflow_dispatch:
   
 jobs:
-  build:   # update
+  update:   # update build
     runs-on: ubuntu-latest
     
     steps:
