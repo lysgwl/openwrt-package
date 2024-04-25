@@ -46,9 +46,8 @@ jobs:
       run: |
         function copy_repo_contents() {
           mkdir -p $3
-          ls -l $PWD/otherpackage
           git checkout $1/master #-- $2
-          echo "3"
+          ls -l $3
           cp -a $2/. $3/
           echo "4"
         }
