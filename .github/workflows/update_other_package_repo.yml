@@ -55,7 +55,7 @@ jobs:
             mkdir -p "otherpackage"
         fi
 
-        git read-tree --prefix=otherpackage/luci-app-diskman/ -u poweroff/master
+        git read-tree --prefix=otherpackage/luci-app-diskman/ -u diskman/master
         git read-tree --prefix=otherpackage/luci-app-ddns-go/ -u ddns-go/main
         git read-tree --prefix=otherpackage/luci-app-openAppFilter/ -u openAppFilter/master
         git read-tree --prefix=otherpackage/luci-app-poweroff/ -u poweroff/master
