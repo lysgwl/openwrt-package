@@ -45,9 +45,13 @@ jobs:
     - name: Copy Repository Contents
       run: |
         function copy_repo_contents() {
+          echo "1"
           mkdir -p $3
+          echo "2"
           git checkout $1/master -- $2
+          echo "3"
           cp -a $2/. $3/
+          echo "4"
         }
         
         if [ ! -d "otherpackage" ]; then
