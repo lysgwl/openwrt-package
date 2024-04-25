@@ -66,20 +66,25 @@ jobs:
         copy_repo_contents master destan19/OpenAppFilter ${GITHUB_WORKSPACE}/otherpackage/OpenAppFilter
         copy_repo_contents master esirplayground/luci-app-poweroff ${GITHUB_WORKSPACE}/otherpackage/luci-app-poweroff
         copy_repo_contents main chenmozhijin/luci-app-socat ${GITHUB_WORKSPACE}/otherpackage/luci-app-socat
+        
+    - name: Check for changes before committing and pushing
+      run: |
+        if git status --porcelain | grep .; then
+          echo "Files changed. Proceeding with commit and push..."
+        else
+          echo "No files changed. Skipping commit and push."
+          exit 0
+        fi    
 
     - name: Commit and Push repository using SSH
       run: |
         current_date=$(date '+%Y-%m-%d')
         
-        if git diff-index --quiet HEAD --; then
-            echo "No changes in the working tree. Skipping commit and push."
-        else
-            git add .
-            git commit -a -m "Merge code repository on $current_date"
+        git add .
+        git commit -a -m "Merge code repository on $current_date"
             
-            # git push git@github.com:lysgwl/openwrt-package.git ${{ github.ref }}:master
-            git push git@github.com:lysgwl/openwrt-package.git HEAD:master 
-        fi
+        # git push git@github.com:lysgwl/openwrt-package.git ${{ github.ref }}:master
+        git push git@github.com:lysgwl/openwrt-package.git HEAD:master 
 
     #- name: Push changes repository
     #  uses: ad-m/github-push-action@master
