@@ -22,60 +22,52 @@ jobs:
     - name: Set SSH key and known_hosts
       uses: webfactory/ssh-agent@v0.5.3
       with:
-        ssh-private-key: ${{ secrets.PERSONAL_SSH_KEY }}    
+        ssh-private-key: ${{ secrets.PERSONAL_SSH_KEY }}   
+
+    - name: Setup Git Config
+      run: |
+        git config --global user.name "lysgwl"
+        git config --global user.email "lysgwl@163.com"      
         
     - name: Add remote repository
       run: |
-        # diskman
-        git remote add diskman https://github.com/lisaac/luci-app-diskman.git || true
+        function add_fetch_repo() {
+          git remote add $1 https://github.com/$2.git || true
+          git fetch $1
+        }
         
-        # ddns-go
-        git remote add ddns-go https://github.com/sirpdboy/luci-app-ddns-go.git || true
-        
-        # openAppFilter
-        git remote add openAppFilter https://github.com/destan19/OpenAppFilter || true
-        
-        # poweroff
-        git remote add poweroff https://github.com/esirplayground/luci-app-poweroff.git || true
-        
-        # socat
-        git remote add socat https://github.com/chenmozhijin/luci-app-socat.git || true
-        
-    - name: Fetch the latest code
-      run: |
-        git fetch diskman
-        git fetch ddns-go
-        git fetch openAppFilter
-        git fetch poweroff
-        git fetch socat
-   
-    - name: Merge code into specific directory
-      run: |
-        rm -rf otherpackage/*
+        add_fetch_repo diskman lisaac/luci-app-diskman
+        add_fetch_repo ddns-go sirpdboy/luci-app-ddns-go
+        add_fetch_repo openAppFilter destan19/OpenAppFilter
+        add_fetch_repo poweroff esirplayground/luci-app-poweroff
+        add_fetch_repo socat chenmozhijin/luci-app-socat
 
-        git read-tree --prefix=otherpackage/luci-app-diskman/ -u diskman/master
-        git read-tree --prefix=otherpackage/luci-app-ddns-go/ -u ddns-go/main
-        git read-tree --prefix=otherpackage/luci-app-openAppFilter/ -u openAppFilter/master
-        git read-tree --prefix=otherpackage/luci-app-poweroff/ -u poweroff/master
-        git read-tree --prefix=otherpackage/luci-app-socat/ -u socat/main
-        
-    - name: Commit info to Git
+    - name: Copy Repository Contents
       run: |
-        git config --global user.name "lysgwl"
-        git config --global user.email "lysgwl@163.com"
+        function copy_repo_contents() {
+          mkdir -p $3
+          git checkout $1/master -- $2
+          cp -a $2/. $3/
+        }
         
+        copy_repo_contents diskman luci-app-diskman ${GITHUB_WORKSPACE}/otherpackage/luci-app-diskman
+        copy_repo_contents ddns-go luci-app-ddns-go ${GITHUB_WORKSPACE}/otherpackage/luci-app-ddns-go
+        copy_repo_contents openAppFilter OpenAppFilter ${GITHUB_WORKSPACE}/otherpackage/OpenAppFilter
+        copy_repo_contents poweroff luci-app-poweroff ${GITHUB_WORKSPACE}/otherpackage/luci-app-poweroff
+        copy_repo_contents socat luci-app-socat ${GITHUB_WORKSPACE}/otherpackage/luci-app-socat
+
+    - name: Commit and Push repository using SSH
+      run: |
         current_date=$(date '+%Y-%m-%d')
         
         git add .
         git commit -a -m "Merge code repository on $current_date"
-
+        
+        # git push git@github.com:lysgwl/openwrt-package.git ${{ github.ref }}:master
+        git push git@github.com:lysgwl/openwrt-package.git HEAD:master    
+        
     #- name: Push changes repository
     #  uses: ad-m/github-push-action@master
     #  with:
     #    github_token: ${{ secrets.GITHUB_TOKEN }}   # PERSONAL_ACCESS_TOKEN
     #    branch: ${{ github.ref }}    # master
-    
-    - name: Push changes repository using SSH
-      run: |
-        # git push git@github.com:lysgwl/openwrt-package.git ${{ github.ref }}:master
-        git push git@github.com:lysgwl/openwrt-package.git HEAD:master
