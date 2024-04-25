@@ -17,7 +17,7 @@ jobs:
         
     - name: Add remote repository
       run: |
-        git remote add poweroff https://github.com/esirplayground/luci-app-poweroff.git || true
+        git remote add poweroff git@github.com:esirplayground/luci-app-poweroff.git || true
         
     - name: Fetch the latest code
       run: |
@@ -39,8 +39,12 @@ jobs:
         current_date=$(date '+%Y-%m-%d')
         git commit -m "Merge code repository on $current_date"
 
+    #- name: Push changes
+    #  uses: ad-m/github-push-action@master
+    #  with:
+    #    github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+    #    branch: master
+    
     - name: Push changes
-      uses: ad-m/github-push-action@master
-      with:
-        github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-        branch: master
+      run: |
+        git push poweroff master
