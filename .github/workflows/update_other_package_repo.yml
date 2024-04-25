@@ -32,13 +32,16 @@ jobs:
         if [ ! -d "otherpackage" ]; then
             mkdir -p "otherpackage"
         fi
-        
-        git read-tree --prefix=otherpackage/luci-app-poweroff/ -u poweroff/master
+        echo "test!" > 1.txt
+        echo "${{ secrets.PERSONAL_ACCESS_TOKEN }}"
+        #git read-tree --prefix=otherpackage/luci-app-poweroff/ -u poweroff/master
         
     - name: Commit info to Git
       run: |
         git config --local user.name "lysgwl"
         git config --local user.email "lysgwl@163.com"
+        
+        git add .
         current_date=$(date '+%Y-%m-%d')
         git commit -m "Merge code repository on $current_date"
         git push https://lysgwl:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/lysgwl/openwrt-package.git master
