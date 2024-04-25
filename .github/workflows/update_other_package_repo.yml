@@ -19,6 +19,11 @@ jobs:
       with:
         ref: master
         
+    - name: Set SSH key and known_hosts
+      uses: webfactory/ssh-agent@v0.5.3
+      with:
+        ssh-private-key: ${{ secrets.PERSONAL_SSH_KEY }}    
+        
     - name: Add remote repository
       run: |
         git remote add poweroff https://github.com/esirplayground/luci-app-poweroff.git || true
@@ -43,10 +48,15 @@ jobs:
         current_date=$(date '+%Y-%m-%d')
         
         git add .
-        git commit -m "Merge code repository on $current_date" -a
+        git commit -a -m "Merge code repository on $current_date"
 
-    - name: Push changes repository
-      uses: ad-m/github-push-action@master
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}   # PERSONAL_ACCESS_TOKEN
-        branch: ${{ github.ref }}    # master
+    #- name: Push changes repository
+    #  uses: ad-m/github-push-action@master
+    #  with:
+    #    github_token: ${{ secrets.GITHUB_TOKEN }}   # PERSONAL_ACCESS_TOKEN
+    #    branch: ${{ github.ref }}    # master
+    
+    - name: Push changes repository using SSH
+      run: |
+        # git push git@github.com:lysgwl/openwrt-package.git ${{ github.ref }}:master
+        git push git@github.com:lysgwl/openwrt-package.git HEAD:master
