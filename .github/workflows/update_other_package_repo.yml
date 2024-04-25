@@ -26,11 +26,28 @@ jobs:
         
     - name: Add remote repository
       run: |
+        # diskman
+        git remote add diskman https://github.com/lisaac/luci-app-diskman.git || true
+        
+        # ddns-go
+        git remote add ddns-go https://github.com/sirpdboy/luci-app-ddns-go.git || true
+        
+        # openAppFilter
+        git remote add openAppFilter https://github.com/destan19/OpenAppFilter || true
+        
+        # poweroff
         git remote add poweroff https://github.com/esirplayground/luci-app-poweroff.git || true
+        
+        # socat
+        git remote add socat https://github.com/chenmozhijin/luci-app-socat.git || true
         
     - name: Fetch the latest code
       run: |
+        git fetch diskman
+        git fetch ddns-go
+        git fetch openAppFilter
         git fetch poweroff
+        git fetch socat
    
     - name: Merge code into specific directory
       run: |
@@ -38,7 +55,11 @@ jobs:
             mkdir -p "otherpackage"
         fi
 
+        git read-tree --prefix=otherpackage/luci-app-diskman/ -u poweroff/master
+        git read-tree --prefix=otherpackage/luci-app-ddns-go/ -u ddns-go/main
+        git read-tree --prefix=otherpackage/luci-app-openAppFilter/ -u openAppFilter/master
         git read-tree --prefix=otherpackage/luci-app-poweroff/ -u poweroff/master
+        git read-tree --prefix=otherpackage/luci-app-socat/ -u socat/main
         
     - name: Commit info to Git
       run: |
