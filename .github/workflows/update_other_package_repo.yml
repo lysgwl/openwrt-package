@@ -51,15 +51,33 @@ jobs:
    
     - name: Merge code into specific directory
       run: |
+        git pull diskman master
+        git pull ddns-go main
+        git pull openAppFilter master
+        git pull poweroff master
+        git pull socat main
+        
         if [ ! -d "otherpackage" ]; then
             mkdir -p "otherpackage"
         fi
+        
+        mkdir -p otherpackage/luci-app-diskman
+        mkdir -p otherpackage/luci-app-ddns-go
+        mkdir -p otherpackage/luci-app-openAppFilter
+        mkdir -p otherpackage/luci-app-poweroff
+        mkdir -p otherpackage/luci-app-socat
+        
+        git mv luci-app-diskman/* otherpackage/luci-app-diskman/
+        git mv luci-app-ddns-go/* otherpackage/luci-app-ddns-go/
+        git mv luci-app-openAppFilter/* otherpackage/luci-app-openAppFilter/
+        git mv luci-app-poweroff/* otherpackage/luci-app-poweroff/
+        git mv luci-app-socat/* otherpackage/luci-app-socat/
 
-        git read-tree --prefix=otherpackage/luci-app-diskman/ -u diskman/master
-        git read-tree --prefix=otherpackage/luci-app-ddns-go/ -u ddns-go/main
-        git read-tree --prefix=otherpackage/luci-app-openAppFilter/ -u openAppFilter/master
-        git read-tree --prefix=otherpackage/luci-app-poweroff/ -u poweroff/master
-        git read-tree --prefix=otherpackage/luci-app-socat/ -u socat/main
+        # git read-tree --prefix=otherpackage/luci-app-diskman/ -u diskman/master
+        # git read-tree --prefix=otherpackage/luci-app-ddns-go/ -u ddns-go/main
+        # git read-tree --prefix=otherpackage/luci-app-openAppFilter/ -u openAppFilter/master
+        # git read-tree --prefix=otherpackage/luci-app-poweroff/ -u poweroff/master
+        # git read-tree --prefix=otherpackage/luci-app-socat/ -u socat/main
         
     - name: Commit info to Git
       run: |
