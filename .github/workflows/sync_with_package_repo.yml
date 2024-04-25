@@ -13,10 +13,11 @@ jobs:
     - name: Checkout dest repository
       uses: actions/checkout@v2
       with:
+        repository: 'lysgwl/openwrt-package'
         path: 'dest_repo'
+        token: ${{ github.token }}
         fetch-depth: 0
-        token: ${{ secrets.CUSTOM_PAT }} # 使用自定义的 Personal Access Token 来检出，以便具有后续推送的权限
-      
+
     - name: Checkout shidahuilang repository
       uses: actions/checkout@v2
       with:
