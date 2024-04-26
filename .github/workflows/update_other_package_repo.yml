@@ -44,25 +44,16 @@ jobs:
 
     - name: Copy Repository Contents
       run: |
+        function copy_repo_contents() {
+          git -C "${3}" pull origin $1 --allow-unrelated-histories
+        }
+        
         if [ ! -d "${GITHUB_WORKSPACE}/otherpackage" ]; then
             mkdir -p "${GITHUB_WORKSPACE}/otherpackage"
         fi
         
-        function copy_repo_contents() {
-          # 检查目标目录是否已经是一个git仓库
-          if [ -d "${3}.git" ]; then
-            echo "Repository already cloned. Pulling latest changes..."
-            git -C "${3}" pull origin master
-          else
-            echo "Cloning repository..."
-            git clone --branch $1 https://github.com/$2.git "${3}"
-          fi
-          
-          #git checkout $1/master #-- $2
-          #cp -a $2/. $3/
-        }
-        
-        copy_repo_contents master lisaac/luci-app-diskman ${GITHUB_WORKSPACE}/otherpackage/luci-app-diskman
+        copy_repo_contents master diskman ${GITHUB_WORKSPACE}/otherpackage/luci-app-diskman
+        #copy_repo_contents master lisaac/luci-app-diskman ${GITHUB_WORKSPACE}/otherpackage/luci-app-diskman
         #copy_repo_contents main sirpdboy/luci-app-ddns-go
         #copy_repo_contents master destan19/OpenAppFilter ${GITHUB_WORKSPACE}/otherpackage
         #copy_repo_contents master esirplayground/luci-app-poweroff ${GITHUB_WORKSPACE}/otherpackage
