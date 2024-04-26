@@ -38,39 +38,39 @@ jobs:
         }
         
         add_fetch_repo diskman lisaac/luci-app-diskman
-        #add_fetch_repo ddns-go sirpdboy/luci-app-ddns-go
-        #add_fetch_repo OpenAppFilter destan19/OpenAppFilter
-        #add_fetch_repo poweroff esirplayground/luci-app-poweroff
-        #add_fetch_repo socat chenmozhijin/luci-app-socat
+        add_fetch_repo ddns-go sirpdboy/luci-app-ddns-go
+        add_fetch_repo OpenAppFilter destan19/OpenAppFilter
+        add_fetch_repo poweroff esirplayground/luci-app-poweroff
+        add_fetch_repo socat chenmozhijin/luci-app-socat
 
     - name: Copy Repository Contents
       run: |
         function copy_repo_contents() {
-            echo $PWD
-            if [ -d "${3}.git" ]; then
-                echo "111"
-                cd ${3}
-                echo "Repository already cloned. Pulling updates..."
-                git pull $2 $1 # --allow-unrelated-histories
+            local branch=$1         # 分支名
+            local remote_alias=$2   # 远程仓库别名
+            local local_dir_name=$3 # 本地目录名
+            local package_path=$4   # 检测的路径前缀
+            
+            if [ -d "${package_path}/${local_dir_name}" ]; then
+                echo "Repository ${local_dir_name} already cloned. Pulling updates..."
+                
+                pushd "${package_path}/${local_dir_name}"
+                git pull $2 $1      # --allow-unrelated-histories
+                popd
             else
-                echo "222"
                 echo "Cloning repository content into the new prefix..."
-                git read-tree --prefix=${3}/ -u ${2}/${1}
+                git subtree add --prefix=${package_path}/${local_dir_name} ${remote_alias} ${branch} --squash
             fi
         }
         
-        echo $PWD
-        # 创建目录otherpackage
         package_path="${PWD}/otherpackage"
         if [ ! -d "${package_path}" ]; then
             mkdir -p "${package_path}"
         fi
         
-        # 进入目录otherpackage
         cd otherpackage
-        
-        echo $PWD
-        copy_repo_contents master diskman luci-app-diskman
+
+        copy_repo_contents master diskman luci-app-diskman ${PWD} 
         #copy_repo_contents master lisaac/luci-app-diskman ${GITHUB_WORKSPACE}/otherpackage/luci-app-diskman
         #copy_repo_contents main sirpdboy/luci-app-ddns-go
         #copy_repo_contents master destan19/OpenAppFilter ${GITHUB_WORKSPACE}/otherpackage
