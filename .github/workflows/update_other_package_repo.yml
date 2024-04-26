@@ -56,8 +56,9 @@ jobs:
             fi
         }
         
+        echo $PWD
         # 创建目录otherpackage
-        package_path="${GITHUB_WORKSPACE}/otherpackage"
+        package_path="${PWD}/otherpackage"
         if [ ! -d "${package_path}" ]; then
             mkdir -p "${package_path}"
         fi
@@ -65,6 +66,7 @@ jobs:
         # 进入目录otherpackage
         cd otherpackage
         
+        echo $PWD
         copy_repo_contents master diskman luci-app-diskman
         #copy_repo_contents master lisaac/luci-app-diskman ${GITHUB_WORKSPACE}/otherpackage/luci-app-diskman
         #copy_repo_contents main sirpdboy/luci-app-ddns-go
