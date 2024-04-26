@@ -46,11 +46,14 @@ jobs:
     - name: Copy Repository Contents
       run: |
         function copy_repo_contents() {
+            echo $PWD
             if [ -d "${3}.git" ]; then
+                echo "111"
                 cd ${3}
                 echo "Repository already cloned. Pulling updates..."
                 git pull $2 $1 # --allow-unrelated-histories
             else
+                echo "222"
                 echo "Cloning repository content into the new prefix..."
                 git read-tree --prefix=${3}/ -u ${2}/${1}
             fi
