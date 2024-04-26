@@ -46,34 +46,36 @@ jobs:
     - name: Copy Repository Contents
       run: |
         function copy_repo_contents() {
-            local branch=$1         # 分支名
-            local remote_alias=$2   # 远程仓库别名
-            local local_dir_name=$3 # 本地目录名
-            local package_path=$4   # 检测的路径前缀
+            local branch=$1             # 分支名
+            local remote_alias=$2       # 远程仓库别名
+            local local_dir_name=$3     # 本地目录名
+            local package_path_rel=$4   # 相对于顶层目录的路径
             
-            if [ -d "${package_path}/${local_dir_name}" ]; then
+            # 转到Git顶层目录
+            pushd $(git rev-parse --show-toplevel)
+            
+            # 计算相对于Git顶层的目标路径
+            local target_path="${package_path_rel}/${local_dir_name}"
+            
+            # 移除路径开头的"./"
+            target_path="${target_path#./}" 
+            
+            if [ -d "$target_path" ]; then
                 echo "Repository ${local_dir_name} already cloned. Pulling updates..."
                 
-                pushd "${package_path}/${local_dir_name}"
-                git pull $2 $1      # --allow-unrelated-histories
+                pushd "$target_path"
+                git pull $remote_alias $branch  # --allow-unrelated-histories
                 popd
             else
                 echo "Cloning repository content into the new prefix..."
-                # git subtree add --prefix=${package_path}/${local_dir_name} ${remote_alias} ${branch} --squash
-                pushd $(git rev-parse --show-toplevel)
-                git subtree add --prefix=${package_path}/${local_dir_name} ${remote_alias} ${branch} --squash
-                popd
+                git subtree add --prefix="$target_path" $remote_alias $branch --squash
             fi
         }
         
-        package_path="${PWD}/otherpackage"
-        if [ ! -d "${package_path}" ]; then
-            mkdir -p "${package_path}"
-        fi
-        
-        cd otherpackage
+        # 相对于git顶层目录的路径
+        package_path_rel="otherpackage"  
 
-        copy_repo_contents master diskman luci-app-diskman ${PWD} 
+        copy_repo_contents master diskman luci-app-diskman $package_path_rel 
         #copy_repo_contents master lisaac/luci-app-diskman ${GITHUB_WORKSPACE}/otherpackage/luci-app-diskman
         #copy_repo_contents main sirpdboy/luci-app-ddns-go
         #copy_repo_contents master destan19/OpenAppFilter ${GITHUB_WORKSPACE}/otherpackage
