@@ -59,7 +59,10 @@ jobs:
                 popd
             else
                 echo "Cloning repository content into the new prefix..."
+                # git subtree add --prefix=${package_path}/${local_dir_name} ${remote_alias} ${branch} --squash
+                pushd $(git rev-parse --show-toplevel)
                 git subtree add --prefix=${package_path}/${local_dir_name} ${remote_alias} ${branch} --squash
+                popd
             fi
         }
         
