@@ -32,8 +32,9 @@ jobs:
     - name: Add remote repository
       run: |
         function add_fetch_repo() {
-          git remote add $1 https://github.com/$2.git || true
-          git fetch $1
+            echo "add remote repository: $2"    
+            git remote add $1 https://github.com/$2.git || true
+            git fetch $1
         }
         
         add_fetch_repo diskman lisaac/luci-app-diskman
@@ -45,14 +46,22 @@ jobs:
     - name: Copy Repository Contents
       run: |
         function copy_repo_contents() {
-          git -C "${3}" pull origin $1 --allow-unrelated-histories
+            if [ -d "${3}.git" ]; then
+                cd ${3}
+                echo "Repository already cloned. Pulling updates..."
+                git pull $2 $1 # --allow-unrelated-histories
+            else
+                echo "Cloning repository content into the new prefix..."
+                git read-tree --prefix=${3}/ -u ${2}/${1}
+            fi
         }
         
-        if [ ! -d "${GITHUB_WORKSPACE}/otherpackage" ]; then
-            mkdir -p "${GITHUB_WORKSPACE}/otherpackage"
+        package_path="${GITHUB_WORKSPACE}/otherpackage"
+        if [ ! -d "${package_path}" ]; then
+            mkdir -p "${package_path}"
         fi
         
-        copy_repo_contents master diskman ${GITHUB_WORKSPACE}/otherpackage/luci-app-diskman
+        copy_repo_contents master diskman ${package_path}/luci-app-diskman
         #copy_repo_contents master lisaac/luci-app-diskman ${GITHUB_WORKSPACE}/otherpackage/luci-app-diskman
         #copy_repo_contents main sirpdboy/luci-app-ddns-go
         #copy_repo_contents master destan19/OpenAppFilter ${GITHUB_WORKSPACE}/otherpackage
