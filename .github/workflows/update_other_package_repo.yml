@@ -64,7 +64,7 @@ jobs:
                 echo "Repository ${local_dir_name} already cloned. Pulling updates..."
                 
                 pushd "$target_path"
-                git pull $remote_alias $branch  # --allow-unrelated-histories
+                git pull --rebase $remote_alias $branch  # --allow-unrelated-histories
                 popd
             else
                 echo "Cloning repository content into the new prefix...$target_path"
