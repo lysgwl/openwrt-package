@@ -38,10 +38,10 @@ jobs:
         }
         
         add_fetch_repo diskman lisaac/luci-app-diskman
-        add_fetch_repo ddns-go sirpdboy/luci-app-ddns-go
-        add_fetch_repo OpenAppFilter destan19/OpenAppFilter
-        add_fetch_repo poweroff esirplayground/luci-app-poweroff
-        add_fetch_repo socat chenmozhijin/luci-app-socat
+        #add_fetch_repo ddns-go sirpdboy/luci-app-ddns-go
+        #add_fetch_repo OpenAppFilter destan19/OpenAppFilter
+        #add_fetch_repo poweroff esirplayground/luci-app-poweroff
+        #add_fetch_repo socat chenmozhijin/luci-app-socat
 
     - name: Copy Repository Contents
       run: |
@@ -67,9 +67,11 @@ jobs:
                 git pull $remote_alias $branch  # --allow-unrelated-histories
                 popd
             else
-                echo "Cloning repository content into the new prefix..."
+                echo "Cloning repository content into the new prefix...$target_path"
                 git subtree add --prefix="$target_path" $remote_alias $branch --squash
             fi
+            
+            popd
         }
         
         # 相对于git顶层目录的路径
@@ -82,23 +84,18 @@ jobs:
         #copy_repo_contents master esirplayground/luci-app-poweroff ${GITHUB_WORKSPACE}/otherpackage
         #copy_repo_contents main chenmozhijin/luci-app-socat ${GITHUB_WORKSPACE}/otherpackage
         
-    - name: Check for changes before committing and pushing
-      run: |
-        if git status --porcelain | grep .; then
-          echo "Files changed. Proceeding with commit and push..."
-        else
-          echo "No files changed. Skipping commit and push."
-          exit 0
-        fi    
-
     - name: Commit and Push repository using SSH
       run: |
         current_date=$(date '+%Y-%m-%d')
-        
-        git add .
-        git commit -a -m "Merge code repository on $current_date"
-            
-        # git push git@github.com:lysgwl/openwrt-package.git ${{ github.ref }}:master
+        changes=$(git status --porcelain)
+
+        if [ -z "$changes" ]; then
+            echo "No changes to commit."
+        else
+            git add .
+            git commit -a -m "Merge code repository on $current_date"
+        fi
+
         git push git@github.com:lysgwl/openwrt-package.git HEAD:master 
 
     #- name: Push changes repository
