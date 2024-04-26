@@ -97,6 +97,11 @@ jobs:
         fi
 
         git pull --rebase origin master
+        if [ $? -ne 0 ]; then
+            echo "Rebase failed, please resolve conflicts manually!"
+            exit 1
+        fi
+        
         git push git@github.com:lysgwl/openwrt-package.git HEAD:master 
 
     #- name: Push changes repository
