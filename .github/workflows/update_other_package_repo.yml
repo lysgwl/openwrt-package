@@ -147,6 +147,8 @@ jobs:
             rm -rf $temp_dir
         }
         
+        original_head=$(git rev-parse HEAD)
+        
         # 相对于git顶层目录的路径
         package_path_rel="otherpackage"
         mkdir -p "$package_path_rel"
@@ -154,12 +156,17 @@ jobs:
         clone_repo_contents https://github.com/lisaac/luci-app-diskman.git master luci-app-diskman $package_path_rel
         clone_repo_contents https://github.com/sirpdboy/luci-app-ddns-go.git main luci-app-ddns-go $package_path_rel
         
-        if ! git diff-index --quiet HEAD --; then
+        ls -al $package_path_rel
+        
+        new_head=$(git rev-parse HEAD)
+        
+        if [[ "$original_head" != "$new_head" ]]; then
             status="successful"
         else
             status="no_changes"
         fi
 
+        echo $status
         echo "repo_status=$status" >> $GITHUB_ENV
       
     - name: Commit and push repository using SSH
@@ -174,6 +181,8 @@ jobs:
             
             git add .
             git commit -a -m "Merge code repository on $current_date"
+            
+            git push git@github.com:lysgwl/openwrt-package.git HEAD:master 
         fi
             
     #- name: Push changes repository
