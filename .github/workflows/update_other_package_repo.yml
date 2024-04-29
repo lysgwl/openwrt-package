@@ -85,6 +85,7 @@ jobs:
         
         # 相对于git顶层目录的路径
         package_path_rel="otherpackage"
+        mkdir -p $package_path_rel
         
         # 获取当前的HEAD哈希值
         original_head=$(git rev-parse HEAD)
@@ -106,9 +107,21 @@ jobs:
         fi
         
         echo "repo_status=$status" >> $GITHUB_ENV
-        
-    - name: Push changes repository
-      uses: ad-m/github-push-action@master
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}   # PERSONAL_ACCESS_TOKEN
-        branch: ${{ github.ref }}    # master
+    
+    - name: Commit and Push repository using SSH
+      env: 
+        repo_status: ${{ env.repo_status }}
+      run: |
+        if [ "$repo_status" != "successful" ]; then
+            echo "No changes to commit."
+        else
+            current_date=$(date '+%Y-%m-%d')
+            
+            git add .
+            echo "tttt"
+        fi
+    #- name: Push changes repository
+    #  uses: ad-m/github-push-action@master
+    #  with:
+    #    github_token: ${{ secrets.GITHUB_TOKEN }}   # PERSONAL_ACCESS_TOKEN
+    #    branch: ${{ github.ref }}    # master
