@@ -123,6 +123,17 @@ jobs:
             git clone --depth 1 --branch $branch $remote_repo $temp_dir
             
             if [ $? -eq 0 ]; then
+                local target_path="$package_path_rel/$local_dir_name"
+                
+                if [ -d "$target_path" ]; then
+                    echo "Removing old files from $target_path."
+                    
+                    # 使用:?防止变量为空时删除根目录
+                    rm -rf "${target_path:?}"/*  
+                else
+                     # 如果目标路径不存在，创建目标路径
+                        mkdir -p "$target_path"
+                fi
                 # 创建目标路径
                 mkdir -p "$package_path_rel/$local_dir_name"
             
@@ -136,6 +147,7 @@ jobs:
         
         # 相对于git顶层目录的路径
         package_path_rel="otherpackage"
+        mkdir -p "$package_path_rel"
 
         clone_repo_contents https://github.com/lisaac/luci-app-diskman.git master luci-app-diskman $package_path_rel
         clone_repo_contents https://github.com/sirpdboy/luci-app-ddns-go.git main luci-app-ddns-go $package_path_rel
@@ -144,22 +156,17 @@ jobs:
       env: 
         repo_status: ${{ env.repo_status }}
       run: |
-        echo "1111"
-        if [ "$repo_status" != "successful" ]; then
-            echo "No changes to commit."
+        git status
+        git diff --staged
+        
+        if [ $(git diff --staged | wc -l) -eq 0 ]; then
+            echo "Nothing new to commit."
         else
-            git status
-            git diff --staged
+            current_date=$(date '+%Y-%m-%d')
+            echo $current_date
             
-            if [ $(git diff --staged | wc -l) -eq 0 ]; then
-                echo "Nothing new to commit."
-            else
-                current_date=$(date '+%Y-%m-%d')
-                echo $current_date
-                
-                git add .
-                git commit -a -m "Merge code repository on $current_date"
-            fi
+            git add .
+            git commit -a -m "Merge code repository on $current_date"
         fi
             
     #- name: Push changes repository
