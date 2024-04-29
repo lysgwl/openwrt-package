@@ -62,13 +62,13 @@ jobs:
             
             if [ -d "$target_path" ]; then
                 echo "Repository ${local_dir_name} already cloned. Pulling updates..."
-                echo $PWD
+                echo "test1--$PWD--"
                 pushd "$target_path"
-                echo $PWD
-                echo $target_path
+                echo "test2--$PWD--"
+                echo "test3--$target_path--"
                 git pull --rebase $remote_alias $branch  # --allow-unrelated-histories
                 popd
-                echo $PWD
+                echo "test4--$PWD--"
                 #git subtree pull --prefix="$target_path" $remote_alias $branch --squash
             else
                 echo "Cloning repository content into the new prefix...$target_path"
