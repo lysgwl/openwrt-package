@@ -156,9 +156,7 @@ jobs:
       env: 
         repo_status: ${{ env.repo_status }}
       run: |
-        if git diff-index --quiet HEAD --; then
-            echo "No changes to commit."
-        else
+        if ! git diff-index --quiet HEAD --; then
             current_date=$(date '+%Y-%m-%d')
             
             git add .
@@ -166,6 +164,8 @@ jobs:
             
             echo "Changes committed. Proceed with the push."
             git push git@github.com:lysgwl/openwrt-package.git HEAD:master
+        else
+            echo "No changes to commit."
         fi
 
     #- name: Push changes repository
