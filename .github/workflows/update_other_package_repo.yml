@@ -118,7 +118,7 @@ jobs:
             current_date=$(date '+%Y-%m-%d')
             
             git add .
-            echo "tttt"
+            git commit -a -m "Merge code repository on $current_date"
         fi
     #- name: Push changes repository
     #  uses: ad-m/github-push-action@master
