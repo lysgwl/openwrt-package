@@ -106,23 +106,9 @@ jobs:
         fi
         
         echo "repo_status=$status" >> $GITHUB_ENV
-     
-    - name: Commit and Push repository using SSH
-      env: 
-        repo_status: ${{ env.repo_status }}
-      run: |
-        if [ "$repo_status" != "successful" ]; then
-            echo "No changes to commit."
-        else
-            current_date=$(date '+%Y-%m-%d')
-            
-            git add .
-            git commit -m "Merge code repository on $current_date"
-            git push origin $(git branch --show-current)
-        fi
-
-    #- name: Push changes repository
-    #  uses: ad-m/github-push-action@master
-    #  with:
-    #    github_token: ${{ secrets.GITHUB_TOKEN }}   # PERSONAL_ACCESS_TOKEN
-    #    branch: ${{ github.ref }}    # master
+        
+    - name: Push changes repository
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}   # PERSONAL_ACCESS_TOKEN
+        branch: ${{ github.ref }}    # master
