@@ -111,7 +111,7 @@ jobs:
             else
                 echo "Fetch failed, please check your remote and network."
                 exit 1
-            if
+            fi
             
             # 检测是否存在冲突
             if git ls-files -u | grep -q '^'; then
