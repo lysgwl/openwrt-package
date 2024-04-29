@@ -27,7 +27,7 @@ jobs:
       with:
         ssh-private-key: ${{ secrets.PERSONAL_SSH_KEY }}   
 
-    - name: Setup Git Config
+    - name: Setup git config
       run: |
         git config --global user.name "lysgwl"
         git config --global user.email "lysgwl@163.com"      
@@ -47,7 +47,7 @@ jobs:
         add_fetch_repo poweroff esirplayground/luci-app-poweroff
         add_fetch_repo socat chenmozhijin/luci-app-socat
 
-    - name: Copy Repository Contents
+    - name: Copy repository contents
       if: env.REPO_REMOTE_COND == 'true' && !cancelled()
       run: |
         function copy_repo_contents() {
@@ -106,8 +106,41 @@ jobs:
         fi
         
         echo "repo_status=$status" >> $GITHUB_ENV
-    
-    - name: Commit and Push repository using SSH
+        
+    - name: Clone and merge repository contents
+      if: env.REPO_REMOTE_COND == 'false' && !cancelled()    
+      run: |
+        function clone_repo_contents() {
+            local remote_repo=$1        # 远程仓库URL
+            local branch=$2             # 分支名
+            local local_dir_name=$3     # 本地目录名
+            local package_path_rel=$4   # 相对于顶层目录的路径
+            
+            # 临时目录，用于克隆远程仓库
+            local temp_dir=$(mktemp -d)
+            
+            # 克隆远程仓库到临时目录
+            git clone --depth 1 --branch $branch $remote_repo $temp_dir
+            
+            if [ $? -eq 0 ]; then
+                # 创建目标路径
+                mkdir -p "$package_path_rel/$local_dir_name"
+            
+                # 复制克隆的内容到目标路径
+                cp -r $temp_dir/* "$package_path_rel/$local_dir_name/"
+            fi
+            
+            # 清理临时目录
+            rm -rf $temp_dir
+        }
+        
+        # 相对于git顶层目录的路径
+        package_path_rel="otherpackage"
+
+        clone_repo_contents https://github.com/lisaac/luci-app-diskman.git master luci-app-diskman $package_path_rel
+        clone_repo_contents https://github.com/sirpdboy/luci-app-ddns-go.git main luci-app-ddns-go $package_path_rel
+      
+    - name: Commit and push repository using SSH
       env: 
         repo_status: ${{ env.repo_status }}
       run: |
