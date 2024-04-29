@@ -118,6 +118,7 @@ jobs:
             
             git add .
             git commit -m "Merge code repository on $current_date"
+            git push origin $(git branch --show-current)
         fi
 
     #- name: Push changes repository
