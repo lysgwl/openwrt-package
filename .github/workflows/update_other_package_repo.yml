@@ -83,9 +83,9 @@ jobs:
 
         copy_repo_contents master diskman luci-app-diskman $package_path_rel
         copy_repo_contents main ddns-go luci-app-ddns-go $package_path_rel
-        copy_repo_contents master OpenAppFilter luci-app-OpenAppFilter $package_path_rel
-        copy_repo_contents master poweroff luci-app-poweroff $package_path_rel
-        copy_repo_contents main socat luci-app-socat $package_path_rel
+        #copy_repo_contents master OpenAppFilter luci-app-OpenAppFilter $package_path_rel
+        #copy_repo_contents master poweroff luci-app-poweroff $package_path_rel
+        #copy_repo_contents main socat luci-app-socat $package_path_rel
         
     - name: Commit and Push repository using SSH
       run: |
