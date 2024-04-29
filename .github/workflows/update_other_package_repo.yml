@@ -98,15 +98,29 @@ jobs:
         else
             git add .
             git commit -a -m "Merge code repository on $current_date"
+            
+            echo "Changes committed. Proceeding with pull and push."
+            
+            # 安全拉取更新
+            # git pull --rebase origin master
+            git fetch origin master
+            
+            STATUS=$?
+            if [ $STATUS -eq 0 ]; then
+                git merge FETCH_HEAD
+            else
+                echo "Fetch failed, please check your remote and network."
+                exit 1
+            if
+            
+            # 检测是否存在冲突
+            if git ls-files -u | grep -q '^'; then
+                echo "Merge conflicts detected. Please resolve them manually."
+                exit 1
+            fi
+            
+            git push git@github.com:lysgwl/openwrt-package.git HEAD:master 
         fi
-
-        git pull --rebase origin master
-        if [ $? -ne 0 ]; then
-            echo "Rebase failed, please resolve conflicts manually!"
-            exit 1
-        fi
-        
-        git push git@github.com:lysgwl/openwrt-package.git HEAD:master 
 
     #- name: Push changes repository
     #  uses: ad-m/github-push-action@master
