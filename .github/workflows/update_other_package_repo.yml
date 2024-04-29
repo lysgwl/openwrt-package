@@ -92,29 +92,36 @@ jobs:
         #copy_repo_contents master poweroff luci-app-poweroff $package_path_rel
         #copy_repo_contents main socat luci-app-socat $package_path_rel
         
+        # 
+        if ! git diff-index --quiet HEAD --; then
+            status="successful"
+        else
+            status="no_changes"
+        fi
+        
+        echo $status
+        echo "repo_status=$status" >> $GITHUB_ENV
+     
     - name: Commit and Push repository using SSH
+      env: 
+        repo_status: ${{ env.repo_status }}
       run: |
-        current_date=$(date '+%Y-%m-%d')
-        changes=$(git status --porcelain)
-
-        if [ -z "$changes" ]; then
+        if [ "$repo_status" != "successful" ]; then
             echo "No changes to commit."
         else
+            current_date=$(date '+%Y-%m-%d')
+            
             git add .
             git commit -a -m "Merge code repository on $current_date"
             
             echo "Changes committed. Proceeding with pull and push."
-            
-            # 安全拉取更新
-            # git pull --rebase origin master
             git fetch origin master
             
             STATUS=$?
-            if [ $STATUS -eq 0 ]; then
-                git merge FETCH_HEAD
+            if [ $STATUS -ne 0 ]; then
+                echo "Fetch failed, please check your remote and network."; exit 1
             else
-                echo "Fetch failed, please check your remote and network."
-                exit 1
+                git merge FETCH_HEAD
             fi
             
             # 检测是否存在冲突
