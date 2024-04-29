@@ -60,6 +60,8 @@ jobs:
             # 移除路径开头的"./"
             target_path="${target_path#./}" 
             
+            echo $target_path
+            
             if [ -d "$target_path" ]; then
                 echo "Repository ${local_dir_name} already cloned. Pulling updates..."
 
@@ -74,6 +76,9 @@ jobs:
                 echo "Cloning repository content into the new prefix...$target_path"
                 git subtree add --prefix="$target_path" $remote_alias $branch --squash
             fi
+            
+            echo "current dir=$PWD"
+            ls -al $target_path
             
             popd
         }
