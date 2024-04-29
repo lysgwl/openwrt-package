@@ -150,23 +150,19 @@ jobs:
         mkdir -p "$package_path_rel"
 
         clone_repo_contents https://github.com/lisaac/luci-app-diskman.git master luci-app-diskman $package_path_rel
-        clone_repo_contents https://github.com/sirpdboy/luci-app-ddns-go.git main luci-app-ddns-go $package_path_rel
+        #clone_repo_contents https://github.com/sirpdboy/luci-app-ddns-go.git main luci-app-ddns-go $package_path_rel
         
     - name: Commit and push repository using SSH
       env: 
         repo_status: ${{ env.repo_status }}
       run: |
-        if ! git diff-index --quiet HEAD --; then
-            current_date=$(date '+%Y-%m-%d')
+        current_date=$(date '+%Y-%m-%d')
             
-            git add .
-            git commit -a -m "Merge code repository on $current_date"
-            
-            echo "Changes committed. Proceed with the push."
-            git push git@github.com:lysgwl/openwrt-package.git HEAD:master
-        else
-            echo "No changes to commit."
-        fi
+        git add .
+        git commit -a -m "Merge code repository on $current_date"
+        
+        echo "Changes committed. Proceed with the push."
+        git push git@github.com:lysgwl/openwrt-package.git HEAD:master
 
     #- name: Push changes repository
     #  uses: ad-m/github-push-action@master
