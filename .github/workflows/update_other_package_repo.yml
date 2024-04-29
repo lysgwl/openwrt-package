@@ -120,9 +120,9 @@ jobs:
             echo "No changes to commit."
         else
             git status
-            git diff HEAD
+            git diff --staged
             
-            if [ $(git diff HEAD | wc -l) -eq 0 ]; then
+            if [ $(git diff --staged | wc -l) -eq 0 ]; then
                 echo "Nothing new to commit."
             else
                 current_date=$(date '+%Y-%m-%d')
@@ -132,6 +132,7 @@ jobs:
                 git commit -a -m "Merge code repository on $current_date"
             fi
         fi
+            
     #- name: Push changes repository
     #  uses: ad-m/github-push-action@master
     #  with:
