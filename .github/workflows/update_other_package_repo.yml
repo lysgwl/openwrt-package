@@ -8,6 +8,9 @@ on:
   repository_dispatch:
   workflow_dispatch:
   
+env:
+  REPO_REMOTE_COND: false   
+  
 jobs:
   build:   # update build
     runs-on: ubuntu-latest
@@ -30,6 +33,7 @@ jobs:
         git config --global user.email "lysgwl@163.com"      
         
     - name: Add remote repository
+      if: env.REPO_REMOTE_COND == 'true' && !cancelled()
       run: |
         function add_fetch_repo() {
             echo "add remote repository: $2"    
@@ -44,6 +48,7 @@ jobs:
         add_fetch_repo socat chenmozhijin/luci-app-socat
 
     - name: Copy Repository Contents
+      if: env.REPO_REMOTE_COND == 'true' && !cancelled()
       run: |
         function copy_repo_contents() {
             local branch=$1             # 分支名
@@ -75,35 +80,25 @@ jobs:
                 git subtree add --prefix="$target_path" $remote_alias $branch --squash
             fi
             
-            echo "subdir=$target_path"
-            ls -al $target_path
-            
             popd
         }
         
         # 相对于git顶层目录的路径
         package_path_rel="otherpackage"
-        mkdir -p $package_path_rel
         
         # 获取当前的HEAD哈希值
         original_head=$(git rev-parse HEAD)
 
         copy_repo_contents master diskman luci-app-diskman $package_path_rel
         copy_repo_contents main ddns-go luci-app-ddns-go $package_path_rel
-        #copy_repo_contents master OpenAppFilter luci-app-OpenAppFilter $package_path_rel
-        #copy_repo_contents master poweroff luci-app-poweroff $package_path_rel
-        #copy_repo_contents main socat luci-app-socat $package_path_rel
+        copy_repo_contents master OpenAppFilter luci-app-OpenAppFilter $package_path_rel
+        copy_repo_contents master poweroff luci-app-poweroff $package_path_rel
+        copy_repo_contents main socat luci-app-socat $package_path_rel
         
         # 获取新的HEAD哈希值
         new_head=$(git rev-parse HEAD)
         
-        echo "cur=$PWD"
-        ls -al $PWD
-        
-        echo "otherpackage dir=$package_path_rel"
-        ls -al $package_path_rel
-        
-        # 
+        # 根据哈希值判断状态
         if [[ "$original_head" != "$new_head" ]]; then
             status="successful"
         else
@@ -116,6 +111,7 @@ jobs:
       env: 
         repo_status: ${{ env.repo_status }}
       run: |
+        echo "1111"
         if [ "$repo_status" != "successful" ]; then
             echo "No changes to commit."
         else
