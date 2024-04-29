@@ -104,22 +104,26 @@ jobs:
         else
             status="no_changes"
         fi
-        
+        echo $status
         echo "repo_status=$status" >> $GITHUB_ENV
      
     - name: Commit and Push repository using SSH
       env: 
         repo_status: ${{ env.repo_status }}
       run: |
+        echo $repo_status
         if [ "$repo_status" != "successful" ]; then
             echo "No changes to commit."
         else
             current_date=$(date '+%Y-%m-%d')
+            echo $current_date
             
             git add .
             git commit -a -m "Merge code repository on $current_date"
             
             commit_status=$?
+
+            echo $commit_status
             if [ $commit_status -ne 0 ]; then
                 echo "Nothing to commit, working tree clean"
                 echo "Checking if local branch is ahead of remote branch..."
