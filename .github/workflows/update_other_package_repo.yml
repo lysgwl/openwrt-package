@@ -120,14 +120,15 @@ jobs:
             echo "No changes to commit."
         else
             git status
-            git diff --cached
+            git diff HEAD
             
-            if [ $(git diff --cached | wc -l) -eq 0 ]; then
+            if [ $(git diff HEAD | wc -l) -eq 0 ]; then
                 echo "Nothing new to commit."
             else
                 current_date=$(date '+%Y-%m-%d')
                 echo $current_date
                 
+                git add .
                 git commit -a -m "Merge code repository on $current_date"
             fi
         fi
