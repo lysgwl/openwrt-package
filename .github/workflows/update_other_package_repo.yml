@@ -165,12 +165,13 @@ jobs:
             echo "Nothing to commit, working tree clean"
             
             ahead=$(git status | grep 'Your branch is ahead' | wc -l)
-            if [ $ahead -eq 0 ]; then
-                echo "Local branch is not ahead; no need to push."
-            else
-                echo "Local branch is ahead of remote, pushing changes..."
-                git push git@github.com:lysgwl/openwrt-package.git HEAD:master
-            fi
+            echo "test:$ahead"
+            #if [ $ahead -eq 0 ]; then
+             #   echo "Local branch is not ahead; no need to push."
+            #else
+            #    echo "Local branch is ahead of remote, pushing changes..."
+            #    git push git@github.com:lysgwl/openwrt-package.git HEAD:master
+            #fi
         else
             echo "Changes committed. Proceeding with pull and push."
             git fetch origin master
