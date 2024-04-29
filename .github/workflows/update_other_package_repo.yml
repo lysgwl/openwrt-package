@@ -131,14 +131,16 @@ jobs:
                     # 使用:?防止变量为空时删除根目录
                     rm -rf "${target_path:?}"/*  
                 else
-                     # 如果目标路径不存在，创建目标路径
-                        mkdir -p "$target_path"
+                    # 如果目标路径不存在，创建目标路径
+                    mkdir -p "$target_path"
                 fi
                 # 创建目标路径
                 mkdir -p "$package_path_rel/$local_dir_name"
             
                 # 复制克隆的内容到目标路径
                 cp -r $temp_dir/* "$package_path_rel/$local_dir_name/"
+                
+                ls -al "$package_path_rel/$local_dir_name/"
             fi
             
             # 清理临时目录
@@ -151,17 +153,22 @@ jobs:
 
         clone_repo_contents https://github.com/lisaac/luci-app-diskman.git master luci-app-diskman $package_path_rel
         clone_repo_contents https://github.com/sirpdboy/luci-app-ddns-go.git main luci-app-ddns-go $package_path_rel
+        
+        if ! git diff-index --quiet HEAD --; then
+            status="successful"
+        else
+            status="no_changes"
+        fi
+
+        echo "repo_status=$status" >> $GITHUB_ENV
       
     - name: Commit and push repository using SSH
       env: 
         repo_status: ${{ env.repo_status }}
       run: |
-        git status
-        git diff --staged
-        
-        if [ $(git diff --staged | wc -l) -eq 0 ]; then
-            echo "Nothing new to commit."
-        else
+        if [ "$repo_status" != "successful" ]; then
+            echo "No changes to commit."
+        else    
             current_date=$(date '+%Y-%m-%d')
             echo $current_date
             
