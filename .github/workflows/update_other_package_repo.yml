@@ -139,15 +139,11 @@ jobs:
             
                 # 复制克隆的内容到目标路径
                 cp -r $temp_dir/* "$package_path_rel/$local_dir_name/"
-                
-                ls -al "$package_path_rel/$local_dir_name/"
             fi
             
             # 清理临时目录
             rm -rf $temp_dir
         }
-        
-        original_head=$(git rev-parse HEAD)
         
         # 相对于git顶层目录的路径
         package_path_rel="otherpackage"
@@ -156,35 +152,45 @@ jobs:
         clone_repo_contents https://github.com/lisaac/luci-app-diskman.git master luci-app-diskman $package_path_rel
         clone_repo_contents https://github.com/sirpdboy/luci-app-ddns-go.git main luci-app-ddns-go $package_path_rel
         
-        ls -al $package_path_rel
-        
-        new_head=$(git rev-parse HEAD)
-        
-        if [[ "$original_head" != "$new_head" ]]; then
-            status="successful"
-        else
-            status="no_changes"
-        fi
-
-        echo $status
-        echo "repo_status=$status" >> $GITHUB_ENV
-      
     - name: Commit and push repository using SSH
       env: 
         repo_status: ${{ env.repo_status }}
       run: |
-        if [ "$repo_status" != "successful" ]; then
-            echo "No changes to commit."
-        else    
-            current_date=$(date '+%Y-%m-%d')
-            echo $current_date
+        current_date=$(date '+%Y-%m-%d')
+        
+        git add .
+        git commit -a -m "Merge code repository on $current_date"
+        
+        if [ $? -ne 0 ]; then
+            echo "Nothing to commit, working tree clean"
             
-            git add .
-            git commit -a -m "Merge code repository on $current_date"
+            ahead=$(git status | grep 'Your branch is ahead' | wc -l)
+            if [ $ahead -eq 0 ]; then
+                echo "Local branch is not ahead; no need to push."
+            else
+                echo "Local branch is ahead of remote, pushing changes..."
+                git push git@github.com:lysgwl/openwrt-package.git HEAD:master
+            fi
+        else
+            echo "Changes committed. Proceeding with pull and push."
+            git fetch origin master
             
-            git push git@github.com:lysgwl/openwrt-package.git HEAD:master 
+            if [ $STATUS -ne 0 ]; then
+                echo "Fetch failed, please check your remote and network."
+                exit 1
+            else
+                git merge FETCH_HEAD
+                
+                # 检测是否存在冲突
+                if git ls-files -u | grep -q '^'; then
+                    echo "Merge conflicts detected. Please resolve them manually."
+                    exit 1
+                fi
+                
+                git push git@github.com:lysgwl/openwrt-package.git HEAD:master 
+            fi
         fi
-            
+    
     #- name: Push changes repository
     #  uses: ad-m/github-push-action@master
     #  with:
