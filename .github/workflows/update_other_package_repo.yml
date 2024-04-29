@@ -59,9 +59,7 @@ jobs:
             
             # 移除路径开头的"./"
             target_path="${target_path#./}" 
-            
-            echo $target_path
-            
+        
             if [ -d "$target_path" ]; then
                 echo "Repository ${local_dir_name} already cloned. Pulling updates..."
 
@@ -77,7 +75,7 @@ jobs:
                 git subtree add --prefix="$target_path" $remote_alias $branch --squash
             fi
             
-            echo "current dir=$PWD"
+            echo "subdir=$target_path"
             ls -al $target_path
             
             popd
@@ -99,6 +97,12 @@ jobs:
         # 获取新的HEAD哈希值
         new_head=$(git rev-parse HEAD)
         
+        echo "cur=$PWD"
+        ls -al $PWD
+        
+        echo "otherpackage dir=$package_path_rel"
+        ls -al $package_path_rel
+        
         # 
         if [[ "$original_head" != "$new_head" ]]; then
             status="successful"
@@ -115,10 +119,17 @@ jobs:
         if [ "$repo_status" != "successful" ]; then
             echo "No changes to commit."
         else
-            current_date=$(date '+%Y-%m-%d')
+            git status
+            git diff --cached
             
-            git add .
-            git commit -a -m "Merge code repository on $current_date"
+            if [ $(git diff --cached | wc -l) -eq 0 ]; then
+                echo "Nothing new to commit."
+            else
+                current_date=$(date '+%Y-%m-%d')
+                echo $current_date
+                
+                git commit -a -m "Merge code repository on $current_date"
+            fi
         fi
     #- name: Push changes repository
     #  uses: ad-m/github-push-action@master
