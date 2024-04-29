@@ -84,7 +84,10 @@ jobs:
         }
         
         # 相对于git顶层目录的路径
-        package_path_rel="otherpackage"  
+        package_path_rel="otherpackage"
+        
+        # 获取当前的HEAD哈希值
+        original_head=$(git rev-parse HEAD)
 
         copy_repo_contents master diskman luci-app-diskman $package_path_rel
         copy_repo_contents main ddns-go luci-app-ddns-go $package_path_rel
@@ -92,14 +95,16 @@ jobs:
         #copy_repo_contents master poweroff luci-app-poweroff $package_path_rel
         #copy_repo_contents main socat luci-app-socat $package_path_rel
         
+        # 获取新的HEAD哈希值
+        new_head=$(git rev-parse HEAD)
+        
         # 
-        if ! git diff-index --quiet HEAD --; then
+        if [[ "$original_head" != "$new_head" ]]; then
             status="successful"
         else
             status="no_changes"
         fi
         
-        echo $status
         echo "repo_status=$status" >> $GITHUB_ENV
      
     - name: Commit and Push repository using SSH
