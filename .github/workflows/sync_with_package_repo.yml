@@ -78,5 +78,5 @@ jobs:
         cd dest_repo
 
         # 相对于git顶层目录的路径
-        #package_path_rel="shidahuilang"
-        #check_git_commit $package_path_rel
+        package_path_rel="shidahuilang"
+        check_git_commit $package_path_rel
