@@ -150,17 +150,31 @@ jobs:
         mkdir -p "$package_path_rel"
 
         clone_repo_contents https://github.com/lisaac/luci-app-diskman.git master luci-app-diskman $package_path_rel
-        #clone_repo_contents https://github.com/sirpdboy/luci-app-ddns-go.git main luci-app-ddns-go $package_path_rel
+        clone_repo_contents https://github.com/sirpdboy/luci-app-ddns-go.git main luci-app-ddns-go $package_path_rel
         
     - name: Commit and push repository using SSH
       run: |
-        current_date=$(date '+%Y-%m-%d')
+        function check_git_commit {
+            # 目标目录路径
+            local target_path=$1   
             
-        git add .
-        git commit -a -m "Merge code repository on $current_date"
+            # 进入目标目录
+            cd "$target_path" || { echo "Error: Unable to change directory to $target_path"; exit 1; }
+
+             # 检查git状态
+            local has_changes=$(git status --porcelain | grep '^[MADRC]')
+            if [ -n "$has_changes" ]; then
+                git add .
+                git commit -m "Auto commit changes"
+                git push origin master
+            fi
+        }
         
-        echo "Changes committed. Proceed with the push."
-        git push git@github.com:lysgwl/openwrt-package.git HEAD:master
+        # 相对于git顶层目录的路径
+        package_path_rel="otherpackage"
+        
+        check_git_commit $package_path_rel
+        
 
     #- name: Push changes repository
     #  uses: ad-m/github-push-action@master
