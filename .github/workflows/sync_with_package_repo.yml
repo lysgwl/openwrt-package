@@ -42,20 +42,50 @@ jobs:
       run: |
         rsync -a --delete src_repo/ dest_repo/shidahuilang/ --exclude .git
         
+    - name: Commit and push repository using SSH
+      run: |
+        function check_git_commit {
+            # 目标目录路径
+            local target_path=$1 
+            
+            # 进入目标目录
+            cd "$target_path" || { echo "Error: Unable to change directory to $target_path"; exit 1; }
+            
+            # 将所有变更添加到暂存区
+            git add .
+            
+            # 输出git状态
+            git status
+            
+            # 检查git状态
+            local has_changes=$(git status --porcelain | grep '^[MADRC]')
+            if [ -n "$has_changes" ]; then
+                current_date=$(date '+%Y-%m-%d')
+                
+                git commit -a -m "commit repository  changes on current_date$"
+                git push git@github.com:lysgwl/openwrt-package.git HEAD:master
+            fi
+            
+            # 递归检查子目录的git状态
+            for subdir in */; do
+                if [ -d "$subdir" ]; then
+                    check_git_commit "$subdir"
+                fi
+            done
+        }
+        
         echo "cur=$PWD"
         ls -al $PWD
         
-        echo "src=src_repo"
-        ls -al "src_repo"
+        # 
+        cd dest_repo
         
         echo "dest=dest_repo"
-        ls -al "dest_repo/shidahuilang"
+        ls -al "dest_repo"
         
-    #- name: Commit and push repository using SSH
-    #  run: |    
-    #    cd dest_repo
+        echo "dest=dest_repo_package"
+        ls -al "dest_repo/shidahuilang"
 
-    #    git add .
-    #    current_date=$(date '+%Y-%m-%d')
-    #    git commit -m "Merge code repository on $current_date"
-    #    git push https://lysgwl:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/lysgwl/openwrt-package.git
+        # 相对于git顶层目录的路径
+        #package_path_rel="shidahuilang"
+        #check_git_commit $package_path_rel
