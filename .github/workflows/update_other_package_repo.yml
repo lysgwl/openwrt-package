@@ -175,7 +175,9 @@ jobs:
             # 检查git状态
             local has_changes=$(git status --porcelain | grep '^[MADRC]')
             if [ -n "$has_changes" ]; then
-                git commit -m "Auto commit changes"
+                current_date=$(date '+%Y-%m-%d')
+                
+                git commit -a -m "commit repository  changes on current_date$"
                 git push git@github.com:lysgwl/openwrt-package.git HEAD:master
             fi
             
