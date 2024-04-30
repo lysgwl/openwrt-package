@@ -160,19 +160,19 @@ jobs:
             
             # 进入目标目录
             cd "$target_path" || { echo "Error: Unable to change directory to $target_path"; exit 1; }
-            echo "test1"
             #
             git add .
-            echo "test2"
             git status
-            echo "test3"
             
             # 检查git状态
             local has_changes=$(git status --porcelain | grep '^[MADRC]')
             echo "status=$has_changes"
             if [ -n "$has_changes" ]; then
+                echo "test1"
                 git commit -m "Auto commit changes"
+                echo "test2"
                 git push origin master
+                echo "test3"
             fi
         }
         
