@@ -80,11 +80,11 @@ jobs:
         # 
         cd dest_repo
         
-        echo "dest=dest_repo"
-        ls -al "dest_repo"
+        echo "dest=$PWD"
+        ls -al $PWD
         
         echo "dest=dest_repo_package"
-        ls -al "dest_repo/shidahuilang"
+        ls -al "$PWD/shidahuilang"
 
         # 相对于git顶层目录的路径
         #package_path_rel="shidahuilang"
