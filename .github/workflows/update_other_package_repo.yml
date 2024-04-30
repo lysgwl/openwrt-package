@@ -157,19 +157,18 @@ jobs:
         function check_git_commit {
             # 目标目录路径
             local target_path=$1   
-
-            echo "cur=$PWD, $target_path"
             
             # 进入目标目录
             cd "$target_path" || { echo "Error: Unable to change directory to $target_path"; exit 1; }
 
-            echo "cur=$PWD"
-             # 检查git状态
+            #
+            git add .
+            git status
+            
+            # 检查git状态
             local has_changes=$(git status --porcelain | grep '^[MADRC]')
             echo "status=$has_changes"
             if [ -n "$has_changes" ]; then
-                echo "1111"
-                git add .
                 git commit -m "Auto commit changes"
                 git push origin master
             fi
