@@ -19,27 +19,43 @@ jobs:
       with:
         repository: 'lysgwl/openwrt-package'
         path: 'dest_repo'
-        #token: ${{ secrets.GITHUB_TOKEN }} # ${{ github.token }}
         fetch-depth: 0
 
     - name: Checkout shidahuilang repository
       uses: actions/checkout@v2
       with:
         repository: 'shidahuilang/openwrt-package'
-        path: 'shidahuilang_repo'
+        path: 'src_repo'
         fetch-depth: 0
+        
+    - name: Set SSH key and known_hosts
+      uses: webfactory/ssh-agent@v0.5.3
+      with:
+        ssh-private-key: ${{ secrets.PERSONAL_SSH_KEY }} 
+
+    - name: Setup git config
+      run: |
+        git config --global user.name "lysgwl"
+        git config --global user.email "lysgwl@163.com"     
     
     - name: Sync directories repository
       run: |
-        rsync -a --delete shidahuilang_repo/ dest_repo/shidahuilang/ --exclude .git
+        rsync -a --delete src_repo/ dest_repo/shidahuilang/ --exclude .git
         
-    - name: Commit info to repository
-      run: |    
-        cd dest_repo
-        git config --local user.email "lysgwl@163.com"      # 使用您GitHub的邮箱地址替换
-        git config --local user.name "lysgwl"               # 使用您的GitHub用户名替换
+        echo "cur=$PWD"
+        ls -al $PWD
         
-        git add .
-        current_date=$(date '+%Y-%m-%d')
-        git commit -m "Merge code repository on $current_date"
-        git push https://lysgwl:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/lysgwl/openwrt-package.git
+        echo "src=src_repo"
+        ls -al "src_repo"
+        
+        echo "dest=dest_repo"
+        ls -al "dest_repo"
+        
+    #- name: Commit and push repository using SSH
+    #  run: |    
+    #    cd dest_repo
+
+    #    git add .
+    #    current_date=$(date '+%Y-%m-%d')
+    #    git commit -m "Merge code repository on $current_date"
+    #    git push https://lysgwl:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/lysgwl/openwrt-package.git
