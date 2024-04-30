@@ -160,10 +160,12 @@ jobs:
             
             # 进入目标目录
             cd "$target_path" || { echo "Error: Unable to change directory to $target_path"; exit 1; }
-
+            echo "test1"
             #
             git add .
+            echo "test2"
             git status
+            echo "test3"
             
             # 检查git状态
             local has_changes=$(git status --porcelain | grep '^[MADRC]')
@@ -176,12 +178,8 @@ jobs:
         
         # 相对于git顶层目录的路径
         package_path_rel="otherpackage"
-
-        ls -al $package_path_rel
-        
         check_git_commit $package_path_rel
         
-
     #- name: Push changes repository
     #  uses: ad-m/github-push-action@master
     #  with:
