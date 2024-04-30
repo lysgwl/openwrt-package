@@ -171,6 +171,13 @@ jobs:
                 git commit -m "Auto commit changes"
                 git push git@github.com:lysgwl/openwrt-package.git HEAD:master
             fi
+            
+            # 递归检查子目录的git状态
+            for subdir in */; do
+                if [ -d "$subdir" ]; then
+                    check_git_commit "$subdir"
+                fi
+            done
         }
         
         # 相对于git顶层目录的路径
