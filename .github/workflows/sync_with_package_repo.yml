@@ -49,7 +49,7 @@ jobs:
         ls -al "src_repo"
         
         echo "dest=dest_repo"
-        ls -al "dest_repo"
+        ls -al "dest_repo/shidahuilang"
         
     #- name: Commit and push repository using SSH
     #  run: |    
