@@ -1,12 +1,14 @@
 name: Sync Package Repo
 
-#on:
-#  schedule:
-#    - cron: '*/10 * * * *' # 每六小时同步一次，您可以根据需要调整(0 */6 * * *)
-
 on:
-  repository_dispatch:
-  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * 0' 
+    # 每六小时同步一次(0 */6 * * *)
+    # 每周执行一次 (0 0 * * 0)
+
+#on:
+#  repository_dispatch:
+#  workflow_dispatch:
 
 jobs:
   build:    # repo-sync
