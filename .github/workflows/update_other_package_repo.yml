@@ -205,4 +205,5 @@ jobs:
       with:
         token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         retain_days: 0
-        keep_minimum_runs: 1
+        keep_minimum_runs: 0
+        ignore_in_progress: true
