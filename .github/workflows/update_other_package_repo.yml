@@ -157,13 +157,8 @@ jobs:
       if: env.REPO_HTTP_COND == 'true' && !cancelled()
       run: |
         function get_http_repo_contents {
-            local branch=$1         # 分支名
-            local repo_owner=$2     # 拥有者
-            local repo_name=$3      # 仓库名称
-            local repo_path=$4      # 仓库路径
-            
             # API 请求 URL
-            local repo_url="https://api.github.com/repos/$repo_owner/$repo_name/contents/$repo_path?ref=$branch"
+            local repo_url=$1
             
             # 发送 API 请求并获取响应
             response=$(curl -s $repo_url)
@@ -174,12 +169,20 @@ jobs:
                     echo ${entry} | base64 --decode | jq -r ${1}
                 }
                 
-                fileName=$(_jq '.name')
-                echo $fileName
+                filetype=$(jq '.type')
+                if [ ${filetype} == "dir" ]; then
+                    fileName=$(_jq '.name')
+                    echo $fileName
+                else
+                    echo "1"
+                fi
             done
         }
         
-        get_http_repo_contents master coolsnowwolf luci applications
+        # 请求 URL (branch,repo_owner,repo_name,repo_path)
+        local url="https://api.github.com/repos/coolsnowwolf/luci/contents/applications?ref=master"
+        
+        get_http_repo_contents $url
       
     - name: Commit and push repository using SSH
       run: |
