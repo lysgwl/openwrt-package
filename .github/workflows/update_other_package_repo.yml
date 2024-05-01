@@ -171,10 +171,10 @@ jobs:
             # 
             for entry in $(echo "$response" | jq -r '.[]'); do
                 _jq() {
-                    echo ${entry} | jq -r ${1}
+                    echo "${entry}" | jq -r "${1}"
                 }
                 
-                fileName=$(_jq '.name')
+                fileName=$(_jq 'name')
                 echo $fileName
             done
         }
