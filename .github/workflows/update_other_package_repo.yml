@@ -1,26 +1,26 @@
 name: Update Other Package Repo
 
-on:
-  schedule:
-    - cron: '0 0 */15 * *'     
+#on:
+#  schedule:
+#    - cron: '0 0 */15 * *'     
     # 每天凌晨运行 (0 0 * * *) 
     # 每15天执行 (0 0 */15 * *)
 
-#on:
-#  repository_dispatch:
-#  workflow_dispatch:
+on:
+  repository_dispatch:
+  workflow_dispatch:
   
 env:
   REPO_REMOTE_COND: false   
   
 jobs:
-  update:   # update build
+  build:   # update build
     runs-on: ubuntu-latest
     
     steps:
     
     - name: Checkout master branch
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
       with:
         ref: master
         
@@ -198,3 +198,9 @@ jobs:
     #  with:
     #    github_token: ${{ secrets.GITHUB_TOKEN }}   # PERSONAL_ACCESS_TOKEN
     #    branch: ${{ github.ref }}    # master
+    
+    - name: Delete workflow runs
+        uses: Mattraks/delete-workflow-runs@main
+        with:
+          retain_days: 0
+          keep_minimum_runs: 2 
