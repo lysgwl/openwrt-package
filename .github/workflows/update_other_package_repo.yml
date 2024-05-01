@@ -180,7 +180,7 @@ jobs:
         }
         
         # 请求 URL (branch,repo_owner,repo_name,repo_path)
-        local url="https://api.github.com/repos/coolsnowwolf/luci/contents/applications?ref=master"
+        url="https://api.github.com/repos/coolsnowwolf/luci/contents/applications?ref=master"
         
         get_http_repo_contents $url
       
