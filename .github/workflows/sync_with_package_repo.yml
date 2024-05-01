@@ -2,7 +2,8 @@ name: Sync Package Repo
 
 on:
   schedule:
-    - cron: '0 0 * * 0' 
+    - cron: '*/5 * * * *'
+    # 每5分钟运行一次 (cron: '*/5 * * * *')
     # 每六小时同步一次(0 */6 * * *)
     # 每周执行一次 (0 0 * * 0)
 
@@ -17,21 +18,21 @@ jobs:
     steps:
   
     - name: Checkout dest repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
       with:
         repository: 'lysgwl/openwrt-package'
         path: 'dest_repo'
         fetch-depth: 0
 
     - name: Checkout shidahuilang repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
       with:
         repository: 'shidahuilang/openwrt-package'
         path: 'src_repo'
         fetch-depth: 0
         
     - name: Set SSH key and known_hosts
-      uses: webfactory/ssh-agent@v0.5.3
+      uses: webfactory/ssh-agent@v0.9.0
       with:
         ssh-private-key: ${{ secrets.PERSONAL_SSH_KEY }} 
 
@@ -82,3 +83,10 @@ jobs:
         # 相对于git顶层目录的路径
         package_path_rel="shidahuilang"
         check_git_commit $package_path_rel
+        
+    - name: Delete workflow runs
+      uses: Mattraks/delete-workflow-runs@v2  # main
+      with:
+        token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+        retain_days: 0
+        keep_minimum_runs: 0    

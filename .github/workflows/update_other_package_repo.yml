@@ -1,14 +1,15 @@
 name: Update Other Package Repo
 
-#on:
-#  schedule:
-#    - cron: '0 0 */15 * *'     
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+    # 每5分钟运行一次 (cron: '*/5 * * * *')
     # 每天凌晨运行 (0 0 * * *) 
     # 每15天执行 (0 0 */15 * *)
 
-on:
-  repository_dispatch:
-  workflow_dispatch:
+#on:
+#  repository_dispatch:
+#  workflow_dispatch:
   
 env:
   REPO_REMOTE_COND: false   
