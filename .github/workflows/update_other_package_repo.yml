@@ -25,7 +25,8 @@ jobs:
         ref: master
         
     - name: Set SSH key and known_hosts
-      uses: webfactory/ssh-agent@v0.9.0     # appleboy/ssh-action@master
+      # appleboy/ssh-action@master  
+      uses: webfactory/ssh-agent@v0.9.0     
       with:
         ssh-private-key: ${{ secrets.PERSONAL_SSH_KEY }}   
 
@@ -200,7 +201,8 @@ jobs:
     #    branch: ${{ github.ref }}    # master
     
     - name: Delete workflow runs
-      uses: Mattraks/delete-workflow-runs@main
+      uses: Mattraks/delete-workflow-runs@v2  # main
       with:
+        token: ${{ secrets.GITHUB_TOKEN }}
         retain_days: 0
-        keep_minimum_runs: 0
+        keep_minimum_runs: 1
