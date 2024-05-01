@@ -166,6 +166,12 @@ jobs:
             # 发送 API 请求并获取响应
             response=$(curl -s $repo_url)
             
+            # 检查是否请求成功
+            if [ $? -ne 0 ]; then
+                echo "Failed to retrieve repository contents from: $repo_url"
+                return
+            fi
+            
             # 
             for entry in $(echo "$response" | jq -r '.[] | @base64'); do
                 _jq() {
@@ -178,6 +184,12 @@ jobs:
                 fi
                 
                 filepath="${repo_path}/${fileName}"
+                if [ -z "${filepath}" ]; then
+                    continue
+                fi
+                
+                path=$(_jq '.path')
+                echo $path
                 
                 filetype=$(_jq '.type')
                 if [ "${filetype}" == "dir" ]; then
@@ -185,9 +197,11 @@ jobs:
 
                     mkdir -p $filepath
                     get_http_repo_contents $repo_url $filepath
-                else
+                elif [ "${filetype}" == "file" ]; then
                     fileurl=$(_jq '.download_url')
-                    wget $fileurl -O $filepath
+                    if [ -n "$fileurl" ]; then
+                        wget $fileurl -O $filepath
+                    fi
                 fi
             done
         }
