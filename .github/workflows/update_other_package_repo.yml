@@ -1,22 +1,24 @@
 name: Update Other Package Repo
 
-on:
-  schedule:
-    - cron: '0 0 * * 0'
+#on:
+#  schedule:
+#    - cron: '0 0 * * 0'
     # 每5分钟运行一次 (cron: '*/5 * * * *')
     # 每天凌晨运行 (0 0 * * *) 
     # 每周执行一次 (0 0 * * 0)
     # 每15天执行 (0 0 */15 * *)
 
-#on:
-#  repository_dispatch:
-#  workflow_dispatch:
+on:
+  repository_dispatch:
+  workflow_dispatch:
   
 env:
-  REPO_REMOTE_COND: false   
+  REPO_REMOTE_COND: false
+  REPO_CLONE_COND:  false
+  REPO_HTTP_COND:   true
   
 jobs:
-  update:   # update build
+  build:   # update build
     runs-on: ubuntu-latest
     
     steps:
@@ -35,31 +37,22 @@ jobs:
     - name: Setup git config
       run: |
         git config --global user.name "lysgwl"
-        git config --global user.email "lysgwl@163.com"      
-        
-    - name: Add remote repository
-      if: env.REPO_REMOTE_COND == 'true' && !cancelled()
-      run: |
-        function add_fetch_repo() {
-            echo "add remote repository: $2"    
-            git remote add $1 https://github.com/$2.git || true
-            git fetch $1
-        }
-        
-        add_fetch_repo diskman lisaac/luci-app-diskman
-        add_fetch_repo ddns-go sirpdboy/luci-app-ddns-go
-        add_fetch_repo OpenAppFilter destan19/OpenAppFilter
-        add_fetch_repo poweroff esirplayground/luci-app-poweroff
-        add_fetch_repo socat chenmozhijin/luci-app-socat
+        git config --global user.email "lysgwl@163.com"
 
-    - name: Copy repository contents
+    - name: Get remote repository contents
       if: env.REPO_REMOTE_COND == 'true' && !cancelled()
       run: |
-        function copy_repo_contents() {
+        function add_and_copy_repo_contents() {
             local branch=$1             # 分支名
             local remote_alias=$2       # 远程仓库别名
-            local local_dir_name=$3     # 本地目录名
-            local package_path_rel=$4   # 相对于顶层目录的路径
+            local remote_url_path=$3    # 远程仓库路径
+            local local_dir_name=$4     # 本地目录名
+            local package_path_rel=$5   # 相对于顶层目录的路径
+            
+            # 添加远程仓库
+            echo "add remote repository: $remote_alias"
+            git remote add $remote_alias https://github.com/$remote_url_path.git || true
+            git fetch $remote_alias
             
             # 转到Git顶层目录
             pushd $(git rev-parse --show-toplevel)
@@ -68,17 +61,18 @@ jobs:
             local target_path="${package_path_rel}/${local_dir_name}"
             
             # 移除路径开头的"./"
-            target_path="${target_path#./}" 
-        
+            target_path="${target_path#./}"
+            
             if [ -d "$target_path" ]; then
                 echo "Repository ${local_dir_name} already cloned. Pulling updates..."
-
                 pushd "$target_path"
+                
                 # 更新远程内容
-                git fetch $remote_alias $branch 
-
+                git fetch $remote_alias $branch
+                
                 # 硬重置本地分支
                 git reset --hard FETCH_HEAD
+                
                 popd
             else
                 echo "Cloning repository content into the new prefix...$target_path"
@@ -88,17 +82,16 @@ jobs:
             popd
         }
         
-        # 相对于git顶层目录的路径
-        package_path_rel="otherpackage"
-        
         # 获取当前的HEAD哈希值
         original_head=$(git rev-parse HEAD)
-
-        copy_repo_contents master diskman luci-app-diskman $package_path_rel
-        copy_repo_contents main ddns-go luci-app-ddns-go $package_path_rel
-        copy_repo_contents master OpenAppFilter luci-app-OpenAppFilter $package_path_rel
-        copy_repo_contents master poweroff luci-app-poweroff $package_path_rel
-        copy_repo_contents main socat luci-app-socat $package_path_rel
+        
+        # 相对于git顶层目录的路径
+        package_path_rel="otherpackage"
+        add_and_copy_repo_contents master diskman lisaac/luci-app-diskman luci-app-diskman $package_path_rel
+        add_and_copy_repo_contents main ddns-go sirpdboy/luci-app-ddns-go luci-app-ddns-go $package_path_rel
+        add_and_copy_repo_contents master OpenAppFilter destan19/OpenAppFilter luci-app-OpenAppFilter $package_path_rel
+        add_and_copy_repo_contents master poweroff esirplayground/luci-app-poweroff luci-app-poweroff $package_path_rel
+        add_and_copy_repo_contents main socat chenmozhijin/luci-app-socat luci-app-socat $package_path_rel
         
         # 获取新的HEAD哈希值
         new_head=$(git rev-parse HEAD)
@@ -111,9 +104,9 @@ jobs:
         fi
         
         echo "repo_status=$status" >> $GITHUB_ENV
-        
-    - name: Clone and merge repository contents
-      if: env.REPO_REMOTE_COND == 'false' && !cancelled()    
+
+    - name: Clone repository contents
+      if: env.REPO_CLONE_COND == 'true' && !cancelled()    
       run: |
         function clone_repo_contents() {
             local remote_repo=$1        # 远程仓库URL
@@ -159,7 +152,26 @@ jobs:
         clone_repo_contents https://github.com/destan19/OpenAppFilter.git master luci-app-OpenAppFilter $package_path_rel
         clone_repo_contents https://github.com/esirplayground/luci-app-poweroff.git master luci-app-poweroff $package_path_rel
         clone_repo_contents https://github.com/chenmozhijin/luci-app-socat.git main luci-app-socat $package_path_rel
+       
+    - name: Get http repository contents
+      if: env.REPO_HTTP_COND == 'true' && !cancelled()
+      run: |
+        function get_http_repo_contents {
+            local branch=$1         # 分支名
+            local repo_owner=$2     # 拥有者
+            local repo_name=$3      # 仓库名称
+            local repo_path=$4      # 仓库路径
+            
+            # API 请求 URL
+            local repo_url="https://api.github.com/repos/$repo_owner/$repo_name/contents/$repo_path?ref=$branch"
+            
+            # 发送 API 请求并获取响应
+            response=$(curl -s $repo_url)
+            echo $response
+        }
         
+        get_http_repo_contents master coolsnowwolf luci applications
+      
     - name: Commit and push repository using SSH
       run: |
         function check_git_commit {
