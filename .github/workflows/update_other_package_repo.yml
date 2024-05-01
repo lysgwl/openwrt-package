@@ -189,7 +189,7 @@ jobs:
                 fi
                 
                 path=$(_jq '.path')
-                echo $path
+                echo "-----$path-----"
                 
                 filetype=$(_jq '.type')
                 if [ "${filetype}" == "dir" ]; then
