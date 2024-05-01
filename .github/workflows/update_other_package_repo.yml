@@ -203,6 +203,6 @@ jobs:
     - name: Delete workflow runs
       uses: Mattraks/delete-workflow-runs@v2  # main
       with:
-        token: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         retain_days: 0
-        keep_minimum_runs: 1
+        keep_minimum_runs: 0
