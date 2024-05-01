@@ -169,9 +169,9 @@ jobs:
             response=$(curl -s $repo_url)
             
             # 
-            for entry in $(echo "$response" | jq -r '.[] | @base64'); do
+            for entry in $(echo "$response" | jq -r '.[]'); do
                 _jq() {
-                    echo ${file} | base64 --decode | jq -r ${1}
+                    echo ${entry} | jq -r ${1}
                 }
                 
                 fileName=$(_jq '.name')
