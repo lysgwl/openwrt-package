@@ -206,4 +206,3 @@ jobs:
         token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         retain_days: 0
         keep_minimum_runs: 0
-        delete_workflow_by_state_pattern: '^(?!in_progress$).*'
