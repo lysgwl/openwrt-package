@@ -169,10 +169,12 @@ jobs:
                     echo ${entry} | base64 --decode | jq -r ${1}
                 }
                 
+                fileName=$(_jq '.name')
+                
                 filetype=$(_jq '.type')
                 if [ "${filetype}" == "dir" ]; then
-                    fileName=$(_jq '.name')
-                    echo $fileName
+                    repo_url=$(_jq '.url')
+                    echo $repo_url
                 else
                     echo "1"
                 fi
