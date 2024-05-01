@@ -174,7 +174,7 @@ jobs:
                     echo ${entry} | base64 --decode | jq -r ${1}
                 }
                 
-                fileName=$(jq '.name')
+                fileName=$(_jq '.name')
                 echo $fileName
             done
         }
