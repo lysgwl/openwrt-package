@@ -167,7 +167,16 @@ jobs:
             
             # 发送 API 请求并获取响应
             response=$(curl -s $repo_url)
-            echo $response
+            
+            # 
+            for entry in $(echo "$response" | jq -r '.[] | @base64'); do
+                _jq() {
+                    echo ${file} | base64 --decode | jq -r ${1}
+                }
+                
+                fileName=$(_jq '.name')
+                echo $fileName
+            done
         }
         
         get_http_repo_contents master coolsnowwolf luci applications
