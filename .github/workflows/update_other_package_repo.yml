@@ -15,7 +15,7 @@ env:
   REPO_REMOTE_COND: false   
   
 jobs:
-  build:   # update build
+  update:   # update build
     runs-on: ubuntu-latest
     
     steps:
