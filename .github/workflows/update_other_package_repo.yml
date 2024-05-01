@@ -25,7 +25,7 @@ jobs:
         ref: master
         
     - name: Set SSH key and known_hosts
-      uses: webfactory/ssh-agent@v0.9.0
+      uses: webfactory/ssh-agent@v0.9.0     # appleboy/ssh-action@master
       with:
         ssh-private-key: ${{ secrets.PERSONAL_SSH_KEY }}   
 
@@ -203,4 +203,4 @@ jobs:
       uses: Mattraks/delete-workflow-runs@main
       with:
         retain_days: 0
-        keep_minimum_runs: 2 
+        keep_minimum_runs: 0
