@@ -178,25 +178,22 @@ jobs:
                 local field=$2
                 
                 # 检查entry是否为有效的JSON对象
-                if ! echo "$entry" | jq -e . >/dev/null 2>&1; then
-                    echo "Error: entry is not a valid JSON object."
-                    return
+                parsed_entry=$(echo "$entry" | jq -e . 2>/dev/null)
+                if [ $? -ne 0 ]; then
+                    #echo "Error: entry is not a valid JSON object."
+                    echo ""
+                else
+                    # 检查字段是否存在于JSON对象中
+                    has_field=$(echo "$parsed_entry" | jq -e ". | has(\"$field\")")
+                    if [ "$has_field" != "true" ]; then
+                        #echo "Field '$field' does not exist in the JSON entry, please check!"
+                        echo ""
+                    fi
+                    
+                    # 获取字段值
+                    value=$(echo "$entry" | jq -r ".$field")
+                    echo "$value"
                 fi
-                
-                # 检查字段 
-                if ! echo "$entry" | jq -e ". | has(\"$field\")" >/dev/null; then
-                    echo "Field($field) parsing error, please check!"
-                    return 
-                fi
-                
-                # 获取字段值
-                value=$(echo "$entry" | jq -r ".$field")
-                if [ -z "$value" ]; then
-                    echo "The parsing field($field) is empty, please check!"
-                    return
-                fi
- 
-                echo "$value"
             }
             
             # 
