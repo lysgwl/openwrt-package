@@ -206,7 +206,17 @@ jobs:
                     continue
                 fi
                 
-                echo "name:${entry}"
+                filepath="${repo_path}/${fileName}"
+                if [ -z "${filepath}" ]; then
+                    continue
+                fi
+                
+                filetype=$(check_process_field "${entry}" "type")
+                if [ -z "${filetype}" ]; then
+                    continue
+                fi
+                
+                echo "name:${fileName}-type:${filetype}"
             done
         }
         
