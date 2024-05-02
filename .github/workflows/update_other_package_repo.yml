@@ -203,39 +203,7 @@ jobs:
                     echo ${entry} | jq -r "${1}"
                 }
                 
-                fileName=$(check_process_field "$entry" "name")
-                if [ -z "${fileName}" ]; then
-                    echo "name:${entry}"
-                    continue
-                fi
-                
-                filepath="${repo_path}/${fileName}"
-                if [ -z "${filepath}" ]; then
-                    continue
-                fi
-
-                #path=$(check_process_field $entry 'path')
-                filetype=$(check_process_field "$entry" "type")
-                
-                if [ "${filetype}" == "dir" ]; then
-                    repo_url=$(check_process_field "$entry" "url")
-                    if [ -z "${repo_url}" ]; then
-                        echo "dir:${entry}"
-                    fi
-                    
-                    if [ ! -d "${filepath}" ]; then
-                        mkdir -p ${filepath}
-                    fi
-
-                    get_http_repo_contents $repo_url $filepath
-                elif [ "${filetype}" == "file" ]; then
-                    fileurl=$(check_process_field "$entry" "download_url")
-                    if [ -n "$fileurl" ]; then
-                        wget $fileurl -O $filepath -q
-                    else
-                        echo "file:${entry}"
-                    fi
-                fi
+                echo "---$entry---"
             done
         }
         
