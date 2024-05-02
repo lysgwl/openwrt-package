@@ -176,23 +176,19 @@ jobs:
             check_process_field() {
                 local entry=$1
                 local field=$2
-
-                echo "check1:$entry"
-                echo "check2:$field"
                 
                 # 检查字段 
                 if ! echo "$entry" | jq -e ". | has(\"$field\")" >/dev/null; then
                     return 
                 fi
-                echo "check3"
                 
                 # 获取字段值
                 value=$(_jq ".$field")
                 if [ -z "$value" ]; then
                     return
                 fi
-                echo "check4:$value"
-                #echo "$value"
+ 
+                echo "$value"
             }
             
             # 
@@ -202,7 +198,7 @@ jobs:
                     echo ${entry} | jq -r "${1}"
                 }
                 
-                fileName=$(check_process_field $entry '.name')
+                fileName=$(check_process_field $entry 'name')
                 echo "-----(name:${fileName})-----"
                 if [ -z "${fileName}" ]; then
                     continue
@@ -213,14 +209,14 @@ jobs:
                     continue
                 fi
 
-                path=$(check_process_field $entry '.path')
-                filetype=$(check_process_field $entry '.type')
+                path=$(check_process_field $entry 'path')
+                filetype=$(check_process_field $entry 'type')
                 
                 echo "-----(type:${filetype})==(name:${fileName})==(path:${path})-----"
                 
                 if [ "${filetype}" == "dir" ]; then
                     echo "----- dir:($fileName)($filepath)($path) -----"
-                    repo_url=$(check_process_field $entry '.url')
+                    repo_url=$(check_process_field $entry 'url')
                     
                     if [ ! -d "${filepath}" ]; then
                         mkdir -p ${filepath}
@@ -230,7 +226,7 @@ jobs:
                     get_http_repo_contents $repo_url $filepath
                 elif [ "${filetype}" == "file" ]; then
                     echo "----- file:($fileName)($filepath)($path) -----"
-                    fileurl=$(check_process_field $entry '.download_url')
+                    fileurl=$(check_process_field $entry 'download_url')
                     if [ -n "$fileurl" ]; then
                         wget $fileurl -O $filepath -q
                     fi
