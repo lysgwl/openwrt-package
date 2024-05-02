@@ -175,10 +175,14 @@ jobs:
             
             echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
             # 
-            for entry in $(echo "$response" | jq -c '.[]'); do
+            #for entry in $(echo "$response" | jq -c '.[]'); do
+            echo "$response" | jq -c '.[]' | while IFS= read -r entry; do
+                echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
                 _jq() {
                     echo ${entry} | jq -r "${1}"
                 }
+                
+                echo "############################################################"
                 
                 fileName=$(_jq '.name')
                 echo "-----(name:${fileName})-----"
