@@ -181,15 +181,11 @@ jobs:
                 local entry=$1
                 local field=$2
                 
-                echo "22++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++22"
-                
                 # 检查字段 
                 if ! echo "$entry" | jq -e ". | has(\"$field\")" >/dev/null; then
                     echo "Field($field) parsing error, please check!"
                     return 
                 fi
-                
-                echo "33++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++33"
                 
                 # 获取字段值
                 value=$(_jq ".$field")
