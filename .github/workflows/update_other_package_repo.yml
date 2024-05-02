@@ -163,6 +163,8 @@ jobs:
             # 本地路径
             local repo_path=$2
             
+            echo "11************************************************************11"
+            
             # 发送 API 请求并获取响应
             response=$(curl -s $repo_url)
             
@@ -172,19 +174,27 @@ jobs:
                 return
             fi
             
+            echo "############################################################"
+            
             # 检查处理JSON对象
             check_process_field() {
                 local entry=$1
                 local field=$2
                 
+                echo "22++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++22"
+                
                 # 检查字段 
                 if ! echo "$entry" | jq -e ". | has(\"$field\")" >/dev/null; then
+                    echo "Field($field) parsing error, please check!"
                     return 
                 fi
+                
+                echo "33++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++33"
                 
                 # 获取字段值
                 value=$(_jq ".$field")
                 if [ -z "$value" ]; then
+                    echo "The parsing field($field) is empty, please check"
                     return
                 fi
  
@@ -197,6 +207,8 @@ jobs:
                 _jq() {
                     echo ${entry} | jq -r "${1}"
                 }
+                
+                echo "11++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++11"
                 
                 fileName=$(check_process_field $entry 'name')
                 echo "-----(name:${fileName})-----"
@@ -233,7 +245,7 @@ jobs:
                 fi
             done
             
-            echo "************************************************************"
+            echo "22************************************************************22"
         }
         
         # 相对于git顶层目录的路径
