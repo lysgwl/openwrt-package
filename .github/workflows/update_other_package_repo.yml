@@ -178,22 +178,20 @@ jobs:
                 local field=$2
                 
                 # 检查entry是否为有效的JSON对象
-                parsed_entry=$(echo "$entry" | jq -e . 2>/dev/null)
-                if [ $? -ne 0 ]; then
-                    #echo "Error: entry is not a valid JSON object."
-                    echo ""
-                else
-                    # 检查字段是否存在于JSON对象中
-                    has_field=$(echo "$parsed_entry" | jq -e ". | has(\"$field\")")
-                    if [ "$has_field" != "true" ]; then
-                        #echo "Field '$field' does not exist in the JSON entry, please check!"
-                        echo ""
-                    fi
-                    
-                    # 获取字段值
-                    value=$(echo "$entry" | jq -r ".$field")
-                    echo "$value"
+                type=$(echo "${entry}" | jq '. | type')
+                if [[ "${type}" != '"object"' ]]; then
+                    return
                 fi
+                
+                # 检查字段是否存在于JSON对象中
+                has_field=$(echo "${entry}" | jq -e --arg field "${field}" '. | has($field)')
+                if [[ "$has_field" != "true" ]]; then
+                    return
+                fi
+                
+                # 获取字段值
+                value=$(echo "$entry" | jq -r ".$field")
+                echo "$value"
             }
             
             # 
@@ -203,10 +201,12 @@ jobs:
                     echo ${entry} | jq -r "${1}"
                 }
                 
-                type=$(echo "${entry}" | jq '. | type')
-                if [[ "${type}" == '"object"' ]]; then
-                    echo "---$entry---"
+                fileName=$(check_process_field "${entry}" "name")
+                if [ -z "${fileName}" ]; then
+                    continue
                 fi
+                
+                echo "name:${entry}"
             done
         }
         
