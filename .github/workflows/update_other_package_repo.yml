@@ -203,7 +203,10 @@ jobs:
                     echo ${entry} | jq -r "${1}"
                 }
                 
-                echo "---$entry---"
+                type=$(echo "${entry}" | jq '. | type')
+                if [[ "${type}" == '"object"' ]]; then
+                    echo "---$entry---"
+                fi
             done
         }
         
