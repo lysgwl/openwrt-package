@@ -201,7 +201,7 @@ jobs:
                     echo ${entry} | jq -r "${1}"
                 }
                 
-                echo "$entry"
+                #echo "$entry"
                 fileName=$(check_process_field ${entry} "name")
                 if [ -z "${fileName}" ]; then
                     continue
@@ -238,6 +238,8 @@ jobs:
                     
                     wget ${fileurl} -O ${filepath} -q
                 fi
+                
+                sleep 0.5
             done
         }
         
@@ -248,9 +250,7 @@ jobs:
         # 请求 URL (branch,repo_owner,repo_name,repo_path)
         url="https://api.github.com/repos/coolsnowwolf/luci/contents/applications?ref=master"
         get_http_repo_contents $url $package_path_rel
-        
-        ls -a $package_path_rel
-      
+
     - name: Commit and push repository using SSH
       run: |
         function check_git_commit {
