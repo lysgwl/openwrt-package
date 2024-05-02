@@ -201,7 +201,7 @@ jobs:
                     echo ${entry} | jq -r "${1}"
                 }
                 
-                fileName=$(check_process_field "${entry}" "name")
+                fileName=$(check_process_field ${entry} "name")
                 if [ -z "${fileName}" ]; then
                     continue
                 fi
@@ -211,12 +211,32 @@ jobs:
                     continue
                 fi
                 
-                filetype=$(check_process_field "${entry}" "type")
+                filetype=$(check_process_field ${entry} "type")
                 if [ -z "${filetype}" ]; then
                     continue
                 fi
                 
-                echo "name:${fileName}-type:${filetype}"
+                if [ "${filetype}" == "dir" ]; then
+                    repo_url=$(check_process_field ${entry} "url")
+                    if [ -z "${repo_url}" ]; then
+                        continue
+                    fi
+                    
+                    if [ ! -d "${filepath}" ]; then
+                        mkdir -p ${filepath}
+                    fi
+                    
+                    # 递归检查
+                    get_http_repo_contents $repo_url $filepath
+                    
+                elif [ "${filetype}" == "file" ]; then
+                    fileurl=$(check_process_field ${entry} "download_url")
+                    if [ -z "${fileurl}" ]; then
+                        continue
+                    fi
+                    
+                    wget ${fileurl} -O ${filepath} -q
+                fi
             done
         }
         
