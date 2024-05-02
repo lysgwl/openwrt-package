@@ -163,7 +163,6 @@ jobs:
             # 本地路径
             local repo_path=$2
             
-            echo "------------------------------------------------------------"
             # 发送 API 请求并获取响应
             response=$(curl -s $repo_url)
             
@@ -173,18 +172,33 @@ jobs:
                 return
             fi
             
-            echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+            # 检查处理JSON对象
+            check_process_field() {
+                local entry=$1
+                local field=$2
+                
+                # 检查字段 
+                if ! echo "$entry" | jq -e ". | has(\"$field\")" >/dev/null; then
+                    return 
+                fi
+                
+                # 获取字段值
+                value=$(_jq ".$field")
+                if [ -z "$value" ]; then
+                    return
+                fi
+                
+                echo "$value"
+            }
+            
             # 
             #for entry in $(echo "$response" | jq -c '.[]'); do
             echo "$response" | jq -c '.[]' | while IFS= read -r entry; do
-                echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
                 _jq() {
                     echo ${entry} | jq -r "${1}"
                 }
                 
-                echo "############################################################"
-                
-                fileName=$(_jq '.name')
+                fileName=$(check_process_field $entry '.name')
                 echo "-----(name:${fileName})-----"
                 if [ -z "${fileName}" ]; then
                     continue
@@ -194,17 +208,15 @@ jobs:
                 if [ -z "${filepath}" ]; then
                     continue
                 fi
-                
-                echo "-----(filepath:${filepath}) -----"
-                
-                path=$(_jq '.path')
-                filetype=$(_jq '.type')
+
+                path=$(check_process_field $entry '.path')
+                filetype=$(check_process_field $entry '.type')
                 
                 echo "-----(type:${filetype})==(name:${fileName})==(path:${path})-----"
                 
                 if [ "${filetype}" == "dir" ]; then
                     echo "----- dir:($fileName)($filepath)($path) -----"
-                    repo_url=$(_jq '.url')
+                    repo_url=$(check_process_field $entry '.url')
                     
                     if [ ! -d "${filepath}" ]; then
                         mkdir -p ${filepath}
@@ -214,7 +226,7 @@ jobs:
                     get_http_repo_contents $repo_url $filepath
                 elif [ "${filetype}" == "file" ]; then
                     echo "----- file:($fileName)($filepath)($path) -----"
-                    fileurl=$(_jq '.download_url')
+                    fileurl=$(check_process_field $entry '.download_url')
                     if [ -n "$fileurl" ]; then
                         wget $fileurl -O $filepath -q
                     fi
