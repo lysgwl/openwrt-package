@@ -199,10 +199,14 @@ jobs:
                 echo "-----(type:${filetype})==(name:${fileName})==(path:${path})-----"
                 
                 if [ "${filetype}" == "dir" ]; then
-                    repo_url=$(_jq '.url')
                     echo "----- dir:($fileName)($filepath)($path) -----"
-
-                    mkdir -p $filepath
+                    repo_url=$(_jq '.url')
+                    
+                    if [ ! -d "${filepath}" ]; then
+                        mkdir -p ${filepath}
+                    fi
+                    
+                    echo "----- dir: ${repo_url}-----"
                     get_http_repo_contents $repo_url $filepath
                 elif [ "${filetype}" == "file" ]; then
                     echo "----- file:($fileName)($filepath)($path) -----"
