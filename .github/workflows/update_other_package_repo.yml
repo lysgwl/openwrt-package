@@ -162,9 +162,7 @@ jobs:
             
             # 本地路径
             local repo_path=$2
-            
-            echo "11************************************************************11"
-            
+
             # 发送 API 请求并获取响应
             response=$(curl -s $repo_url)
             
@@ -173,8 +171,6 @@ jobs:
                 echo "Failed to retrieve repository contents from: $repo_url"
                 return
             fi
-            
-            echo "############################################################"
             
             # 检查处理JSON对象
             check_process_field() {
@@ -210,11 +206,9 @@ jobs:
                     echo ${entry} | jq -r "${1}"
                 }
                 
-                echo "11++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++11"
-                
-                fileName=$(check_process_field $entry 'name')
-                echo "-----(name:${fileName})-----"
+                fileName=$(check_process_field "$entry" "name")
                 if [ -z "${fileName}" ]; then
+                    echo "name:${entry}"
                     continue
                 fi
                 
@@ -223,31 +217,29 @@ jobs:
                     continue
                 fi
 
-                path=$(check_process_field $entry 'path')
-                filetype=$(check_process_field $entry 'type')
-                
-                echo "-----(type:${filetype})==(name:${fileName})==(path:${path})-----"
+                #path=$(check_process_field $entry 'path')
+                filetype=$(check_process_field "$entry" "type")
                 
                 if [ "${filetype}" == "dir" ]; then
-                    echo "----- dir:($fileName)($filepath)($path) -----"
-                    repo_url=$(check_process_field $entry 'url')
+                    repo_url=$(check_process_field "$entry" "url")
+                    if [ -z "${repo_url}" ]; then
+                        echo "dir:${entry}"
+                    fi
                     
                     if [ ! -d "${filepath}" ]; then
                         mkdir -p ${filepath}
                     fi
-                    
-                    echo "----- dir: ${repo_url}-----"
+
                     get_http_repo_contents $repo_url $filepath
                 elif [ "${filetype}" == "file" ]; then
-                    echo "----- file:($fileName)($filepath)($path) -----"
-                    fileurl=$(check_process_field $entry 'download_url')
+                    fileurl=$(check_process_field "$entry" "download_url")
                     if [ -n "$fileurl" ]; then
                         wget $fileurl -O $filepath -q
+                    else
+                        echo "file:${entry}"
                     fi
                 fi
             done
-            
-            echo "22************************************************************22"
         }
         
         # 相对于git顶层目录的路径
