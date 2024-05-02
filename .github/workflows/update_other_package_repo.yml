@@ -175,9 +175,9 @@ jobs:
             
             echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
             # 
-            for entry in $(echo "$response" | jq -r '.[] | @base64'); do
+            for entry in $(echo "$response" | jq -c '.[]'); do
                 _jq() {
-                    echo ${entry} | base64 --decode | jq -r ${1}
+                    echo ${entry} | jq -r "${1}"
                 }
                 
                 fileName=$(_jq '.name')
