@@ -15,7 +15,7 @@ on:
 env:
   REPO_REMOTE_COND: false
   REPO_CLONE_COND:  false
-  REPO_HTTP_COND:   true
+  REPO_HTTP_COND:   false
   
 jobs:
   build:   # update build
@@ -239,7 +239,7 @@ jobs:
                     wget ${fileurl} -O ${filepath} -q
                 fi
                 
-                sleep 0.5
+                #sleep 0.5
             done
         }
         
