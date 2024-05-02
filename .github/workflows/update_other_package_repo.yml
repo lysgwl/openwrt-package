@@ -163,6 +163,7 @@ jobs:
             # 本地路径
             local repo_path=$2
             
+            echo "------------------------------------------------------------"
             # 发送 API 请求并获取响应
             response=$(curl -s $repo_url)
             
@@ -172,6 +173,7 @@ jobs:
                 return
             fi
             
+            echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
             # 
             for entry in $(echo "$response" | jq -r '.[] | @base64'); do
                 _jq() {
@@ -204,6 +206,8 @@ jobs:
                     fi
                 fi
             done
+            
+            echo "************************************************************"
         }
         
         # 相对于git顶层目录的路径
@@ -211,7 +215,7 @@ jobs:
         mkdir -p "$package_path_rel"
         
         # 请求 URL (branch,repo_owner,repo_name,repo_path)
-        url="https://api.github.com/repos/coolsnowwolf/luci/contents/applications/luci-app-adbyby-plus/root/lib/upgrade?ref=master"
+        url="https://api.github.com/repos/coolsnowwolf/luci/contents/collections?ref=master"
         get_http_repo_contents $url $package_path_rel
         
         ls -a $package_path_rel
