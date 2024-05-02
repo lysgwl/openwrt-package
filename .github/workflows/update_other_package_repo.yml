@@ -188,7 +188,7 @@ jobs:
                 fi
                 
                 # 获取字段值
-                value=$(_jq ".$field")
+                value=$(echo "$entry" | jq -r ".$field")
                 if [ -z "$value" ]; then
                     echo "The parsing field($field) is empty, please check"
                     return
