@@ -201,6 +201,7 @@ jobs:
                     echo ${entry} | jq -r "${1}"
                 }
                 
+                echo "$entry"
                 fileName=$(check_process_field ${entry} "name")
                 if [ -z "${fileName}" ]; then
                     continue
