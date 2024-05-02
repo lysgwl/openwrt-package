@@ -181,6 +181,7 @@ jobs:
                 }
                 
                 fileName=$(_jq '.name')
+                echo "-----(name:${fileName})-----"
                 if [ -z "${fileName}" ]; then
                     continue
                 fi
@@ -190,16 +191,21 @@ jobs:
                     continue
                 fi
                 
-                path=$(_jq '.path')
-                echo "-----$path-----"
+                echo "-----(filepath:${filepath}) -----"
                 
+                path=$(_jq '.path')
                 filetype=$(_jq '.type')
+                
+                echo "-----(type:${filetype})==(name:${fileName})==(path:${path})-----"
+                
                 if [ "${filetype}" == "dir" ]; then
                     repo_url=$(_jq '.url')
+                    echo "----- dir:($fileName)($filepath)($path) -----"
 
                     mkdir -p $filepath
                     get_http_repo_contents $repo_url $filepath
                 elif [ "${filetype}" == "file" ]; then
+                    echo "----- file:($fileName)($filepath)($path) -----"
                     fileurl=$(_jq '.download_url')
                     if [ -n "$fileurl" ]; then
                         wget $fileurl -O $filepath -q
