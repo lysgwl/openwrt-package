@@ -176,19 +176,23 @@ jobs:
             check_process_field() {
                 local entry=$1
                 local field=$2
+
+                echo "check1:$entry"
+                echo "check2:$field"
                 
                 # 检查字段 
                 if ! echo "$entry" | jq -e ". | has(\"$field\")" >/dev/null; then
                     return 
                 fi
+                echo "check3"
                 
                 # 获取字段值
                 value=$(_jq ".$field")
                 if [ -z "$value" ]; then
                     return
                 fi
-                
-                echo "$value"
+                echo "check4:$value"
+                #echo "$value"
             }
             
             # 
