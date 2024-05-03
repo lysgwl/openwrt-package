@@ -120,7 +120,7 @@ jobs:
         
         if [ $REPO_REMOTE_COND -eq 1 ]; then
             # 相对于git顶层目录的路径
-            package_path_rel="otxherpackage"
+            package_path_rel="otherpackage"
             
             add_and_copy_repo_contents master diskman lisaac/luci-app-diskman luci-app-diskman $package_path_rel
             add_and_copy_repo_contents main ddns-go sirpdboy/luci-app-ddns-go luci-app-ddns-go $package_path_rel
