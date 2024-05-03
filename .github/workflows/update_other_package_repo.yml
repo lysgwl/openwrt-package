@@ -89,32 +89,30 @@ jobs:
             local remote_spec_path=$4   # 远程指定路径
             local local_spec_path=$5    # 本地指定路径
             
+            # 初始化本地目录
+            git init ${local_spec_path}
+            
+            cd ${local_spec_path}
+            
             # 添加远程仓库
             echo "add remote repository: $remote_alias"
             git remote add $remote_alias https://github.com/$remote_url_path.git || true
 
-            echo "test1"
-            git fetch $remote_alias
-            echo "test2"
             # 开启Sparse checkout模式
             git config core.sparsecheckout true
-            echo "test3"
+
             # 配置要检出的目录或文件
             sparse_file=".git/info/sparse-checkout"
             if [ ! -e "${sparse_file}" ]; then
                 touch "${sparse_file}"
             fi
-            echo "test4"
+
             echo "${remote_spec_path}" >> ${sparse_file}
             echo "Pulling from $remote_alias branch $branch..."
-            echo "test5"
+
             # 从远程将目标目录或文件拉取下来
-            git -C "${local_spec_path}" pull ${remote_alias} ${branch}
-            echo "test6"
+            git pull ${remote_alias} ${branch}
         }
-        
-        echo "curdir=$PWD"
-        ls -al $PWD
         
         # 获取当前的HEAD哈希值
         original_head=$(git rev-parse HEAD)
