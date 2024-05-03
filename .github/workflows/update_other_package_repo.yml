@@ -86,7 +86,7 @@ jobs:
         #
         #}
         
-        if [ env.REPO_REMOTE_COND -eq 1 ]; then
+        if [ $REPO_REMOTE_COND -eq 1 ]; then
             # 获取当前的HEAD哈希值
             original_head=$(git rev-parse HEAD)
             
