@@ -13,7 +13,7 @@ on:
   workflow_dispatch:
   
 env:
-  REPO_REMOTE_COND: false
+  REPO_REMOTE_COND: 0
   REPO_CLONE_COND:  false
   REPO_HTTP_COND:   false
   
@@ -40,7 +40,7 @@ jobs:
         git config --global user.email "lysgwl@163.com"
 
     - name: Get remote repository contents
-      if: env.REPO_REMOTE_COND == 'true' && !cancelled()
+      if: env.REPO_REMOTE_COND != 0 && !cancelled()
       run: |
         function add_and_copy_repo_contents() {
             local branch=$1             # 分支名
@@ -82,29 +82,37 @@ jobs:
             popd
         }
         
-        # 获取当前的HEAD哈希值
-        original_head=$(git rev-parse HEAD)
+        #function clone_spec_repo_contents() {
+        #
+        #}
         
-        # 相对于git顶层目录的路径
-        package_path_rel="otherpackage"
-        add_and_copy_repo_contents master diskman lisaac/luci-app-diskman luci-app-diskman $package_path_rel
-        add_and_copy_repo_contents main ddns-go sirpdboy/luci-app-ddns-go luci-app-ddns-go $package_path_rel
-        add_and_copy_repo_contents master OpenAppFilter destan19/OpenAppFilter luci-app-OpenAppFilter $package_path_rel
-        add_and_copy_repo_contents master poweroff esirplayground/luci-app-poweroff luci-app-poweroff $package_path_rel
-        add_and_copy_repo_contents main socat chenmozhijin/luci-app-socat luci-app-socat $package_path_rel
-        
-        # 获取新的HEAD哈希值
-        new_head=$(git rev-parse HEAD)
-        
-        # 根据哈希值判断状态
-        if [[ "$original_head" != "$new_head" ]]; then
-            status="successful"
+        if [ $env.REPO_REMOTE_COND -eq 1 ]; then
+            # 获取当前的HEAD哈希值
+            original_head=$(git rev-parse HEAD)
+            
+            # 相对于git顶层目录的路径
+            package_path_rel="otxherpackage"
+            add_and_copy_repo_contents master diskman lisaac/luci-app-diskman luci-app-diskman $package_path_rel
+            add_and_copy_repo_contents main ddns-go sirpdboy/luci-app-ddns-go luci-app-ddns-go $package_path_rel
+            add_and_copy_repo_contents master OpenAppFilter destan19/OpenAppFilter luci-app-OpenAppFilter $package_path_rel
+            add_and_copy_repo_contents master poweroff esirplayground/luci-app-poweroff luci-app-poweroff $package_path_rel
+            add_and_copy_repo_contents main socat chenmozhijin/luci-app-socat luci-app-socat $package_path_rel
+            
+            # 获取新的HEAD哈希值
+            new_head=$(git rev-parse HEAD)
+            
+            # 根据哈希值判断状态
+            if [[ "$original_head" != "$new_head" ]]; then
+                status="successful"
+            else
+                status="no_changes"
+            fi
+            
+            echo "repo_status=$status" >> $GITHUB_ENV
         else
-            status="no_changes"
+            echo "2222"
         fi
         
-        echo "repo_status=$status" >> $GITHUB_ENV
-
     - name: Clone repository contents
       if: env.REPO_CLONE_COND == 'true' && !cancelled()    
       run: |
