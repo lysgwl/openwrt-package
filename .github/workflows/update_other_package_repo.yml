@@ -38,6 +38,7 @@ jobs:
       run: |
         git config --global user.name "lysgwl"
         git config --global user.email "lysgwl@163.com"
+        git config --global init.defaultBranch main
 
     - name: Get remote repository contents
       if: env.REPO_REMOTE_COND != 0 && !cancelled()
@@ -90,7 +91,7 @@ jobs:
             local local_spec_path=$5    # 本地指定路径
             
             # 初始化本地目录
-            git init ${local_spec_path}
+            git init -b main ${local_spec_path}
             
             cd ${local_spec_path}
 
