@@ -93,6 +93,9 @@ jobs:
             git init ${local_spec_path}
             
             cd ${local_spec_path}
+
+            echo "cur=$PWD"
+            ls -al $PWD
             
             # 添加远程仓库
             echo "add remote repository: $remote_alias"
@@ -129,8 +132,10 @@ jobs:
         else
             package_path_rel="otherpackage/coolsnowwolf"
             mkdir -p "$package_path_rel"
+
+            ls -al $package_path_rel
             
-            clone_spec_repo_contents master "lede" "coolsnowwolf/luci" "/applications/" ${package_path_rel}
+            clone_spec_repo_contents master "lede" "coolsnowwolf/luci" "applications" ${package_path_rel}
         fi
         
         echo "otherdir=$PWD/otherpackage"
