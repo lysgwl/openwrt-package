@@ -13,7 +13,7 @@ on:
   workflow_dispatch:
   
 env:
-  REPO_REMOTE_COND: 0
+  REPO_REMOTE_COND: 2
   REPO_CLONE_COND:  false
   REPO_HTTP_COND:   false
   
