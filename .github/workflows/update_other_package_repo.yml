@@ -29,10 +29,12 @@ jobs:
         DEBIAN_FRONTEND: noninteractive
       run: |
         scripts_file="${GITHUB_WORKSPACE}/.github/scripts/${BUILD_SCRIPT}"
+        echo "file=$scripts_file"
         if [ ! -e "${scripts_file}" ]; then
+            echo "111"
             exit 1
         fi
-        
+        echo "222"
         chmod +x "${scripts_file}"
         echo "scripts=${scripts_file}" >> $GITHUB_ENV
     
