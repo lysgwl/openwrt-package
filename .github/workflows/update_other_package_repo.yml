@@ -61,6 +61,23 @@ jobs:
             get_remote_repo ${REPO_REMOTE_COND}
         fi
         
+    - name: Commit and push repository using SSH
+      run: |
+        # 相对于git顶层目录的路径
+        package_path_rel="otherpackage"
+        
+        scripts_file=${{ env.scripts }}
+        if [ -x "${scripts_file}" ]; then
+            source ${scripts_file}
+            check_git_commit ${package_path_rel}
+        fi
+        
+    #- name: Push changes repository
+    #  uses: ad-m/github-push-action@master
+    #  with:
+    #    github_token: ${{ secrets.GITHUB_TOKEN }}   # PERSONAL_ACCESS_TOKEN
+    #    branch: ${{ github.ref }}    # master    
+        
     - name: Delete workflow runs
       uses: Mattraks/delete-workflow-runs@v2  # main
       with:

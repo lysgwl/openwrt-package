@@ -80,14 +80,9 @@ function get_remote_spec_contents()
 	# 从远程将目标目录或文件拉取下来
 	git pull ${remote_alias} ${branch}
 
- 	echo "${temp_dir}/${remote_spec_path}"
-  	ls -al "${temp_dir}/${remote_spec_path}"
-   
 	if [ -e "${temp_dir}/${remote_spec_path}" ]; then
- 		echo "path=$local_spec_path"
-		#cp -rf "${temp_dir}/${remote_spec_path}/*" "${local_spec_path}"
-		mv ${temp_dir}/${remote_spec_path}/* ${local_spec_path}
-  		ls -al $local_spec_path
+		cp -rf ${temp_dir}/${remote_spec_path}/* ${local_spec_path}
+		#mv ${temp_dir}/${remote_spec_path}/* ${local_spec_path}
 	fi
 	
 	# 清理临时目录
@@ -261,4 +256,35 @@ function get_remote_repo()
 		
 		get_remote_spec_contents "master" "lede" "coolsnowwolf/luci" "applications" ${package_path_rel}
 	fi
+}
+
+function check_git_commit 
+{
+	# 目标目录路径
+	local target_path=$1   
+	
+	# 进入目标目录
+	cd "$target_path" || { echo "Error: Unable to change directory to $target_path"; exit 1; }
+	
+	# 将所有变更添加到暂存区
+	git add .
+	
+	# 输出git状态
+	git status
+	
+	# 检查git状态
+	local has_changes=$(git status --porcelain | grep '^[MADRC]')
+	if [ -n "$has_changes" ]; then
+		current_date=$(date '+%Y-%m-%d')
+		
+		git commit -a -m "commit repository  changes on $current_date"
+		git push git@github.com:lysgwl/openwrt-package.git HEAD:master
+	fi
+	
+	# 递归检查子目录的git状态
+	for subdir in */; do
+		if [ -d "$subdir" ]; then
+			check_git_commit "$subdir"
+		fi
+	done
 }
