@@ -52,29 +52,40 @@ function get_remote_spec_contents()
 	local remote_spec_path=$4   # 远程指定路径
 	local local_spec_path=$5    # 本地指定路径
 	
-	# 初始化本地目录
-	git init -b main ${local_spec_path}
+	# 临时目录，用于克隆远程仓库
+	local temp_dir=$(mktemp -d)
 	
-	cd ${local_spec_path}
+	# 初始化本地目录
+	git init -b main ${temp_dir}
+	
+	echo $temp_dir
+	
+	# 进入临时目录
+	cd ${temp_dir}
 	
 	# 添加远程仓库
 	echo "add remote repository: $remote_alias"
 	git remote add $remote_alias https://github.com/$remote_url_path.git || true
-
+	
 	# 开启Sparse checkout模式
 	git config core.sparsecheckout true
-
+	
 	# 配置要检出的目录或文件
 	sparse_file=".git/info/sparse-checkout"
 	if [ ! -e "${sparse_file}" ]; then
 		touch "${sparse_file}"
 	fi
-
+	
 	echo "${remote_spec_path}" >> ${sparse_file}
 	echo "Pulling from $remote_alias branch $branch..."
-
+	
 	# 从远程将目标目录或文件拉取下来
 	git pull ${remote_alias} ${branch}
+	
+	ls -al $temp_dir
+	
+	# 清理临时目录
+	rm -rf $temp_dir
 }
 
 # 克隆仓库内容
@@ -212,15 +223,11 @@ function get_retmote_repo_package()
 	get_remote_repo_contents main socat chenmozhijin/luci-app-socat luci-app-socat $1
 }
 
-echo "cur=$PWD"
 # 获取远程仓库内容
 function get_remote_repo()
 {
-	echo "1111"
 	repo_remote_cond=$1
 	package_path_rel="otherpackage"		# 相对于git顶层目录的路径
-	
-	echo "$repo_remote_cond--$package_path_rel"
 	
 	if [ $repo_remote_cond -eq 1 ]; then
 		mkdir -p "$package_path_rel"
@@ -244,11 +251,8 @@ function get_remote_repo()
         echo "repo_status=$status" >> $GITHUB_ENV
 	else
 		package_path_rel="${package_path_rel}/coolsnowwolf"
-		echo $package_path_rel
 		mkdir -p "$package_path_rel"
 		
-		echo "test1"
-		
-		#get_remote_spec_contents master "lede" "coolsnowwolf/luci" "applications" ${package_path_rel}
+		get_remote_spec_contents "master" "lede" "coolsnowwolf/luci" "applications" ${package_path_rel}
 	fi
 }
