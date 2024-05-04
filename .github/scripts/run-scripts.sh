@@ -85,7 +85,7 @@ function get_remote_spec_contents()
    
 	if [ -e "${temp_dir}/${remote_spec_path}" ]; then
  		echo "path=$local_spec_path"
-		cp -rf "${temp_dir}/${remote_spec_path}/*" "${local_spec_path}"
+		#cp -rf "${temp_dir}/${remote_spec_path}/*" "${local_spec_path}"
   		ls -al $local_spec_path
 	fi
 	
