@@ -23,37 +23,34 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    
+
+    - name: Checkout master branch
+      uses: actions/checkout@v4
+      with:
+        ref: master
+
+    - name: Set SSH key and known_hosts
+      uses: webfactory/ssh-agent@v0.9.0   # appleboy/ssh-action@master
+      with:
+        ssh-private-key: ${{ secrets.PERSONAL_SSH_KEY }}
+        
+    - name: Setup git config
+      run: |
+        git config --global user.name "lysgwl"
+        git config --global user.email "lysgwl@163.com"
+        git config --global init.defaultBranch main    
+        
     - name: Initialization environment
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
-        echo "cur=$PWD"
-        ls -al $PWD
         scripts_file="${GITHUB_WORKSPACE}/scripts/${BUILD_SCRIPT}"
-        ls -al ${GITHUB_WORKSPACE}/scripts
         if [ ! -e "${scripts_file}" ]; then
             exit 1
         fi
 
         chmod +x "${scripts_file}"
         echo "scripts=${scripts_file}" >> $GITHUB_ENV
-    
-    - name: Checkout master branch
-      uses: actions/checkout@v4
-      with:
-        ref: master
-        
-    - name: Set SSH key and known_hosts
-      uses: webfactory/ssh-agent@v0.9.0   # appleboy/ssh-action@master 
-      with:
-        ssh-private-key: ${{ secrets.PERSONAL_SSH_KEY }}   
-
-    - name: Setup git config
-      run: |
-        git config --global user.name "lysgwl"
-        git config --global user.email "lysgwl@163.com"
-        git config --global init.defaultBranch main
 
     - name: Get remote repository contents
       if: env.REPO_REMOTE_COND != 0 && !cancelled()
