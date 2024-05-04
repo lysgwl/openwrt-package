@@ -28,6 +28,10 @@ jobs:
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
+        echo "cur=$PWD"
+        ls -al $PWD
+
+        ls -al ${GITHUB_WORKSPACE}/.github/scripts
         scripts_file="${GITHUB_WORKSPACE}/.github/scripts/${BUILD_SCRIPT}"
         echo "file=$scripts_file"
         if [ ! -e "${scripts_file}" ]; then
