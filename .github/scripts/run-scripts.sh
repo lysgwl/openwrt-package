@@ -218,6 +218,8 @@ function get_remote_repo()
 	repo_remote_cond=$1
 	package_path_rel="otherpackage"		# 相对于git顶层目录的路径
 	
+	echo $repo_remote_cond
+	
 	if [ $repo_remote_cond -eq 1 ]; then
 		mkdir -p "$package_path_rel"
 		
@@ -240,6 +242,7 @@ function get_remote_repo()
         echo "repo_status=$status" >> $GITHUB_ENV
 	else
 		package_path_rel="${package_path_rel}/coolsnowwolf"
+		echo $package_path_rel
 		mkdir -p "$package_path_rel"
 		
 		echo "test1"
