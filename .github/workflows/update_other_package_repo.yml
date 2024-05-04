@@ -50,6 +50,8 @@ jobs:
         fi
 
         chmod +x "${scripts_file}"
+        source ${scripts_file} 
+        
         echo "scripts=${scripts_file}" >> $GITHUB_ENV
 
     - name: Get remote repository contents
@@ -57,7 +59,7 @@ jobs:
       run: |
         scripts_file=${{ env.scripts }}
         if [ -x "${scripts_file}" ]; then
-            source ${scripts_file} 
+            #source ${scripts_file} 
             get_remote_repo ${REPO_REMOTE_COND}
         fi
         
