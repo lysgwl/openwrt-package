@@ -1,22 +1,22 @@
 name: Sync Package Repo
 
-on:
-  schedule:
-    - cron: '0 0 * * 0'
+#on:
+#  schedule:
+#    - cron: '0 0 * * 0'
     # 每5分钟运行一次 (cron: '*/5 * * * *')
     # 每天凌晨运行 (0 0 * * *) 
     # 每周执行一次 (0 0 * * 0)
     # 每15天执行 (0 0 */15 * *)
 
-#on:
-#  repository_dispatch:
-#  workflow_dispatch:
+on:
+  repository_dispatch:
+  workflow_dispatch:
 
 env:
   BUILD_SCRIPT: run-scripts.sh
 
 jobs:
-  repo-sync:    # repo-sync  build
+  build:    # repo-sync  build
     runs-on: ubuntu-latest
     
     steps:
@@ -78,5 +78,6 @@ jobs:
       uses: Mattraks/delete-workflow-runs@v2  # main
       with:
         token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+        repository: 'lysgwl/openwrt-package'
         retain_days: 0
         keep_minimum_runs: 0    

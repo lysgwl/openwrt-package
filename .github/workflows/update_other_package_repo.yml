@@ -1,16 +1,16 @@
 name: Update Other Package Repo
 
-on:
-  schedule:
-    - cron: '0 0 * * 0'
+#on:
+#  schedule:
+#    - cron: '0 0 * * 0'
     # 每5分钟运行一次 (cron: '*/5 * * * *')
     # 每天凌晨运行 (0 0 * * *) 
     # 每周执行一次 (0 0 * * 0)
     # 每15天执行 (0 0 */15 * *)
 
-#on:
-#  repository_dispatch:
-#  workflow_dispatch:
+on:
+  repository_dispatch:
+  workflow_dispatch:
   
 env:
   BUILD_SCRIPT: run-scripts.sh
@@ -19,7 +19,7 @@ env:
   REPO_HTTP_COND:   false
   
 jobs:
-  update:   # update build
+  build:   # update build
     runs-on: ubuntu-latest
     
     steps:
@@ -105,5 +105,6 @@ jobs:
       uses: Mattraks/delete-workflow-runs@v2  # main
       with:
         token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-        retain_days: 0
-        keep_minimum_runs: 0    
+        repository: ${{ github.repository }}
+        retain_days: 0          # 全部删除只留正在跑的一条
+        keep_minimum_runs: 0    # 全部删除只留正在跑的一条    
