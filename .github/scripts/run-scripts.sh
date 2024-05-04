@@ -252,6 +252,8 @@ function get_remote_repo()
 	else
 		package_path_rel="${package_path_rel}/coolsnowwolf"
 		mkdir -p "$package_path_rel"
+  		ls -al $PWD
+    		ls -al "otherpackage"
 		
 		get_remote_spec_contents "master" "lede" "coolsnowwolf/luci" "applications" ${package_path_rel}
 	fi
