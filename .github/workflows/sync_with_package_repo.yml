@@ -32,6 +32,7 @@ jobs:
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
+        ls -al $PWD
         scripts_file="${GITHUB_WORKSPACE}/.github/scripts/${BUILD_SCRIPT}"
         if [ ! -e "${scripts_file}" ]; then
             exit 1
