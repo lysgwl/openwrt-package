@@ -1,16 +1,16 @@
 name: Update Other Package Repo
 
-on:
-  schedule:
-    - cron: '0 0 * * 0'
+#on:
+#  schedule:
+#    - cron: '0 0 * * 0'
     # 每5分钟运行一次 (cron: '*/5 * * * *')
     # 每天凌晨运行 (0 0 * * *) 
     # 每周执行一次 (0 0 * * 0)
     # 每15天执行 (0 0 */15 * *)
 
-#on:
-#  repository_dispatch:
-#  workflow_dispatch:
+on:
+  repository_dispatch:
+  workflow_dispatch:
   
 env:
   BUILD_SCRIPT: run-scripts.sh
@@ -19,7 +19,7 @@ env:
   REPO_HTTP_COND:   false
   
 jobs:
-  update:   # update build
+  build:   # update build
     runs-on: ubuntu-latest
     
     steps:
@@ -28,6 +28,18 @@ jobs:
       uses: actions/checkout@v4
       with:
         ref: master
+        
+    - name: Initialization environment
+      env:
+        DEBIAN_FRONTEND: noninteractive
+      run: |
+        scripts_file="${GITHUB_WORKSPACE}/.github/scripts/${BUILD_SCRIPT}"
+        if [ ! -e "${scripts_file}" ]; then
+            exit 1
+        fi
+
+        chmod +x "${scripts_file}"
+        echo "scripts=${scripts_file}" >> $GITHUB_ENV    
 
     - name: Set SSH key and known_hosts
       uses: webfactory/ssh-agent@v0.9.0   # appleboy/ssh-action@master
@@ -40,18 +52,6 @@ jobs:
         git config --global user.email "lysgwl@163.com"
         git config --global init.defaultBranch main    
         
-    - name: Initialization environment
-      env:
-        DEBIAN_FRONTEND: noninteractive
-      run: |
-        scripts_file="${GITHUB_WORKSPACE}/.github/scripts/${BUILD_SCRIPT}"
-        if [ ! -e "${scripts_file}" ]; then
-            exit 1
-        fi
-
-        chmod +x "${scripts_file}"
-        echo "scripts=${scripts_file}" >> $GITHUB_ENV
-
     - name: Get remote repository contents
       if: env.REPO_REMOTE_COND != 0 && !cancelled()
       run: |
