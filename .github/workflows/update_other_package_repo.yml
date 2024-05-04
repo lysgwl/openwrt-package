@@ -57,7 +57,8 @@ jobs:
       run: |
         scripts_file=${{ env.scripts }}
         if [ -x "${scripts_file}" ]; then
-            source ${scripts_file} get_remote_repo ${REPO_REMOTE_COND}
+            source ${scripts_file} 
+            get_remote_repo ${REPO_REMOTE_COND}
         fi
         
     - name: Delete workflow runs
