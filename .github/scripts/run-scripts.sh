@@ -58,8 +58,6 @@ function get_remote_spec_contents()
 	# 初始化本地目录
 	git init -b main ${temp_dir}
 	
-	echo $temp_dir
-	
 	# 进入临时目录
 	cd ${temp_dir}
 	
@@ -82,7 +80,9 @@ function get_remote_spec_contents()
 	# 从远程将目标目录或文件拉取下来
 	git pull ${remote_alias} ${branch}
 	
-	ls -al $temp_dir
+	if [ -e "${temp_dir}/${remote_spec_path}" ]; then
+		cp -rf "${temp_dir}/${remote_spec_path}" "${local_spec_path}"
+	fi
 	
 	# 清理临时目录
 	rm -rf $temp_dir
