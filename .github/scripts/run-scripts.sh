@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "cur=$PWD"
+
 #********************************************************************************#
 # 添加获取远程仓库内容
 function get_remote_repo_contents() 
@@ -212,13 +212,15 @@ function get_retmote_repo_package()
 	get_remote_repo_contents main socat chenmozhijin/luci-app-socat luci-app-socat $1
 }
 
+echo "cur=$PWD"
 # 获取远程仓库内容
 function get_remote_repo()
 {
+	echo "1111"
 	repo_remote_cond=$1
 	package_path_rel="otherpackage"		# 相对于git顶层目录的路径
 	
-	echo $repo_remote_cond
+	echo "$repo_remote_cond--$package_path_rel"
 	
 	if [ $repo_remote_cond -eq 1 ]; then
 		mkdir -p "$package_path_rel"
