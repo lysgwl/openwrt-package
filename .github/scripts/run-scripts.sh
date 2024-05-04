@@ -235,7 +235,7 @@ function get_remote_repo()
 	repo_remote_cond=$1
 	
 	if [ $repo_remote_cond -eq 1 ]; then
-		package_path_rel="$1"		# 相对于git顶层目录的路径
+		package_path_rel="$2"		# 相对于git顶层目录的路径
 		mkdir -p "$package_path_rel"
 		
 		# 获取当前的HEAD哈希值
@@ -256,7 +256,7 @@ function get_remote_repo()
         
         echo "repo_status=$status" >> $GITHUB_ENV
 	else
-		package_path_rel="${PWD}/${1}/coolsnowwolf"
+		package_path_rel="${PWD}/${2}/coolsnowwolf"
 		mkdir -p "$package_path_rel"
 		
 		get_remote_spec_contents "master" "lede" "coolsnowwolf/luci" "applications" ${package_path_rel}
