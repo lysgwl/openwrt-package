@@ -79,6 +79,11 @@ function get_remote_spec_contents()
 	
 	# 从远程将目标目录或文件拉取下来
 	git pull ${remote_alias} ${branch}
+	
+	# 判断目标目录是否为空
+	if [ ! -z "$(ls -A ${local_spec_path})" ]; then
+		rm -rf "${local_spec_path:?}"/*  
+	fi
 
 	if [ -e "${temp_dir}/${remote_spec_path}" ]; then
 		cp -rf ${temp_dir}/${remote_spec_path}/* ${local_spec_path}
@@ -228,9 +233,9 @@ function get_retmote_repo_package()
 function get_remote_repo()
 {
 	repo_remote_cond=$1
-	package_path_rel="otherpackage"		# 相对于git顶层目录的路径
 	
 	if [ $repo_remote_cond -eq 1 ]; then
+		package_path_rel="$1"		# 相对于git顶层目录的路径
 		mkdir -p "$package_path_rel"
 		
 		# 获取当前的HEAD哈希值
@@ -251,14 +256,39 @@ function get_remote_repo()
         
         echo "repo_status=$status" >> $GITHUB_ENV
 	else
-		package_path_rel="${PWD}/${package_path_rel}/coolsnowwolf"
+		package_path_rel="${PWD}/${1}/coolsnowwolf"
 		mkdir -p "$package_path_rel"
 		
 		get_remote_spec_contents "master" "lede" "coolsnowwolf/luci" "applications" ${package_path_rel}
 	fi
 }
 
-function check_git_commit 
+# 克隆远程仓库内容
+function clone_remote_repo()
+{
+	package_path_rel="$1"		# 相对于git顶层目录的路径
+	mkdir -p "$package_path_rel"
+	
+	clone_repo_contents https://github.com/lisaac/luci-app-diskman.git master luci-app-diskman $package_path_rel
+	clone_repo_contents https://github.com/sirpdboy/luci-app-ddns-go.git main luci-app-ddns-go $package_path_rel
+	clone_repo_contents https://github.com/destan19/OpenAppFilter.git master luci-app-OpenAppFilter $package_path_rel
+	clone_repo_contents https://github.com/esirplayground/luci-app-poweroff.git master luci-app-poweroff $package_path_rel
+	clone_repo_contents https://github.com/chenmozhijin/luci-app-socat.git main luci-app-socat $package_path_rel
+}
+
+# http协议获取远程仓库内容
+function get_remote_http_repo()
+{
+	package_path_rel="$1/coolsnowwolf"		# 相对于git顶层目录的路径
+	mkdir -p "$package_path_rel"
+	
+	# 请求 URL (branch,repo_owner,repo_name,repo_path)
+    url="https://api.github.com/repos/coolsnowwolf/luci/contents/applications?ref=master"
+	get_http_repo_contents $url $package_path_rel
+}
+
+# 提交代码
+function check_git_commit() 
 {
 	# 目标目录路径
 	local target_path=$1   
