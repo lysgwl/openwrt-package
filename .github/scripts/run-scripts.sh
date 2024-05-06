@@ -233,10 +233,9 @@ function get_retmote_repo_package()
 function get_remote_repo()
 {
 	repo_remote_cond=$1
+	package_path_rel=$2
 	
-	if [ $repo_remote_cond -eq 1 ]; then
-		package_path_rel="$2"		# 相对于git顶层目录的路径
-		mkdir -p "$package_path_rel"
+	if [ $repo_remote_cond != 'true' ]; then
 		
 		# 获取当前的HEAD哈希值
         original_head=$(git rev-parse HEAD)
@@ -256,9 +255,6 @@ function get_remote_repo()
         
         echo "repo_status=$status" >> $GITHUB_ENV
 	else
-		package_path_rel="${PWD}/${2}/coolsnowwolf"
-		mkdir -p "$package_path_rel"
-		
 		get_remote_spec_contents "master" "lede" "coolsnowwolf/luci" "applications" ${package_path_rel}
 	fi
 }
@@ -266,9 +262,8 @@ function get_remote_repo()
 # 克隆远程仓库内容
 function clone_remote_repo()
 {
-	package_path_rel="$1"		# 相对于git顶层目录的路径
-	mkdir -p "$package_path_rel"
-	
+	package_path_rel="$1"
+
 	clone_repo_contents https://github.com/lisaac/luci-app-diskman.git master luci-app-diskman $package_path_rel
 	clone_repo_contents https://github.com/sirpdboy/luci-app-ddns-go.git main luci-app-ddns-go $package_path_rel
 	clone_repo_contents https://github.com/destan19/OpenAppFilter.git master luci-app-OpenAppFilter $package_path_rel
@@ -279,8 +274,7 @@ function clone_remote_repo()
 # http协议获取远程仓库内容
 function get_remote_http_repo()
 {
-	package_path_rel="$1/coolsnowwolf"		# 相对于git顶层目录的路径
-	mkdir -p "$package_path_rel"
+	package_path_rel="$1"
 	
 	# 请求 URL (branch,repo_owner,repo_name,repo_path)
     url="https://api.github.com/repos/coolsnowwolf/luci/contents/applications?ref=master"

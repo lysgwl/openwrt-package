@@ -1,25 +1,25 @@
 name: Update Other Package Repo
 
-on:
-  schedule:
-    - cron: '0 0 * * 0'
+#on:
+#  schedule:
+#    - cron: '0 0 * * 0'
     # 每5分钟运行一次 (cron: '*/5 * * * *')
     # 每天凌晨运行 (0 0 * * *) 
     # 每周执行一次 (0 0 * * 0)
     # 每15天执行 (0 0 */15 * *)
 
-#on:
-#  repository_dispatch:
-#  workflow_dispatch:
+on:
+  repository_dispatch:
+  workflow_dispatch:
   
 env:
   BUILD_SCRIPT: run-scripts.sh
-  REPO_REMOTE_COND: 2
-  REPO_CLONE_COND:  true
-  REPO_HTTP_COND:   false
+  REPO_OTHER_COND: true
+  REPO_LEDE_COND: true
+  REPO_HTTP_COND: false
   
 jobs:
-  update:   # update build
+  build:   # update build
     runs-on: ubuntu-latest
     
     steps:
@@ -50,34 +50,37 @@ jobs:
       run: |
         git config --global user.name "lysgwl"
         git config --global user.email "lysgwl@163.com"
-        git config --global init.defaultBranch main    
-        
-    - name: Get remote repository contents
-      if: env.REPO_REMOTE_COND != 0 && !cancelled()
+        git config --global init.defaultBranch main
+
+    - name: Get other repository contents
+      if: env.REPO_OTHER_COND == 'true' && !cancelled()
       run: |
         package_path_rel="otherpackage"
-        
-        scripts_file=${{ env.scripts }}
-        if [ -x "${scripts_file}" ]; then
-            source ${scripts_file} 
-            get_remote_repo ${REPO_REMOTE_COND} ${package_path_rel}
-        fi
-        
-    - name: Clone repository contents
-      if: env.REPO_CLONE_COND == 'true' && !cancelled()
-      run: |
-        package_path_rel="otherpackage"
+        mkdir -p "$package_path_rel"
         
         scripts_file=${{ env.scripts }}
         if [ -x "${scripts_file}" ]; then
             source ${scripts_file}
             clone_remote_repo ${package_path_rel}
+        fi        
+        
+    - name: Get coolsnowwolf repository contents
+      if: env.REPO_LEDE_COND == 'true' && !cancelled()
+      run: |
+        package_path_rel="otherpackage/coolsnowwolf/luci"
+        mkdir -p "$package_path_rel"
+        
+        scripts_file=${{ env.scripts }}
+        if [ -x "${scripts_file}" ]; then
+            source ${scripts_file} 
+            get_remote_repo ${REPO_LEDE_COND} ${package_path_rel}
         fi
         
     - name: Get http repository contents
       if: env.REPO_HTTP_COND == 'true' && !cancelled()
       run: |
-        package_path_rel="otherpackage"
+        package_path_rel="otherpackage/coolsnowwolf"
+        mkdir -p "$package_path_rel"
         
         scripts_file=${{ env.scripts }}
         if [ -x "${scripts_file}" ]; then
