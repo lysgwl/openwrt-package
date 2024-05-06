@@ -58,8 +58,8 @@ function get_remote_spec_contents()
 	# 初始化本地目录
 	git init -b main ${temp_dir}
 	
-	# 进入临时目录
-	cd ${temp_dir}
+	# 使用pushd进入临时目录
+	pushd ${temp_dir} > /dev/null	# cd ${temp_dir}
 	
 	# 添加远程仓库
 	echo "Add remote repository: $remote_alias"
@@ -91,6 +91,9 @@ function get_remote_spec_contents()
 		cp -rf ${temp_dir}/${remote_spec_path}/* ${local_spec_path}
 		#mv ${temp_dir}/${remote_spec_path}/* ${local_spec_path}
 	fi
+	
+	# 返回原始目录
+    popd > /dev/null
 	
 	# 清理临时目录
 	rm -rf $temp_dir
@@ -275,7 +278,7 @@ function clone_remote_repo()
 
 # http协议获取远程仓库内容
 function get_remote_http_repo()
-{
+{	
 	package_path_rel="$1"
 	
 	# 请求 URL (branch,repo_owner,repo_name,repo_path)
@@ -290,9 +293,7 @@ function check_git_commit()
 	local target_path=$1   
 	
 	# 进入目标目录
-	cd "$target_path" || { echo "Error: Unable to change directory to $target_path"; exit 1; }
-	
-	echo "cur2=$PWD"
+	pushd "$target_path" > /dev/null || { echo "Error: Unable to change directory to $target_path"; exit 1; }
 	
 	# 将所有变更添加到暂存区
 	git add .
@@ -315,4 +316,7 @@ function check_git_commit()
 			check_git_commit "$subdir"
 		fi
 	done
+	
+	# 返回原始目录
+    popd > /dev/null
 }
