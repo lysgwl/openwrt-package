@@ -90,11 +90,7 @@ function get_remote_spec_contents()
 	if [ -e "${temp_dir}/${remote_spec_path}" ]; then
 		cp -rf ${temp_dir}/${remote_spec_path}/* ${local_spec_path}
 		#mv ${temp_dir}/${remote_spec_path}/* ${local_spec_path}
-  		echo "cur=$PWD"
 	fi
-
- 	
-	ls -al ${local_spec_path}
 	
 	# 清理临时目录
 	rm -rf $temp_dir
