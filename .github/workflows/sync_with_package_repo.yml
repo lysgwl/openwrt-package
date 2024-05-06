@@ -1,22 +1,22 @@
 name: Sync Package Repo
 
-on:
-  schedule:
-    - cron: '0 0 * * 0'
+#on:
+#  schedule:
+#    - cron: '0 0 * * 0'
     # 每5分钟运行一次 (cron: '*/5 * * * *')
     # 每天凌晨运行 (0 0 * * *) 
     # 每周执行一次 (0 0 * * 0)
     # 每15天执行 (0 0 */15 * *)
 
-#on:
-#  repository_dispatch:
-#  workflow_dispatch:
+on:
+  repository_dispatch:
+  workflow_dispatch:
 
 env:
   BUILD_SCRIPT: run-scripts.sh
 
 jobs:
-  repo-sync:    # repo-sync  build
+  build:    # repo-sync  build
     runs-on: ubuntu-latest
     
     steps:
@@ -63,10 +63,9 @@ jobs:
         
     - name: Commit and push repository using SSH
       run: |
-        package_path_rel="shidahuilang"
-        
         # 进入目标仓库
         cd dest_repo
+        package_path_rel="$PWD"
         
         scripts_file=${{ env.scripts }}
         if [ -x "${scripts_file}" ]; then

@@ -16,9 +16,10 @@ env:
   BUILD_SCRIPT: run-scripts.sh
   REPO_OTHER_COND: 1
   REPO_LEDE_COND:  1
+  REPO_SDHL_COND:  1
   
 jobs:
-  build:   # update build
+  build:   # update build repo-sync
     runs-on: ubuntu-latest
     
     steps:
@@ -73,6 +74,17 @@ jobs:
         if [ -x "${scripts_file}" ]; then
             source ${scripts_file} 
             get_remote_repo ${REPO_LEDE_COND} ${package_path_rel}
+        fi
+        
+    - name: Get coolsnowwolf repository contents
+      if: env.REPO_SDHL_COND != 0 && !cancelled()
+      run: |
+        package_path_rel="$PWD/shidahuilang"
+        mkdir -p "$package_path_rel"
+        
+        scripts_file=${{ env.scripts }}
+        if [ -x "${scripts_file}" ]; then
+            source ${scripts_file} 
         fi
 
     - name: Commit and push repository using SSH

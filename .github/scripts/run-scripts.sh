@@ -136,6 +136,12 @@ function clone_repo_contents()
 	rm -rf $temp_dir
 }
 
+# 同步远程仓库内容
+function sync_repo_contents()
+{
+	echo "111"
+}
+
 # http协议获取远程仓库
 function get_http_repo_contents()
 {
