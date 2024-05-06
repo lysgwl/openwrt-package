@@ -80,6 +80,9 @@ function get_remote_spec_contents()
 	# 从远程将目标目录或文件拉取下来
 	git pull ${remote_alias} ${branch}
 	
+	echo "cur=$PWD"
+	ls -al $PWD
+	
 	# 判断目标目录是否为空
 	if [ ! -z "$(ls -A ${local_spec_path})" ]; then
 		rm -rf "${local_spec_path:?}"/*  
