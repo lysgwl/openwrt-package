@@ -311,11 +311,11 @@ function check_git_commit()
 	fi
 	
 	# 递归检查子目录的git状态
-	for subdir in */; do
-		if [ -d "$subdir" ]; then
-			check_git_commit "$subdir"
-		fi
-	done
+	#for subdir in */; do
+	#	if [ -d "$subdir" ]; then
+	#		check_git_commit "$subdir"
+	#	fi
+	#done
 	
 	# 返回原始目录
     popd > /dev/null
