@@ -62,7 +62,7 @@ function get_remote_spec_contents()
 	cd ${temp_dir}
 	
 	# 添加远程仓库
-	echo "add remote repository: $remote_alias"
+	echo "Add remote repository: $remote_alias"
 	git remote add $remote_alias https://github.com/$remote_url_path.git || true
 	
 	# 开启Sparse checkout模式
@@ -84,6 +84,8 @@ function get_remote_spec_contents()
 	if [ ! -z "$(ls -A ${local_spec_path})" ]; then
 		rm -rf "${local_spec_path:?}"/*  
 	fi
+	
+	echo "Copying remote repo directory to local...."
 
 	if [ -e "${temp_dir}/${remote_spec_path}" ]; then
 		cp -rf ${temp_dir}/${remote_spec_path}/* ${local_spec_path}
