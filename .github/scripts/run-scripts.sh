@@ -236,7 +236,7 @@ function clone_remote_repo()
 		clone_repo_contents https://github.com/destan19/OpenAppFilter.git master luci-app-OpenAppFilter $package_path_rel
 		clone_repo_contents https://github.com/esirplayground/luci-app-poweroff.git master luci-app-poweroff $package_path_rel
 		clone_repo_contents https://github.com/chenmozhijin/luci-app-socat.git main luci-app-socat $package_path_rel
-	else
+	elif [ $repo_other_cond -eq 2 ]; then
 		# 获取当前的HEAD哈希值
         original_head=$(git rev-parse HEAD)
 		
@@ -268,7 +268,7 @@ function get_remote_repo()
 	
 	if [ $repo_remote_cond -eq 1 ]; then
 		get_remote_spec_contents "master" "lede" "coolsnowwolf/luci" "applications" ${package_path_rel}
-	else
+	elif [ $repo_remote_cond -eq 2 ]; then
 		# 请求 URL (branch,repo_owner,repo_name,repo_path)
 		url="https://api.github.com/repos/coolsnowwolf/luci/contents/applications?ref=master"
 		get_http_repo_contents $url $package_path_rel
