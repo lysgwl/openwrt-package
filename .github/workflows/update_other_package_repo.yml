@@ -77,6 +77,7 @@ jobs:
             get_remote_repo ${REPO_LEDE_COND} ${package_path_rel}
         fi
         echo "cur2=$PWD"
+        echo "dir=$package_path_rel"
         ls -al $package_path_rel
         
     - name: Get http repository contents
@@ -93,7 +94,9 @@ jobs:
         
     - name: Commit and push repository using SSH
       run: |
-        package_path_rel="otherpackage"
+        package_path_rel="$PWD"
+        echo "cur1=$PWD"
+        ls -al $PWD
         
         scripts_file=${{ env.scripts }}
         if [ -x "${scripts_file}" ]; then
