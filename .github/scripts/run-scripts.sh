@@ -292,6 +292,8 @@ function check_git_commit()
 	# 进入目标目录
 	cd "$target_path" || { echo "Error: Unable to change directory to $target_path"; exit 1; }
 	
+	echo "cur2=$PWD"
+	
 	# 将所有变更添加到暂存区
 	git add .
 	

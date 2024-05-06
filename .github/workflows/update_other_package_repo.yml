@@ -69,13 +69,14 @@ jobs:
       run: |
         package_path_rel="$PWD/coolsnowwolf/luci"
         mkdir -p "$package_path_rel"
+        echo "cur1=$PWD"
         
         scripts_file=${{ env.scripts }}
         if [ -x "${scripts_file}" ]; then
             source ${scripts_file} 
             get_remote_repo ${REPO_LEDE_COND} ${package_path_rel}
         fi
-        echo "cur=$PWD"
+        echo "cur2=$PWD"
         ls -al $package_path_rel
         
     - name: Get http repository contents
