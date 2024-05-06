@@ -81,7 +81,7 @@ function get_remote_spec_contents()
 	git pull ${remote_alias} ${branch}
 	
 	echo "cur=$PWD"
-	ls -al $PWD
+	ls -al $PWD/applications
 	
 	# 判断目标目录是否为空
 	if [ ! -z "$(ls -A ${local_spec_path})" ]; then
