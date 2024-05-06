@@ -76,6 +76,8 @@ function get_remote_spec_contents()
 	
 	echo "${remote_spec_path}" >> ${sparse_file}
 	echo "Pulling from $remote_alias branch $branch..."
+
+ 	cat ${sparse_file}
 	
 	# 从远程将目标目录或文件拉取下来
 	git pull ${remote_alias} ${branch}
