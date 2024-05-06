@@ -76,14 +76,9 @@ function get_remote_spec_contents()
 	
 	echo "${remote_spec_path}" >> ${sparse_file}
 	echo "Pulling from $remote_alias branch $branch..."
-
- 	cat ${sparse_file}
 	
 	# 从远程将目标目录或文件拉取下来
 	git pull ${remote_alias} ${branch}
-	
-	echo "cur=$PWD"
-	ls -al $PWD/applications
 	
 	# 判断目标目录是否为空
 	if [ ! -z "$(ls -A ${local_spec_path})" ]; then
@@ -95,7 +90,11 @@ function get_remote_spec_contents()
 	if [ -e "${temp_dir}/${remote_spec_path}" ]; then
 		cp -rf ${temp_dir}/${remote_spec_path}/* ${local_spec_path}
 		#mv ${temp_dir}/${remote_spec_path}/* ${local_spec_path}
+  		echo "cur=$PWD"
 	fi
+
+ 	
+	ls -al ${local_spec_path}
 	
 	# 清理临时目录
 	rm -rf $temp_dir
