@@ -202,6 +202,7 @@ function sync_repo_contents()
 		fi
 		
 		rm -rf $temp_dir
+		rm -rf $target_path
 	done
 }
 
