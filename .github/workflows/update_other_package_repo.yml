@@ -102,9 +102,9 @@ jobs:
         fi
         
         source ${scripts_file}
-        get_remote_repo 3 ${package_path_rel}
+        get_remote_repo 3 ${package_path_rel} "Official"
         
-        check_git_commit ${package_path_rel} "Official"
+        check_git_commit ${package_path_rel}
         
     #- name: Commit and push repository using SSH
     #  run: |
