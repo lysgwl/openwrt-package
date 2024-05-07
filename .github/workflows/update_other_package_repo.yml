@@ -1,14 +1,15 @@
 name: Update Other Package Repo
 
-#on:
-#  schedule:
-#    - cron: '0 0 * * 0'
+on:
+  push:
+    branches:
+      - master      # 指定在对master分支进行push时触发
+  schedule:
+    - cron: '0 0 * * 0'
     # 每5分钟运行一次 (cron: '*/5 * * * *')
     # 每天凌晨运行 (0 0 * * *) 
     # 每周执行一次 (0 0 * * 0)
     # 每15天执行 (0 0 */15 * *)
-
-on:
   repository_dispatch:
   workflow_dispatch:
   
