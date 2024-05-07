@@ -1,6 +1,42 @@
 #!/bin/bash
 
 #********************************************************************************#
+# 提交代码
+function check_git_commit() 
+{
+	# 目标目录路径
+	local target_path=$1
+	
+	# 进入目标目录
+	pushd "$target_path" > /dev/null || { echo "Error: Unable to change directory to $target_path"; exit 1; }
+	
+	# 将所有变更添加到暂存区
+	git add .
+	
+	# 输出git状态
+	git status
+	
+	# 检查git状态
+	local has_changes=$(git status --porcelain | grep '^[MADRC]')
+	if [ -n "$has_changes" ]; then
+		current_date=$(date '+%Y-%m-%d')
+		
+		git commit -a -m "commit repository changes on ${current_date}"
+		git push git@github.com:lysgwl/openwrt-package.git HEAD:master
+	fi
+	
+	# 递归检查子目录的git状态
+	#for subdir in */; do
+	#	if [ -d "$subdir" ]; then
+	#		check_git_commit "$subdir"
+	#	fi
+	#done
+	
+	# 返回原始目录
+    popd > /dev/null
+}
+
+#********************************************************************************#
 # 添加获取远程仓库内容
 function get_remote_repo_contents() 
 {
@@ -162,6 +198,7 @@ function sync_repo_contents()
 		
 		if [ $? -eq 0 ]; then
 			rsync -a --delete $temp_dir/ $target_path/ --exclude .git
+			check_git_commit $target_path
 		fi
 	done
 }
@@ -331,39 +368,4 @@ function get_remote_repo()
 		url="https://github.com/shidahuilang/openwrt-package.git"
 		sync_repo_contents $url $package_path_rel
 	fi
-}
-
-# 提交代码
-function check_git_commit() 
-{
-	# 目标目录路径
-	local target_path=$1   
-	
-	# 进入目标目录
-	pushd "$target_path" > /dev/null || { echo "Error: Unable to change directory to $target_path"; exit 1; }
-	
-	# 将所有变更添加到暂存区
-	git add .
-	
-	# 输出git状态
-	git status
-	
-	# 检查git状态
-	local has_changes=$(git status --porcelain | grep '^[MADRC]')
-	if [ -n "$has_changes" ]; then
-		current_date=$(date '+%Y-%m-%d')
-		
-		git commit -a -m "commit repository changes on ${current_date}"
-		git push git@github.com:lysgwl/openwrt-package.git HEAD:master
-	fi
-	
-	# 递归检查子目录的git状态
-	#for subdir in */; do
-	#	if [ -d "$subdir" ]; then
-	#		check_git_commit "$subdir"
-	#	fi
-	#done
-	
-	# 返回原始目录
-    popd > /dev/null
 }
