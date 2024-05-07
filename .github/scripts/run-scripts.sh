@@ -139,7 +139,31 @@ function clone_repo_contents()
 # 同步远程仓库内容
 function sync_repo_contents()
 {
-	echo "111"
+	local repo_url=$1
+	local repo_path=$2
+	
+	git ls-remote --heads $repo_url | while read -r line ; do
+		branch_name=$(echo $line | sed 's?.*refs/heads/??')
+		if [ -z "${branch_name}" ]; then
+			continue
+		fi
+		
+		echo "branch name: $branch_name"
+		local target_path="${repo_path}/${branch_name}"
+		if [ ! -d "${target_path}" ]; then
+			mkdir -p "${target_path}"
+		fi
+		
+		# 临时目录，用于克隆远程仓库
+		local temp_dir=$(mktemp -d)
+		
+		# 克隆远程仓库到临时目录
+		git clone --single-branch --branch ${branch_name} ${repo_url} ${temp_dir}
+		
+		if [ $? -eq 0 ]; then
+			rsync -a --delete $temp_dir/ $target_path/ --exclude .git
+		fi
+	done
 }
 
 # http协议获取远程仓库
@@ -275,9 +299,11 @@ function get_remote_repo()
 	if [ $repo_remote_cond -eq 1 ]; then
 		get_remote_spec_contents "master" "lede" "coolsnowwolf/luci" "applications" ${package_path_rel}
 	elif [ $repo_remote_cond -eq 2 ]; then
-		# 请求 URL (branch,repo_owner,repo_name,repo_path)
 		url="https://api.github.com/repos/coolsnowwolf/luci/contents/applications?ref=master"
 		get_http_repo_contents $url $package_path_rel
+	elif [ $repo_remote_cond -eq 3 ]; then
+		url="https://github.com/shidahuilang/openwrt-package.git"
+		sync_repo_contents $url $package_path_rel
 	fi
 }
 
