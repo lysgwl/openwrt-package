@@ -71,7 +71,6 @@ jobs:
         clone_remote_repo ${REPO_OTHER_COND} ${package_path_rel}
         
         check_git_commit ${package_path_rel}
-        rm -rf ${package_path_rel}
         
     - name: Get coolsnowwolf repository contents
       if: env.REPO_LEDE_COND != 0 && !cancelled()
@@ -89,7 +88,6 @@ jobs:
         get_remote_repo ${REPO_LEDE_COND} ${package_path_rel}
         
         check_git_commit ${package_path_rel}
-        rm -rf ${package_path_rel}
         
     - name: Get shidahuilang repository contents
       if: env.REPO_SDHL_COND != 0 && !cancelled()
@@ -105,6 +103,8 @@ jobs:
         
         source ${scripts_file}
         get_remote_repo 3 ${package_path_rel}
+        
+        check_git_commit ${package_path_rel} "Official"
         
     #- name: Commit and push repository using SSH
     #  run: |

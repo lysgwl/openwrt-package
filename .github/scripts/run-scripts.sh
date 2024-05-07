@@ -17,7 +17,7 @@ function check_git_commit()
 	git status
 	
 	# 检查git状态
-	local has_changes=$(git status --porcelain)	#| grep '^[MADRC]'
+	local has_changes=$(git status --porcelain | grep '^[MADRC]')
 	if [ -n "$has_changes" ]; then
 		current_date=$(date '+%Y-%m-%d')
 		
@@ -177,11 +177,19 @@ function sync_repo_contents()
 {
 	local repo_url=$1
 	local repo_path=$2
+	local branch=$3
 	
 	git ls-remote --heads $repo_url | while read -r line ; do
 		branch_name=$(echo $line | sed 's?.*refs/heads/??')
 		if [ -z "${branch_name}" ]; then
 			continue
+		fi
+		
+		# 分支比较
+		if [ -n "${branch}" ]; then
+			if [ "${branch}" != "${branch_name}" ]; then
+				continue
+			fi
 		fi
 		
 		echo "branch name: $branch_name"
@@ -198,11 +206,9 @@ function sync_repo_contents()
 		
 		if [ $? -eq 0 ]; then
 			rsync -a --delete $temp_dir/ $target_path/ --exclude .git
-			check_git_commit $target_path
 		fi
 		
 		rm -rf $temp_dir
-		rm -rf $target_path
 	done
 }
 
@@ -369,6 +375,6 @@ function get_remote_repo()
 		get_http_repo_contents $url $package_path_rel
 	elif [ $repo_remote_cond -eq 3 ]; then
 		url="https://github.com/shidahuilang/openwrt-package.git"
-		sync_repo_contents $url $package_path_rel
+		sync_repo_contents $url $package_path_rel $3
 	fi
 }
