@@ -257,6 +257,7 @@ function get_http_repo_contents()
 # 更新linux环境
 function update_linux_env()
 {
+	set +e
 	dpkg-query -Wf '${Installed-Size}\t${Package}\n' | sort -n | tail -n 100
 	echo "正在删除大的软件包，请等待..."
 	
