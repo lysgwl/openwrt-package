@@ -16,7 +16,7 @@ env:
   BUILD_SCRIPT: run-scripts.sh
   REPO_OTHER_COND: 1
   REPO_LEDE_COND:  1
-  REPO_SDHL_COND:  1
+  REPO_SDHL_COND:  0
   
 jobs:
   build:   # update build repo-sync
@@ -41,6 +41,8 @@ jobs:
 
         chmod +x "${scripts_file}"
         echo "scripts=${scripts_file}" >> $GITHUB_ENV
+        
+        df -hT
 
     - name: Set SSH key and known_hosts
       uses: webfactory/ssh-agent@v0.9.0   # appleboy/ssh-action@master
@@ -70,6 +72,7 @@ jobs:
         
         check_git_commit ${package_path_rel}
         rm -rf ${package_path_rel}
+        df -hT
         
     - name: Get coolsnowwolf repository contents
       if: env.REPO_LEDE_COND != 0 && !cancelled()
@@ -88,6 +91,7 @@ jobs:
         
         check_git_commit ${package_path_rel}
         rm -rf ${package_path_rel}
+        df -hT
         
     - name: Get shidahuilang repository contents
       if: env.REPO_SDHL_COND != 0 && !cancelled()
