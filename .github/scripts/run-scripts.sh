@@ -200,6 +200,8 @@ function sync_repo_contents()
 			rsync -a --delete $temp_dir/ $target_path/ --exclude .git
 			check_git_commit $target_path
 		fi
+		
+		rm -rf $temp_dir
 	done
 }
 
