@@ -17,7 +17,7 @@ function check_git_commit()
 	git status
 	
 	# 检查git状态
-	local has_changes=$(git status --porcelain | grep '^[MADRC]')
+	local has_changes=$(git status --porcelain)	#| grep '^[MADRC]'
 	if [ -n "$has_changes" ]; then
 		current_date=$(date '+%Y-%m-%d')
 		
