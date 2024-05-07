@@ -39,7 +39,10 @@ jobs:
         fi
 
         chmod +x "${scripts_file}"
-        echo "scripts=${scripts_file}" >> $GITHUB_ENV    
+        echo "scripts=${scripts_file}" >> $GITHUB_ENV
+        
+        source ${scripts_file}
+        update_linux_env
 
     - name: Set SSH key and known_hosts
       uses: webfactory/ssh-agent@v0.9.0   # appleboy/ssh-action@master

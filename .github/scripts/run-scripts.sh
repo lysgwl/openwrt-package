@@ -254,6 +254,31 @@ function get_http_repo_contents()
 }
 
 #********************************************************************************#
+# 更新linux环境
+function update_linux_env()
+{
+	dpkg-query -Wf '${Installed-Size}\t${Package}\n' | sort -n | tail -n 100
+	echo "正在删除大的软件包，请等待..."
+	
+	sudo apt-get remove -y '^ghc-8.*'
+	sudo apt-get remove -y '^dotnet-.*'
+	sudo apt-get remove -y '^llvm-.*'
+	sudo apt-get remove -y 'php.*'
+	sudo apt-get remove -y 'temurin-.*'
+	sudo apt-get remove -y 'mono-.*'
+	sudo apt-get remove -y azure-cli google-cloud-sdk hhvm google-chrome-stable firefox powershell microsoft-edge-stable
+	
+	sudo rm -rf \
+        /etc/apt/sources.list.d/* \
+        /usr/share/dotnet \
+        /usr/local/lib/android \
+        /opt/ghc \
+        /opt/hostedtoolcache/CodeQL
+		
+	sudo -E apt-get -qq autoremove --purge	
+	sudo -E apt-get -qq clean
+}
+
 # 克隆远程仓库内容
 function clone_remote_repo()
 {
