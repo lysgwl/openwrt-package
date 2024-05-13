@@ -82,8 +82,8 @@ function get_remote_repo_contents()
 # 添加获取远程仓库指定内容
 function get_remote_spec_contents() 
 {
-	local remote_alias=$1       # 远程仓库别名
-	local remote_repo=$2       	# 远程仓库URL
+	local remote_repo=$1       	# 远程仓库URL
+	local remote_alias=$2       # 远程仓库别名
 	local local_spec_path=$3    # 本地指定路径
 	
 	# 获取.git的前缀和后缀字符
@@ -156,18 +156,32 @@ function get_remote_spec_contents()
 # 克隆仓库内容
 function clone_repo_contents() 
 {
-	local remote_repo=$1        # 远程仓库URL
-	local branch=$2             # 分支名
-	local local_dir_name=$3     # 本地目录名
-	local package_path_rel=$4   # 相对于顶层目录的路径
-
- 	echo "$remote_repo"
+	local remote_repo=$1        
+	local package_path_rel=$2
+	
+	# 获取?的前缀和后缀字符
+	mark_prefix="${remote_repo%%\?*}"
+	mark_suffix="${remote_repo#*\?}"
+	
+	if [ -z "${mark_prefix}" ] || [ -z "${mark_suffix}" ]; then
+		return
+	fi
+	
+	# 获取.git的前缀
+	git_prefix="${mark_prefix%%.git*}"
+	if [ -z "${git_prefix}" ]; then
+		return
+	fi
+	
+	repo_url="${mark_prefix}"	# 远程仓库URL
+	repo_branch=$(echo ${mark_suffix} | awk -F '=' '{print $2; exit}')	# 分支名
+	local_dir_name=$(echo ${git_prefix} | awk -F '/' '{print $NF}')			# 目录名
 	
 	# 临时目录，用于克隆远程仓库
 	local temp_dir=$(mktemp -d)
 	
 	# 克隆远程仓库到临时目录
-	git clone --depth 1 --branch $branch $remote_repo $temp_dir
+	git clone --depth 1 --branch $repo_branch $remote_repo $temp_dir
 	
 	if [ $? -eq 0 ]; then
 		local target_path="$package_path_rel/$local_dir_name"
@@ -327,11 +341,11 @@ function clone_remote_repo()
 	package_path_rel=$2
  
 	if [ $repo_other_cond -eq 1 ]; then
-		clone_repo_contents https://github.com/lisaac/luci-app-diskman.git master luci-app-diskman $package_path_rel
-		clone_repo_contents https://github.com/sirpdboy/luci-app-ddns-go.git main luci-app-ddns-go $package_path_rel
-		clone_repo_contents https://github.com/destan19/OpenAppFilter.git master luci-app-OpenAppFilter $package_path_rel
-		clone_repo_contents https://github.com/esirplayground/luci-app-poweroff.git master luci-app-poweroff $package_path_rel
-		clone_repo_contents https://github.com/chenmozhijin/luci-app-socat.git main luci-app-socat $package_path_rel
+		clone_repo_contents https://github.com/lisaac/luci-app-diskman.git?ref=master $package_path_rel
+		clone_repo_contents https://github.com/sirpdboy/luci-app-ddns-go.git?ref=main $package_path_rel
+		clone_repo_contents https://github.com/destan19/OpenAppFilter.git?ref=master  $package_path_rel
+		clone_repo_contents https://github.com/esirplayground/luci-app-poweroff.git?ref=master $package_path_rel
+		clone_repo_contents https://github.com/chenmozhijin/luci-app-socat.git?ref=main $package_path_rel
 	fi
 }
 
@@ -343,7 +357,7 @@ function get_remote_repo()
 	
 	if [ $repo_remote_cond -eq 1 ]; then
 		url="https://github.com/coolsnowwolf/luci.git/applications?ref=master"
-		get_remote_spec_contents "lede" $url $package_path_rel
+		get_remote_spec_contents $url "lede" $package_path_rel
 	fi
 	
 	if [ $repo_remote_cond -eq 2 ]; then
