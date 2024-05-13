@@ -352,7 +352,7 @@ function clone_remote_repo()
 	repo_other_cond=$1
 	package_path_rel=$2
  
-	if [ $repo_remote_cond -eq 1 ]; then
+	if [ $repo_remote_cond == "1" ]; then
 		clone_repo_contents https://github.com/lisaac/luci-app-diskman.git master luci-app-diskman $package_path_rel
 		clone_repo_contents https://github.com/sirpdboy/luci-app-ddns-go.git main luci-app-ddns-go $package_path_rel
 		clone_repo_contents https://github.com/destan19/OpenAppFilter.git master luci-app-OpenAppFilter $package_path_rel
