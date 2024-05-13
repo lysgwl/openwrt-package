@@ -160,6 +160,8 @@ function clone_repo_contents()
 	local branch=$2             # 分支名
 	local local_dir_name=$3     # 本地目录名
 	local package_path_rel=$4   # 相对于顶层目录的路径
+
+ 	echo "$remote_repo"
 	
 	# 临时目录，用于克隆远程仓库
 	local temp_dir=$(mktemp -d)
