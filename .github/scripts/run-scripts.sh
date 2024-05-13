@@ -353,7 +353,7 @@ function clone_remote_repo()
 	package_path_rel=$2
  
 	echo "--${repo_other_cond}###${package_path_rel}--"
-	case $repo_remote_cond in
+	case ${repo_remote_cond} in
 		1)
   			echo "1234"
 			clone_repo_contents https://github.com/lisaac/luci-app-diskman.git master luci-app-diskman $package_path_rel
@@ -395,7 +395,7 @@ function get_remote_repo()
 	repo_remote_cond=$1
 	package_path_rel=$2
 	
-	case $repo_remote_cond in
+	case ${repo_remote_cond} in
 		1)
 			url="https://github.com/coolsnowwolf/luci.git/applications?ref=master"
 			get_remote_spec_contents "lede" $url $package_path_rel
