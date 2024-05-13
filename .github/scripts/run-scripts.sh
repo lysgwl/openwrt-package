@@ -352,41 +352,13 @@ function clone_remote_repo()
 	repo_other_cond=$1
 	package_path_rel=$2
  
-	echo "--${repo_other_cond}###${package_path_rel}--"
-	case ${repo_remote_cond} in
-		1 )
-  			echo "1234"
-			clone_repo_contents https://github.com/lisaac/luci-app-diskman.git master luci-app-diskman $package_path_rel
-			clone_repo_contents https://github.com/sirpdboy/luci-app-ddns-go.git main luci-app-ddns-go $package_path_rel
-			clone_repo_contents https://github.com/destan19/OpenAppFilter.git master luci-app-OpenAppFilter $package_path_rel
-			clone_repo_contents https://github.com/esirplayground/luci-app-poweroff.git master luci-app-poweroff $package_path_rel
-			clone_repo_contents https://github.com/chenmozhijin/luci-app-socat.git main luci-app-socat $package_path_rel
-			;;
-		2 )
-			# 获取当前的HEAD哈希值
-			original_head=$(git rev-parse HEAD)
-			
-			get_remote_repo_contents master diskman lisaac/luci-app-diskman luci-app-diskman $package_path_rel
-			get_remote_repo_contents main ddns-go sirpdboy/luci-app-ddns-go luci-app-ddns-go $package_path_rel
-			get_remote_repo_contents master OpenAppFilter destan19/OpenAppFilter luci-app-OpenAppFilter $package_path_rel
-			get_remote_repo_contents master poweroff esirplayground/luci-app-poweroff luci-app-poweroff $package_path_rel
-			get_remote_repo_contents main socat chenmozhijin/luci-app-socat luci-app-socat $package_path_rel
-			
-			# 获取新的HEAD哈希值
-			new_head=$(git rev-parse HEAD)
-			
-			# 根据哈希值判断状态
-			if [[ "$original_head" != "$new_head" ]]; then
-				status="successful"
-			else
-				status="no_changes"
-			fi
-			
-			echo "repo_status=$status" >> $GITHUB_ENV
-			;;
-		* )
-			;;
-	esac
+	if [ $repo_remote_cond -eq 1 ]; then
+		clone_repo_contents https://github.com/lisaac/luci-app-diskman.git master luci-app-diskman $package_path_rel
+		clone_repo_contents https://github.com/sirpdboy/luci-app-ddns-go.git main luci-app-ddns-go $package_path_rel
+		clone_repo_contents https://github.com/destan19/OpenAppFilter.git master luci-app-OpenAppFilter $package_path_rel
+		clone_repo_contents https://github.com/esirplayground/luci-app-poweroff.git master luci-app-poweroff $package_path_rel
+		clone_repo_contents https://github.com/chenmozhijin/luci-app-socat.git main luci-app-socat $package_path_rel
+	fi
 }
 
 # 获取远程仓库内容
@@ -395,20 +367,18 @@ function get_remote_repo()
 	repo_remote_cond=$1
 	package_path_rel=$2
 	
-	case ${repo_remote_cond} in
-		1 )
-			url="https://github.com/coolsnowwolf/luci.git/applications?ref=master"
-			get_remote_spec_contents "lede" $url $package_path_rel
-			;;
-		2 )
-			url="https://api.github.com/repos/coolsnowwolf/luci/contents/applications?ref=master"
-			get_http_repo_contents $url $package_path_rel
-			;;
-		3 )	
-			url="https://github.com/shidahuilang/openwrt-package.git"
-			sync_repo_contents $3 $url $package_path_rel
-			;;
-		* )
-			;;
-	esac		
+	if [ $repo_remote_cond -eq 1 ]; then
+		url="https://github.com/coolsnowwolf/luci.git/applications?ref=master"
+		get_remote_spec_contents "lede" $url $package_path_rel
+	fi
+	
+	if [ $repo_remote_cond -eq 2 ]; then
+		url="https://api.github.com/repos/coolsnowwolf/luci/contents/applications?ref=master"
+		get_http_repo_contents $url $package_path_rel
+	fi
+	
+	if [ $repo_remote_cond -eq 3 ]; then
+		url="https://github.com/shidahuilang/openwrt-package.git"
+		sync_repo_contents $3 $url $package_path_rel
+	fi		
 }
