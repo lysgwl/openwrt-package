@@ -82,11 +82,29 @@ function get_remote_repo_contents()
 # 添加获取远程仓库指定内容
 function get_remote_spec_contents() 
 {
-	local branch=$1             # 分支名
-	local remote_alias=$2       # 远程仓库别名
-	local remote_url_path=$3    # 远程仓库路径
-	local remote_spec_path=$4   # 远程指定路径
-	local local_spec_path=$5    # 本地指定路径
+	local remote_alias=$1       # 远程仓库别名
+	local remote_repo=$2       	# 远程仓库URL
+	local local_spec_path=$3    # 本地指定路径
+	
+	# 获取.git的前缀和后缀字符
+	git_prefix="${remote_repo%%.git*}"
+	git_suffix="${remote_repo#*.git}"
+	
+	if [ -z "${git_prefix}" ] || [ -z "${git_suffix}" ]; then
+		return
+	fi
+	
+	# 获取?的前缀和后缀字符
+	suffix_before_mark="${git_suffix%%\?*}"	#
+	suffix_after_mark="${git_suffix#*\?}"	#
+	
+	if [ -z "${suffix_before_mark}" ] || [ -z "${suffix_after_mark}" ]; then
+		return
+	fi
+	
+	repo_url="${git_prefix}.git"
+	repo_path="${suffix_before_mark}"
+	repo_branch=$(echo ${suffix_after_mark} | awk -F '=' '{print $2; exit}')
 	
 	# 临时目录，用于克隆远程仓库
 	local temp_dir=$(mktemp -d)
@@ -99,7 +117,7 @@ function get_remote_spec_contents()
 	
 	# 添加远程仓库
 	echo "Add remote repository: $remote_alias"
-	git remote add $remote_alias https://github.com/$remote_url_path.git || true
+	git remote add $remote_alias $repo_url || true
 	
 	# 开启Sparse checkout模式
 	git config core.sparsecheckout true
@@ -110,11 +128,11 @@ function get_remote_spec_contents()
 		touch "${sparse_file}"
 	fi
 	
-	echo "${remote_spec_path}" >> ${sparse_file}
+	echo "${repo_path}" >> ${sparse_file}
 	echo "Pulling from $remote_alias branch $branch..."
 	
 	# 从远程将目标目录或文件拉取下来
-	git pull ${remote_alias} ${branch}
+	git pull ${remote_alias} ${repo_branch}
 	
 	# 判断目标目录是否为空
 	if [ ! -z "$(ls -A ${local_spec_path})" ]; then
@@ -122,10 +140,10 @@ function get_remote_spec_contents()
 	fi
 	
 	echo "Copying remote repo directory to local...."
-
-	if [ -e "${temp_dir}/${remote_spec_path}" ]; then
-		cp -rf ${temp_dir}/${remote_spec_path}/* ${local_spec_path}
-		#mv ${temp_dir}/${remote_spec_path}/* ${local_spec_path}
+	
+	if [ -e "${temp_dir}/${repo_path}" ]; then
+		cp -rf ${temp_dir}/${repo_path}/* ${local_spec_path}
+		#mv ${temp_dir}/${repo_path}/* ${local_spec_path}
 	fi
 	
 	# 返回原始目录
@@ -175,9 +193,9 @@ function clone_repo_contents()
 # 同步远程仓库内容
 function sync_repo_contents()
 {
-	local repo_url=$1
-	local repo_path=$2
-	local branch=$3
+	local branch=$1
+	local repo_url=$2
+	local repo_path=$3	
 	
 	git ls-remote --heads $repo_url | while read -r line ; do
 		branch_name=$(echo $line | sed 's?.*refs/heads/??')
@@ -332,34 +350,39 @@ function clone_remote_repo()
     repo_other_cond=$1
 	package_path_rel=$2
 
-	if [ $repo_other_cond -eq 1 ]; then
-		clone_repo_contents https://github.com/lisaac/luci-app-diskman.git master luci-app-diskman $package_path_rel
-		clone_repo_contents https://github.com/sirpdboy/luci-app-ddns-go.git main luci-app-ddns-go $package_path_rel
-		clone_repo_contents https://github.com/destan19/OpenAppFilter.git master luci-app-OpenAppFilter $package_path_rel
-		clone_repo_contents https://github.com/esirplayground/luci-app-poweroff.git master luci-app-poweroff $package_path_rel
-		clone_repo_contents https://github.com/chenmozhijin/luci-app-socat.git main luci-app-socat $package_path_rel
-	elif [ $repo_other_cond -eq 2 ]; then
-		# 获取当前的HEAD哈希值
-        original_head=$(git rev-parse HEAD)
-		
-		get_remote_repo_contents master diskman lisaac/luci-app-diskman luci-app-diskman $package_path_rel
-		get_remote_repo_contents main ddns-go sirpdboy/luci-app-ddns-go luci-app-ddns-go $package_path_rel
-		get_remote_repo_contents master OpenAppFilter destan19/OpenAppFilter luci-app-OpenAppFilter $package_path_rel
-		get_remote_repo_contents master poweroff esirplayground/luci-app-poweroff luci-app-poweroff $package_path_rel
-		get_remote_repo_contents main socat chenmozhijin/luci-app-socat luci-app-socat $package_path_rel
-		
-		# 获取新的HEAD哈希值
-        new_head=$(git rev-parse HEAD)
-		
-		# 根据哈希值判断状态
-        if [[ "$original_head" != "$new_head" ]]; then
-            status="successful"
-        else
-            status="no_changes"
-        fi
-		
-		echo "repo_status=$status" >> $GITHUB_ENV
-	fi
+	case $repo_remote_cond in
+		1)
+			clone_repo_contents https://github.com/lisaac/luci-app-diskman.git master luci-app-diskman $package_path_rel
+			clone_repo_contents https://github.com/sirpdboy/luci-app-ddns-go.git main luci-app-ddns-go $package_path_rel
+			clone_repo_contents https://github.com/destan19/OpenAppFilter.git master luci-app-OpenAppFilter $package_path_rel
+			clone_repo_contents https://github.com/esirplayground/luci-app-poweroff.git master luci-app-poweroff $package_path_rel
+			clone_repo_contents https://github.com/chenmozhijin/luci-app-socat.git main luci-app-socat $package_path_rel
+			;;
+		2)
+			# 获取当前的HEAD哈希值
+			original_head=$(git rev-parse HEAD)
+			
+			get_remote_repo_contents master diskman lisaac/luci-app-diskman luci-app-diskman $package_path_rel
+			get_remote_repo_contents main ddns-go sirpdboy/luci-app-ddns-go luci-app-ddns-go $package_path_rel
+			get_remote_repo_contents master OpenAppFilter destan19/OpenAppFilter luci-app-OpenAppFilter $package_path_rel
+			get_remote_repo_contents master poweroff esirplayground/luci-app-poweroff luci-app-poweroff $package_path_rel
+			get_remote_repo_contents main socat chenmozhijin/luci-app-socat luci-app-socat $package_path_rel
+			
+			# 获取新的HEAD哈希值
+			new_head=$(git rev-parse HEAD)
+			
+			# 根据哈希值判断状态
+			if [[ "$original_head" != "$new_head" ]]; then
+				status="successful"
+			else
+				status="no_changes"
+			fi
+			
+			echo "repo_status=$status" >> $GITHUB_ENV
+			;;
+		*)
+			;;
+	esac
 }
 
 # 获取远程仓库内容
@@ -368,13 +391,20 @@ function get_remote_repo()
 	repo_remote_cond=$1
 	package_path_rel=$2
 	
-	if [ $repo_remote_cond -eq 1 ]; then
-		get_remote_spec_contents "master" "lede" "coolsnowwolf/luci" "applications" ${package_path_rel}
-	elif [ $repo_remote_cond -eq 2 ]; then
-		url="https://api.github.com/repos/coolsnowwolf/luci/contents/applications?ref=master"
-		get_http_repo_contents $url $package_path_rel
-	elif [ $repo_remote_cond -eq 3 ]; then
-		url="https://github.com/shidahuilang/openwrt-package.git"
-		sync_repo_contents $url $package_path_rel $3
-	fi
+	case $repo_remote_cond in
+		1)
+			url="https://github.com/coolsnowwolf/luci.git/applications?ref=master"
+			get_remote_spec_contents "lede" $url $package_path_rel
+			;;
+		2)
+			url="https://api.github.com/repos/coolsnowwolf/luci/contents/applications?ref=master"
+			get_http_repo_contents $url $package_path_rel
+			;;
+		3)	
+			url="https://github.com/shidahuilang/openwrt-package.git"
+			sync_repo_contents $3 $url $package_path_rel
+			;;
+		*)
+			;;
+	esac		
 }
