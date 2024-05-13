@@ -75,7 +75,7 @@ jobs:
     - name: Get coolsnowwolf repository contents
       if: env.REPO_LEDE_COND != 0 && !cancelled()
       run: |
-        package_path_rel="$PWD/coolsnowwolf/luci"
+        package_path_rel="$PWD/coolsnowwolf"
         mkdir -p "$package_path_rel"
         
         scripts_file=${{ env.scripts }}
