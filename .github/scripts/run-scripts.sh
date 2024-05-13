@@ -354,7 +354,7 @@ function clone_remote_repo()
  
 	echo "--${repo_other_cond}###${package_path_rel}--"
 	case ${repo_remote_cond} in
-		1)
+		1 )
   			echo "1234"
 			clone_repo_contents https://github.com/lisaac/luci-app-diskman.git master luci-app-diskman $package_path_rel
 			clone_repo_contents https://github.com/sirpdboy/luci-app-ddns-go.git main luci-app-ddns-go $package_path_rel
@@ -362,7 +362,7 @@ function clone_remote_repo()
 			clone_repo_contents https://github.com/esirplayground/luci-app-poweroff.git master luci-app-poweroff $package_path_rel
 			clone_repo_contents https://github.com/chenmozhijin/luci-app-socat.git main luci-app-socat $package_path_rel
 			;;
-		2)
+		2 )
 			# 获取当前的HEAD哈希值
 			original_head=$(git rev-parse HEAD)
 			
@@ -384,7 +384,7 @@ function clone_remote_repo()
 			
 			echo "repo_status=$status" >> $GITHUB_ENV
 			;;
-		*)
+		* )
 			;;
 	esac
 }
@@ -396,19 +396,19 @@ function get_remote_repo()
 	package_path_rel=$2
 	
 	case ${repo_remote_cond} in
-		1)
+		1 )
 			url="https://github.com/coolsnowwolf/luci.git/applications?ref=master"
 			get_remote_spec_contents "lede" $url $package_path_rel
 			;;
-		2)
+		2 )
 			url="https://api.github.com/repos/coolsnowwolf/luci/contents/applications?ref=master"
 			get_http_repo_contents $url $package_path_rel
 			;;
-		3)	
+		3 )	
 			url="https://github.com/shidahuilang/openwrt-package.git"
 			sync_repo_contents $3 $url $package_path_rel
 			;;
-		*)
+		* )
 			;;
 	esac		
 }
