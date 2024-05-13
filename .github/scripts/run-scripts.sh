@@ -327,19 +327,12 @@ function clone_remote_repo()
 	package_path_rel=$2
  
 	if [ $repo_other_cond -eq 1 ]; then
-		echo "111"
 		clone_repo_contents https://github.com/lisaac/luci-app-diskman.git master luci-app-diskman $package_path_rel
-		echo "222"
 		clone_repo_contents https://github.com/sirpdboy/luci-app-ddns-go.git main luci-app-ddns-go $package_path_rel
-		echo "333"
 		clone_repo_contents https://github.com/destan19/OpenAppFilter.git master luci-app-OpenAppFilter $package_path_rel
-		echo "444"
 		clone_repo_contents https://github.com/esirplayground/luci-app-poweroff.git master luci-app-poweroff $package_path_rel
-		echo "555"
 		clone_repo_contents https://github.com/chenmozhijin/luci-app-socat.git main luci-app-socat $package_path_rel
 	fi
-	
-	echo "222"
 }
 
 # 获取远程仓库内容
