@@ -349,11 +349,13 @@ function update_linux_env()
 # 克隆远程仓库内容
 function clone_remote_repo()
 {
-    repo_other_cond=$1
+	repo_other_cond=$1
 	package_path_rel=$2
-
+ 
+	echo "--${repo_other_cond}###${package_path_rel}--"
 	case $repo_remote_cond in
 		1)
+  			echo "1234"
 			clone_repo_contents https://github.com/lisaac/luci-app-diskman.git master luci-app-diskman $package_path_rel
 			clone_repo_contents https://github.com/sirpdboy/luci-app-ddns-go.git main luci-app-ddns-go $package_path_rel
 			clone_repo_contents https://github.com/destan19/OpenAppFilter.git master luci-app-OpenAppFilter $package_path_rel
