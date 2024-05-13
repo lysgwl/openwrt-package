@@ -43,6 +43,7 @@ jobs:
         chmod +x "${scripts_file}"
         echo "scripts=${scripts_file}" >> $GITHUB_ENV
         
+        set +e
         df -hT
 
     - name: Set SSH key and known_hosts

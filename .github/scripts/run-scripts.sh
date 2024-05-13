@@ -320,32 +320,6 @@ function get_http_repo_contents()
 }
 
 #********************************************************************************#
-# 更新linux环境
-function update_linux_env()
-{
-	set +e
-	dpkg-query -Wf '${Installed-Size}\t${Package}\n' | sort -n | tail -n 100
-	echo "正在删除大的软件包，请等待..."
-	
-	sudo apt-get remove -y '^ghc-8.*'
-	sudo apt-get remove -y '^dotnet-.*'
-	sudo apt-get remove -y '^llvm-.*'
-	sudo apt-get remove -y 'php.*'
-	sudo apt-get remove -y 'temurin-.*'
-	sudo apt-get remove -y 'mono-.*'
-	sudo apt-get remove -y azure-cli google-cloud-sdk hhvm google-chrome-stable firefox powershell microsoft-edge-stable
-	
-	sudo rm -rf \
-        /etc/apt/sources.list.d/* \
-        /usr/share/dotnet \
-        /usr/local/lib/android \
-        /opt/ghc \
-        /opt/hostedtoolcache/CodeQL
-		
-	sudo -E apt-get -qq autoremove --purge	
-	sudo -E apt-get -qq clean
-}
-
 # 克隆远程仓库内容
 function clone_remote_repo()
 {
@@ -353,12 +327,19 @@ function clone_remote_repo()
 	package_path_rel=$2
  
 	if [ $repo_other_cond -eq 1 ]; then
+		echo "111"
 		clone_repo_contents https://github.com/lisaac/luci-app-diskman.git master luci-app-diskman $package_path_rel
+		echo "222"
 		clone_repo_contents https://github.com/sirpdboy/luci-app-ddns-go.git main luci-app-ddns-go $package_path_rel
+		echo "333"
 		clone_repo_contents https://github.com/destan19/OpenAppFilter.git master luci-app-OpenAppFilter $package_path_rel
+		echo "444"
 		clone_repo_contents https://github.com/esirplayground/luci-app-poweroff.git master luci-app-poweroff $package_path_rel
+		echo "555"
 		clone_repo_contents https://github.com/chenmozhijin/luci-app-socat.git main luci-app-socat $package_path_rel
 	fi
+	
+	echo "222"
 }
 
 # 获取远程仓库内容
