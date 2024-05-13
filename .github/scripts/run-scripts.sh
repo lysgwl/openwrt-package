@@ -209,10 +209,20 @@ function clone_repo_contents()
 # 同步远程仓库内容
 function sync_repo_contents()
 {
-	local branch=$1
-	local repo_url=$2
-	local repo_path=$3	
+	local remote_repo=$1        
+	local package_path_rel=$2
 	
+	# 获取?的前缀和后缀字符
+	mark_prefix="${remote_repo%%\?*}"
+	mark_suffix="${remote_repo#*\?}"
+	
+	if [ -z "${mark_prefix}" ] || [ -z "${mark_suffix}" ]; then
+		return
+	fi
+	
+	repo_url="${mark_prefix}"	# 远程仓库URL
+	repo_branch=$(echo ${mark_suffix} | awk -F '=' '{print $2; exit}')		# 分支名
+
 	git ls-remote --heads $repo_url | while read -r line ; do
 		branch_name=$(echo $line | sed 's?.*refs/heads/??')
 		if [ -z "${branch_name}" ]; then
@@ -220,14 +230,14 @@ function sync_repo_contents()
 		fi
 		
 		# 分支比较
-		if [ -n "${branch}" ]; then
-			if [ "${branch}" != "${branch_name}" ]; then
+		if [ -n "${repo_branch}" ]; then
+			if [ "${repo_branch}" != "${branch_name}" ]; then
 				continue
 			fi
 		fi
 		
 		echo "branch name: $branch_name"
-		local target_path="${repo_path}/${branch_name}"
+		local target_path="${package_path_rel}/${branch_name}"
 		if [ ! -d "${target_path}" ]; then
 			mkdir -p "${target_path}"
 		fi
@@ -364,9 +374,9 @@ function get_remote_repo()
 		url="https://api.github.com/repos/coolsnowwolf/luci/contents/applications?ref=master"
 		get_http_repo_contents $url $package_path_rel
 	fi
-	
+
 	if [ $repo_remote_cond -eq 3 ]; then
-		url="https://github.com/shidahuilang/openwrt-package.git"
-		sync_repo_contents $3 $url $package_path_rel
+		url="https://github.com/shidahuilang/openwrt-package.git?ref=Official"
+		sync_repo_contents $url $package_path_rel
 	fi		
 }
