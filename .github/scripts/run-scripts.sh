@@ -174,14 +174,14 @@ function clone_repo_contents()
 	fi
 	
 	repo_url="${mark_prefix}"	# 远程仓库URL
-	repo_branch=$(echo ${mark_suffix} | awk -F '=' '{print $2; exit}')	# 分支名
+	repo_branch=$(echo ${mark_suffix} | awk -F '=' '{print $2; exit}')		# 分支名
 	local_dir_name=$(echo ${git_prefix} | awk -F '/' '{print $NF}')			# 目录名
 	
 	# 临时目录，用于克隆远程仓库
 	local temp_dir=$(mktemp -d)
 	
 	# 克隆远程仓库到临时目录
-	git clone --depth 1 --branch $repo_branch $remote_repo $temp_dir
+	git clone --depth 1 --branch $repo_branch $repo_url $temp_dir
 	
 	if [ $? -eq 0 ]; then
 		local target_path="$package_path_rel/$local_dir_name"
