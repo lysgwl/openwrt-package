@@ -84,7 +84,7 @@ function get_remote_spec_contents()
 {
 	local remote_repo=$1       	# 远程仓库URL
 	local remote_alias=$2       # 远程仓库别名
-	local local_spec_path=$3    # 本地指定路径
+	local local_path=$3    		# 本地指定路径
 	
 	# 获取.git的前缀和后缀字符
 	git_prefix="${remote_repo%%.git*}"
@@ -134,16 +134,21 @@ function get_remote_spec_contents()
 	# 从远程将目标目录或文件拉取下来
 	git pull ${remote_alias} ${repo_branch}
 	
+	# 目标路径
+	local target_path="${local_path}/${remote_alias}"
+	if [ ! -d "${target_path}" ]; then
+		mkdir -p "${target_path}"
+	fi
+	
 	# 判断目标目录是否为空
-	if [ ! -z "$(ls -A ${local_spec_path})" ]; then
-		rm -rf "${local_spec_path:?}"/*  
+	if [ ! -z "$(ls -A ${target_path})" ]; then
+		rm -rf "${target_path:?}"/*  
 	fi
 	
 	echo "Copying remote repo directory to local...."
 	
 	if [ -e "${temp_dir}/${repo_path}" ]; then
-		cp -rf ${temp_dir}/${repo_path}/* ${local_spec_path}
-		#mv ${temp_dir}/${repo_path}/* ${local_spec_path}
+		cp -rf ${temp_dir}/${repo_path}/* ${target_path}
 	fi
 	
 	# 返回原始目录
@@ -367,7 +372,7 @@ function get_remote_repo()
 	
 	if [ $repo_remote_cond -eq 1 ]; then
 		url="https://github.com/coolsnowwolf/luci.git/applications?ref=master"
-		get_remote_spec_contents $url "lede" $package_path_rel
+		get_remote_spec_contents $url "luci" $package_path_rel
 	fi
 	
 	if [ $repo_remote_cond -eq 2 ]; then
