@@ -21,7 +21,7 @@ function check_git_commit()
 	if [ -n "$has_changes" ]; then
 		current_date=$(date '+%Y-%m-%d')
 		
-		git commit -a -m "commit repository changes on ${current_date}"
+		git commit -a -m "commit repository changes on ${current_date} [skip ci]"
 		git push git@github.com:lysgwl/openwrt-package.git HEAD:master
 	fi
 	
