@@ -386,7 +386,7 @@ function get_remote_repo()
 	fi	
 
 	if [ $repo_remote_cond -eq 4 ]; then
-		url="https://github.com/kiddin9/openwrt-package.git?ref=master"
+		url="https://github.com/kiddin9/openwrt-packages.git?ref=master"
 		sync_repo_contents $url $package_path_rel
 	fi	
 }
