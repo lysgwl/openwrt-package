@@ -383,5 +383,10 @@ function get_remote_repo()
 	if [ $repo_remote_cond -eq 3 ]; then
 		url="https://github.com/shidahuilang/openwrt-package.git?ref=Official"
 		sync_repo_contents $url $package_path_rel
-	fi		
+	fi	
+
+	if [ $repo_remote_cond -eq 4 ]; then
+		url="https://github.com/kiddin9/openwrt-package.git?ref=master"
+		sync_repo_contents $url $package_path_rel
+	fi	
 }
