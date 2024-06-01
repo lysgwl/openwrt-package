@@ -358,9 +358,9 @@ function clone_remote_repo()
 	if [ $repo_other_cond -eq 1 ]; then
 		clone_repo_contents https://github.com/lisaac/luci-app-diskman.git?ref=master $package_path_rel
 		clone_repo_contents https://github.com/sirpdboy/luci-app-ddns-go.git?ref=main $package_path_rel
-		#clone_repo_contents https://github.com/destan19/OpenAppFilter.git?ref=master  $package_path_rel
-		#clone_repo_contents https://github.com/esirplayground/luci-app-poweroff.git?ref=master $package_path_rel
-		#clone_repo_contents https://github.com/chenmozhijin/luci-app-socat.git?ref=main $package_path_rel
+		clone_repo_contents https://github.com/destan19/OpenAppFilter.git?ref=master  $package_path_rel
+		clone_repo_contents https://github.com/esirplayground/luci-app-poweroff.git?ref=master $package_path_rel
+		clone_repo_contents https://github.com/chenmozhijin/luci-app-socat.git?ref=main $package_path_rel
 	fi
 }
 
