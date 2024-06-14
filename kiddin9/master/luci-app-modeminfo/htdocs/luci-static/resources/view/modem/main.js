@@ -20,7 +20,6 @@
 return view.extend({
 
 	load: function(data) {
-		L.resolveDefault(fs.exec_direct('/usr/share/modeminfo/scripts/rmtmp'));
 		return L.resolveDefault(fs.exec_direct('/usr/bin/modeminfo'));
 	},
 
@@ -465,11 +464,12 @@ return view.extend({
 			let snrname = 'snrname'+i;
 			let rsrp = 'rsrp'+i;
 			let rsrq = 'rsrq'+i;
+			let m = i+1;
 			//s.tab("modem" + i, vendors[i]);
 			//o = json.modem.length > 1 ? s.taboption('modem'+i, form.HiddenValue, 'generic') : s.option(form.HiddenValue, 'generic');
 
 			if ( json.modem.length > 1 ) {
-				s.tab("modem" + i, _('Modem')+' '+i);
+				s.tab("modem" + i, _('Modem')+' '+m);
 				o = s.taboption('modem'+i, form.HiddenValue, 'generic');
 			} else {
 				o = s.option(form.HiddenValue, 'generic');
