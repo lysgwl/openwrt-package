@@ -205,7 +205,7 @@ jobs:
         git_clone https://github.com/Ausaci/luci-app-nat6-helper
         git clone https://github.com/gngpp/luci-theme-design -b js --depth 1
         git_clone https://github.com/derisamedia/luci-theme-alpha
-        git_clone https://github.com/lazywalker/mmdvm-openwrt; rm -rf mmdvm-openwrt/misc; mvdir mmdvm-openwrt
+        git_clone https://github.com/lazywalker/mmdvm-openwrt && rm -rf mmdvm-openwrt/misc && mvdir mmdvm-openwrt
         ) &
         (
         git_clone https://github.com/BoringCat/luci-app-minieap
@@ -213,7 +213,7 @@ jobs:
         git_clone https://github.com/Diciya/luci-app-broadbandacc
         git_clone https://github.com/wiwizcom/WiFiPortal && mvdir WiFiPortal
         git_clone https://github.com/gSpotx2f/luci-app-internet-detector
-        git_clone https://github.com/vinewx/NanoHatOLED; mv NanoHatOLED/nanohatoled ./;rm -rf NanoHatOLED
+        git_clone https://github.com/vinewx/NanoHatOLED && mv NanoHatOLED/nanohatoled ./ && rm -rf NanoHatOLED
         git_clone https://github.com/zerolabnet/luci-app-torbp
         git_clone https://github.com/muink/luci-app-tinyfilemanager
         git_clone https://github.com/sbwml/luci-app-airconnect airconnect1 && mv airconnect1/* ./ && rm -rf airconnect1
@@ -231,13 +231,13 @@ jobs:
         (
         git_sparse_clone master "https://github.com/QiuSimons/OpenWrt-Add" "OpenWrt-Add" luci-app-irqbalance
         git_sparse_clone main "https://github.com/lucikap/Brukamen" "Brukamen" luci-app-ua2f
-        git_sparse_clone  master "https://github.com/HiGarfield/lede-17.01.4-Mod" "HiGarfield" package/extra/luci-app-openvpn-server
+        git_sparse_clone master "https://github.com/lunatickochiya/Matrix-Action-Openwrt" "kochiya" package/kochiya/brlaser package/kochiya/luci-app-banmac-ipt package/kochiya/luci-app-banmac-nft package/kochiya/luci-app-nvr package/kochiya/luci-app-openvpn-server
         git_sparse_clone istoreos-22.03 "https://github.com/jjm2473/packages" "jjm2473" net/miniupnpd
         ) &
         (
         git_sparse_clone master "https://github.com/coolsnowwolf/packages" "leanpkg" multimedia/UnblockNeteaseMusic-Go \
         multimedia/UnblockNeteaseMusic net/amule net/softethervpn5 net/antileech multimedia/gmediarender net/go-aliyundrive-webdav \
-        net/qBittorrent-static net/phtunnel net/frp \
+        net/qBittorrent-static net/phtunnel net/frp net/headscale \
         net/uugamebooster net/verysync net/vlmcsd net/dnsforwarder net/tcpping net/netatalk net/pgyvpn lang/golang
         git_sparse_clone openwrt-23.05 "https://github.com/openwrt/packages" "oppackages" \
         utils/coremark utils/watchcat utils/dockerd utils/cgroupfs-mount net/uwsgi net/ddns-scripts net/smartdns net/curl \
@@ -295,7 +295,7 @@ jobs:
     - name: Delete duplicated packages
       run: |
         shopt -s extglob
-        mv -n luciapp/!(luci-app-noddos|luci-app-cshark|luci-app-dnscrypt-proxy|luci-app-https-dns-proxy|luci-app-ssr-mudb-server|luci-app-ledtrig-*) ./ ; rm -Rf luciapp
+        mv -n luciapp/!(luci-app-noddos|luci-app-openvpn-server|luci-app-cshark|luci-app-dnscrypt-proxy|luci-app-https-dns-proxy|luci-app-ssr-mudb-server|luci-app-ledtrig-*) ./ ; rm -Rf luciapp
         mv -n lean/* ./ ; rm -Rf lean
         mv -n liep/* ./ ; rm -Rf liep
         mv -n openwrt-app-actions/applications/* ./;rm -rf openwrt-app-actions
