@@ -115,6 +115,9 @@ msgstr "TCP并发"
 msgid "TCP Keep Alive Interval"
 msgstr "TCP Keep Alive 间隔"
 
+msgid "Log Level"
+msgstr "日志级别"
+
 msgid "External Control Config"
 msgstr "外部控制配置"
 
@@ -174,6 +177,18 @@ msgstr "Redirect 端口"
 
 msgid "TPROXY Port"
 msgstr "TPROXY 端口"
+
+msgid "Authentication"
+msgid "身份验证"
+
+msgid "Edit Authentications"
+msgstr "编辑身份验证"
+
+msgid "username"
+msgstr "用户名"
+
+msgid "password"
+msgstr "密码"
 
 msgid "DNS Config"
 msgstr "DNS 配置"
@@ -315,3 +330,6 @@ msgstr "核心日志"
 
 msgid "Scroll To Bottom"
 msgstr "滚动到底部"
+
+msgid "Editor"
+msgstr "编辑器"

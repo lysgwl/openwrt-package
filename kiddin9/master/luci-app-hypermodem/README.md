@@ -1,20 +1,10 @@
 # luci-app-hypermodem
 
-# 目录
+- 原项目地址：https://github.com/momokind/luci-app-hypermodem
 
-[一、说明](#一说明)
+## 说明
 
-# 一、说明
+- 在原项目的基础上修改并添加USB和PCIe等依赖支持
 
-原项目地址：https://github.com/momokind/luci-app-hypermodem
-
-插件功能
-
-- 支持USB和PCIe两种通信方式的通信模组
-
-- 支持IPv6
-
-- 支持高通和紫光展锐两个平台的通信模组
-
-- 支持常见厂商的通信模组（例如：移远，广和通等）
+- 支持USB和PCIE两种连接模式的5G模块用QMI模式进行IPv6拨号，然后下发给内网设备
 
