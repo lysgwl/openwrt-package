@@ -56,7 +56,7 @@ start_vntcli() {
 		local token mode ipaddr mtu desvice_id localadd log comp
 		local peeradd desvice_name vntshost stunhost checkip mapping
 		local punch client_port par key forward serverw vntdns
-		local finger relay first_latency tunname tunmode tcp passmode
+		local finger relay first_latency tunname tunmode passmode
 		config_get token "$cfg" 'token'
                 config_get vntdns "$cfg" 'vntdns'
                 config_get desvice_id "$cfg" 'desvice_id'
@@ -128,7 +128,6 @@ fi
 		config_get key "$cfg" 'key'
 		config_get relay "$cfg" 'relay'
 		config_get_bool serverw "$cfg" 'serverw' '0'
-		config_get tcp "$cfg" 'tcp'
 		config_get_bool forward "$cfg" 'forward' '0'
 		config_get_bool finger "$cfg" 'finger' '0'
 		config_get_bool first_latency "$cfg" 'first_latency' '0'
@@ -234,7 +233,6 @@ EOF
 		[ "$passmode" != "off" ] && [ -n "$key" ] && procd_append_param command --model "$passmode"
 		[ "$passmode" != "off" ] && [ -n "$key" ] && procd_append_param command -w "$key"
 		[ "$tunmode" = "tun" ] || procd_append_param command -a
-		[ "$tcp" = "udp" ] || procd_append_param command --tcp
 		[ "$forward" = "0" ] || procd_append_param command --no-proxy
 		[ "$finger" = "0" ] || procd_append_param command --finger
 		[ "$serverw" = "0" ] || procd_append_param command -W
@@ -311,6 +309,7 @@ EOF
 		[ "$forward" = "0" ] || sysctl -w net.ipv4.ip_forward=1 >/dev/null 2>&1
                 [ ! -z "$checkip" ] && check
                 echo `date +%s` > /tmp/vnt_time
+                echo "$(date '+%Y-%m-%d %H:%M:%S') 若启动失败请前往 状态-系统日志 查看具体原因 " >>/tmp/vnt-cli.log
 }
 
 check () {
@@ -385,24 +384,24 @@ start_vnts() {
                 key_path="${path}/key"
                 log_path="${path}/log"
 		if [ $(($($vntsbin -h | wc -l))) -lt 3 ] || [ ! -f "$vntsbin" ] ; then
-		echo "$(date '+%Y-%m-%d %H:%M:%S') vnt : ${vntsbin} 不存在，开始在线下载1.2.9.7版本，下载较慢耐心等候，如需最新版请前去官方下载手动上传或修改此脚本" >>/tmp/vnts.log
+		echo "$(date '+%Y-%m-%d %H:%M:%S') vnt : ${vntsbin} 不存在，开始在线下载1.2.11版本，下载较慢耐心等候，如需最新版请前去官方下载手动上传或修改此脚本" >>/tmp/vnts.log
                 mkdir -p "$path"
                 proxy_url="https://hub.gitmirror.com/"
                 proxy_url2="http://gh.ddlc.top/"
 		case "${cpucore}" in 
-	           "mipsle")  curl -L -k -o /tmp/vnts.tar.gz --connect-timeout 10 --retry 3 "${proxy_url}https://github.com/lbl8603/vnts/releases/download/1.2.9.7/vnts-mipsel-unknown-linux-musl-1.2.9.7.tar.gz" || curl -L -k -o /tmp/vnts.tar.gz --connect-timeout 10 --retry 3 "${proxy_url2}https://github.com/lbl8603/vnts/releases/download/1.2.9.7/vnts-mipsel-unknown-linux-musl-1.2.9.7.tar.gz"
+	           "mipsle")  curl -L -k -o /tmp/vnts.tar.gz --connect-timeout 10 --retry 3 "${proxy_url}https://github.com/lbl8603/vnts/releases/download/1.2.11/vnts-mipsel-unknown-linux-musl-1.2.11.tar.gz" || curl -L -k -o /tmp/vnts.tar.gz --connect-timeout 10 --retry 3 "${proxy_url2}https://github.com/lbl8603/vnts/releases/download/1.2.11/vnts-mipsel-unknown-linux-musl-1.2.11.tar.gz"
 	           ;;
-	           "mips")  curl -L -k -o /tmp/vnts.tar.gz --connect-timeout 10 --retry 3 "${proxy_url}https://github.com/lbl8603/vnts/releases/download/1.2.9.7/vnts-mips-unknown-linux-musl-1.2.9.7.tar.gz" || curl -L -k -o /tmp/vnts.tar.gz --connect-timeout 10 --retry 3 "${proxy_url2}https://github.com/lbl8603/vnts/releases/download/1.2.9.7/vnts-mips-unknown-linux-musl-1.2.9.7.tar.gz"
+	           "mips")  curl -L -k -o /tmp/vnts.tar.gz --connect-timeout 10 --retry 3 "${proxy_url}https://github.com/lbl8603/vnts/releases/download/1.2.11/vnts-mips-unknown-linux-musl-1.2.11.tar.gz" || curl -L -k -o /tmp/vnts.tar.gz --connect-timeout 10 --retry 3 "${proxy_url2}https://github.com/lbl8603/vnts/releases/download/1.2.11/vnts-mips-unknown-linux-musl-1.2.11.tar.gz"
 	           ;;
-	           "x86_64")  curl -L -k -o /tmp/vnts.tar.gz --connect-timeout 10 --retry 3 "${proxy_url}https://github.com/lbl8603/vnts/releases/download/1.2.9.7/vnts-x86_64-unknown-linux-gnu-1.2.9.7.tar.gz" || curl -L -k -o /tmp/vnts.tar.gz --connect-timeout 10 --retry 3 "${proxy_url2}https://github.com/lbl8603/vnts/releases/download/1.2.9.7/vnts-x86_64-unknown-linux-gnu-1.2.9.7.tar.gz"
+	           "x86_64")  curl -L -k -o /tmp/vnts.tar.gz --connect-timeout 10 --retry 3 "${proxy_url}https://github.com/lbl8603/vnts/releases/download/1.2.11/vnts-x86_64-unknown-linux-musl-1.2.11.tar.gz" || curl -L -k -o /tmp/vnts.tar.gz --connect-timeout 10 --retry 3 "${proxy_url2}https://github.com/lbl8603/vnts/releases/download/1.2.11/vnts-x86_64-unknown-linux-musl-1.2.11.tar.gz"
 	           ;;
-	           "i386")  curl -L -k -o /tmp/vnts.tar.gz --connect-timeout 10 --retry 3 "${proxy_url}https://github.com/lbl8603/vnts/releases/download/1.2.9.7/vnts-i686-unknown-linux-musl-1.2.9.7.tar.gz" || curl -L -k -o /tmp/vnts.tar.gz --connect-timeout 10 --retry 3 "${proxy_url2}https://github.com/lbl8603/vnts/releases/download/1.2.9.7/vnts-i686-unknown-linux-musl-1.2.9.7.tar.gz"
+	           "i386")  curl -L -k -o /tmp/vnts.tar.gz --connect-timeout 10 --retry 3 "${proxy_url}https://github.com/lbl8603/vnts/releases/download/1.211/vnts-i686-unknown-linux-musl-1.2.11.tar.gz" || curl -L -k -o /tmp/vnts.tar.gz --connect-timeout 10 --retry 3 "${proxy_url2}https://github.com/lbl8603/vnts/releases/download/1.2.11/vnts-i686-unknown-linux-musl-1.2.11.tar.gz"
 	           ;;
-	           "arm")  curl -L -k -o /tmp/vnts.tar.gz --connect-timeout 10 --retry 3 "${proxy_url}https://github.com/lbl8603/vnts/releases/download/1.2.9.7/vnts-arm-unknown-linux-musleabi-1.2.9.7.tar.gz" || curl -L -k -o /tmp/vnts.tar.gz --connect-timeout 10 --retry 3 "${proxy_url2}https://github.com/lbl8603/vnts/releases/download/1.2.9.7/vnts-arm-unknown-linux-musleabi-1.2.9.7.tar.gz"
+	           "arm")  curl -L -k -o /tmp/vnts.tar.gz --connect-timeout 10 --retry 3 "${proxy_url}https://github.com/lbl8603/vnts/releases/download/1.2.11/vnts-arm-unknown-linux-musleabi-1.2.11.tar.gz" || curl -L -k -o /tmp/vnts.tar.gz --connect-timeout 10 --retry 3 "${proxy_url2}https://github.com/lbl8603/vnts/releases/download/1.2.11/vnts-arm-unknown-linux-musleabi-1.2.11.tar.gz"
 	           ;;
-	           "armv7")  curl -L -k -o /tmp/vnts.tar.gz --connect-timeout 10 --retry 3 "${proxy_url}https://github.com/lbl8603/vnts/releases/download/1.2.9.7/vnts-armv7-unknown-linux-musleabi-1.2.9.7.tar.gz" || curl -L -k -o /tmp/vnts.tar.gz --connect-timeout 10 --retry 3 "${proxy_url2}https://github.com/lbl8603/vnts/releases/download/1.2.9.7/vnts-armv7-unknown-linux-musleabi-1.2.9.7.tar.gz"
+	           "armv7")  curl -L -k -o /tmp/vnts.tar.gz --connect-timeout 10 --retry 3 "${proxy_url}https://github.com/lbl8603/vnts/releases/download/1.2.11/vnts-armv7-unknown-linux-musleabi-1.2.11.tar.gz" || curl -L -k -o /tmp/vnts.tar.gz --connect-timeout 10 --retry 3 "${proxy_url2}https://github.com/lbl8603/vnts/releases/download/1.2.11/vnts-armv7-unknown-linux-musleabi-1.2.11.tar.gz"
 	           ;;
-	           "aarch64")  curl -L -k -o /tmp/vnts.tar.gz --connect-timeout 10 --retry 3 "${proxy_url}https://github.com/lbl8603/vnts/releases/download/1.2.9.7/vnts-aarch64-unknown-linux-musl-1.2.9.7.tar.gz" || curl -L -k -o /tmp/vnts.tar.gz --connect-timeout 10 --retry 3 "${proxy_url2}https://github.com/lbl8603/vnts/releases/download/1.2.9.7/vnts-aarch64-unknown-linux-musl-1.2.9.7.tar.gz"
+	           "aarch64")  curl -L -k -o /tmp/vnts.tar.gz --connect-timeout 10 --retry 3 "${proxy_url}https://github.com/lbl8603/vnts/releases/download/1.2.11/vnts-aarch64-unknown-linux-musl-1.2.11.tar.gz" || curl -L -k -o /tmp/vnts.tar.gz --connect-timeout 10 --retry 3 "${proxy_url2}https://github.com/lbl8603/vnts/releases/download/1.2.11/vnts-aarch64-unknown-linux-musl-1.2.11.tar.gz"
 	           ;;
                    esac
                    tar zxf /tmp/vnts.tar.gz -C /tmp/

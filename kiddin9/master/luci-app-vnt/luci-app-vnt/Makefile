@@ -6,7 +6,7 @@
 
 include $(TOPDIR)/rules.mk
 
-PKG_VERSION:=1.3.1
+PKG_VERSION:=1.2.11
 PKG_RELEASE:=1
 
 LUCI_TITLE:=LuCI support for vnt

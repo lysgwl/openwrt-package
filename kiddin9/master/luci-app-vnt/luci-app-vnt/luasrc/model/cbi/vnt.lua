@@ -85,11 +85,11 @@ log.rmempty = false
 
 clibin = s:taboption("privacy", Value, "clibin", translate("vnt-cli程序路径"),
 	translate("自定义vnt-cli的存放路径，确保填写完整的路径及名称,若指定的路径可用空间不足将会自动移至/tmp/vnt-cli"))
-clibin.placeholder = "/tmp/vnt-cli"
+clibin.placeholder = "/usr/bin/vnt-cli"
 
 vntshost = s:taboption("privacy", Value, "vntshost", translate("vnts服务器地址"),
-	translate("相同的服务器，相同token的设备才会组成一个局域网"))
-vntshost.placeholder = "域名:端口"
+	translate("相同的服务器，相同token的设备才会组成一个局域网<br>协议支持使用tcp://和ws://和wss://,默认为udp://"))
+vntshost.placeholder = "tcp://vnt.wherewego.top:29872"
 vntshost.password = true
 
 vntdns = s:taboption("privacy",DynamicList, "vntdns", translate("DNS服务器"),
@@ -120,13 +120,8 @@ tunname = s:taboption("privacy",Value, "tunname", translate("虚拟网卡名称"
 	translate("自定义虚拟网卡的名称，在多开时虚拟网卡名称不能相同，默认：TUN模式为 vnt-tun ，TAP模式为 vnt-tap"))
 tunname.placeholder = "vnt-tun"
 
-tcp = s:taboption("privacy",ListValue, "tcp", translate("TCP/UDP模式"),
-	translate("有些网络提供商对UDP限制比较大，这个时候可以选择使用TCP模式，提高稳定性。一般来说udp延迟和消耗更低"))
-tcp:value("udp")
-tcp:value("tcp")
-
 relay = s:taboption("privacy",ListValue, "relay", translate("传输模式"),
-	translate("自动:根据当前网络环境，自动选择由服务器或客户端转发还是客户端之间直连<br>转发:仅中继转发，会禁止打洞/p2p直连，只使用服务器或客户端转发<br>p2p:仅直连模式，会禁止网络数据从服务器/客户端转发，只会使用服务器转发控制包<br>在网络环境很差时，不使用p2p只使用服务器中继转发效果可能更好（可以配合tcp模式一起使用）<br>tcp直连需要指定监听port，且防火墙需要放行第一个端口，才有几率tcp-p2p"))
+	translate("自动:根据当前网络环境，自动选择由服务器或客户端转发还是客户端之间直连<br>转发:仅中继转发，会禁止打洞/p2p直连，只使用服务器或客户端转发<br>p2p:仅直连模式，会禁止网络数据从服务器/客户端转发，只会使用服务器转发控制包<br>在网络环境很差时，不使用p2p只使用服务器中继转发效果可能更好（可以配合服务器的tcp协议一起使用）<br>tcp直连需要指定监听port，且防火墙需要放行第一个端口，才有几率tcp-p2p"))
 relay:value("自动")
 relay:value("转发")
 relay:value("P2P")
@@ -320,6 +315,27 @@ btn4route.cfgvalue = function(self, section)
     return string.format("<pre>%s</pre>", luci.util.pcdata(content))
 end
 
+btnchart = s:taboption("infos", Button, "btnchart")
+btnchart.inputtitle = translate("设备流量统计")
+btnchart.description = translate("点击按钮刷新，查看所有设备流量统计")
+btnchart.inputstyle = "apply"
+btnchart:depends("cmdmode", "原版")
+btnchart.write = function()
+if process_status ~= "" then
+    luci.sys.call("$(uci -q get vnt.@vnt-cli[0].clibin) --chart_a >/tmp/vnt-cli_chart")
+else
+    luci.sys.call("echo '错误：程序未运行！请启动程序后重新点击刷新' >/tmp/vnt-cli_chart")
+end
+end
+
+btn4chart = s:taboption("infos", DummyValue, "btn4chart")
+btn4chart.rawhtml = true
+btn4chart:depends("cmdmode", "原版")
+btn4chart.cfgvalue = function(self, section)
+    local content = nixio.fs.readfile("/tmp/vnt-cli_chart") or ""
+    return string.format("<pre>%s</pre>", luci.util.pcdata(content))
+end
+
 vnt_cmd = s:taboption("infos", Button, "vnt_cmd" )
 vnt_cmd.rawhtml = true
 vnt_cmd:depends("cmdmode", "表格式")
@@ -473,7 +489,7 @@ logs.rmempty = false
 
 vntsbin = s:taboption("pri",Value, "vntsbin", translate("vnts程序路径"),
 	translate("自定义vnts的存放路径，确保填写完整的路径及名称,若指定的路径可用空间不足将会自动移至/tmp/vnts，可使用上方客户端里上传程序进行上传"))
-vntsbin.placeholder = "/tmp/vnts"
+vntsbin.placeholder = "/usr/bin/vnts"
 
 sfinger = s:taboption("pri",Flag, "sfinger", translate("启用数据指纹校验"),
 	translate("开启后只会转发指纹正确的客户端数据包，增强安全性，这会损失一部分性能,如果服务端开启指纹校验，则客户端也必须开启。<br>注意：默认情况下服务端不会对中转的数据做校验，如果要对中转的数据做校验，则需要客户端、服务端都开启此参数"))
