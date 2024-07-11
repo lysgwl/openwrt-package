@@ -356,17 +356,22 @@ function clone_remote_repo()
 	package_path_rel=$2
  
 	if [ $repo_other_cond -eq 1 ]; then
-		#clone_repo_contents https://github.com/lisaac/luci-app-diskman.git?ref=master $package_path_rel
-		#clone_repo_contents https://github.com/sirpdboy/luci-app-ddns-go.git?ref=main $package_path_rel
 		#clone_repo_contents https://github.com/destan19/OpenAppFilter.git?ref=master  $package_path_rel
-		#clone_repo_contents https://github.com/esirplayground/luci-app-poweroff.git?ref=master $package_path_rel
-		#clone_repo_contents https://github.com/chenmozhijin/luci-app-socat.git?ref=main $package_path_rel
 
 		url="https://github.com/sbwml/luci-app-alist.git?ref=master"
 		clone_repo_contents "${url}" "${package_path_rel}"
 		
+		url="https://github.com/sirpdboy/luci-app-ddns-go.git?ref=main"
+		clone_repo_contents "${url}" "${package_path_rel}"
+		
 		url="https://github.com/lisaac/luci-app-diskman.git/applications/luci-app-diskman?ref=master"
 		get_remote_spec_contents "${url}" "diskman" "${package_path_rel}/luci-app-diskman"
+		
+		url="https://github.com/esirplayground/luci-app-poweroff.git?ref=master"
+		clone_repo_contents "${url}" "${package_path_rel}"
+		
+		url="https://github.com/chenmozhijin/luci-app-socat.git?ref=main"
+		clone_repo_contents "${url}" "${package_path_rel}"
 	fi
 }
 
