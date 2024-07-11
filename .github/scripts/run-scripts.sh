@@ -132,14 +132,20 @@ function get_remote_spec_contents()
 	echo "${repo_path}" >> ${sparse_file}
 	echo "Pulling from $remote_alias branch $branch..."
 	
+	echo "name=$remote_alias"
+	
 	# 从远程将目标目录或文件拉取下来
 	git pull ${remote_alias} ${repo_branch}
+	
+	ls -ls ${temp_dir}
 	
 	# 目标路径
 	local target_path="${local_path}"
 	if [ ! -d "${target_path}" ]; then
 		mkdir -p "${target_path}"
 	fi
+	
+	echo "target=$target_path"
 	
 	# 判断目标目录是否为空
 	if [ ! -z "$(ls -A ${target_path})" ]; then
