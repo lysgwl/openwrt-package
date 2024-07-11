@@ -136,9 +136,16 @@ function get_remote_spec_contents()
 	
 	# 目标路径
 	local target_path="${local_path}"
+	
+	echo "test1=target_path"
+	ls -al "$target_path"
+	
 	if [ ! -d "${target_path}" ]; then
 		mkdir -p "${target_path}"
 	fi
+	
+	echo "test2=target_path"
+	ls -al "$target_path"
 	
 	# 判断目标目录是否为空
 	if [ ! -z "$(ls -A ${target_path})" ]; then
@@ -365,12 +372,6 @@ function clone_remote_repo()
 		
 		url="https://github.com/lisaac/luci-app-diskman.git/applications/luci-app-diskman?ref=master"
 		get_remote_spec_contents "${url}" "diskman" "${package_path_rel}/luci-app-diskman"
-		
-		echo "11111111111111111"
-		ls -al $package_path_rel
-		
-		echo "22222222222222222"
-		ls -al "${package_path_rel}/luci-app-diskman"
 	fi
 }
 
