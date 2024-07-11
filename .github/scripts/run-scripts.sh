@@ -138,9 +138,10 @@ function get_remote_spec_contents()
 	local target_path="${local_path}"
 	
 	echo "test1=target_path"
-	ls -al "$target_path"
+	#ls -al "$target_path"
 	
 	if [ ! -d "${target_path}" ]; then
+		echo "tttt"
 		mkdir -p "${target_path}"
 	fi
 	
