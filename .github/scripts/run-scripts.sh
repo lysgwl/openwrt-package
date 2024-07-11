@@ -372,7 +372,7 @@ function clone_remote_repo()
 		clone_repo_contents "${url}" "${package_path_rel}"
 		
 		url="https://github.com/destan19/OpenAppFilter.git?ref=master"
-		clone_repo_contents "${url}" "${package_path_rel}"
+		#clone_repo_contents "${url}" "${package_path_rel}"
 	fi
 }
 
