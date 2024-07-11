@@ -133,16 +133,12 @@ function get_remote_spec_contents()
 	
 	# 从远程将目标目录或文件拉取下来
 	git pull ${remote_alias} ${repo_branch}
-	
-	ls -ls ${temp_dir}
-	
+		
 	# 目标路径
 	local target_path="${local_path}"
 	if [ ! -d "${target_path}" ]; then
 		mkdir -p "${target_path}"
 	fi
-	
-	echo "target=$target_path"
 	
 	# 判断目标目录是否为空
 	if [ ! -z "$(ls -A ${target_path})" ]; then
@@ -367,8 +363,8 @@ function clone_remote_repo()
 		#clone_repo_contents https://github.com/chenmozhijin/luci-app-socat.git?ref=main $package_path_rel
 		#clone_repo_contents https://github.com/sbwml/luci-app-alist.git?ref=master $package_path_rel
 		
-		url="https://github.com/lisaac/luci-app-diskman.git/applications?ref=master"
-		get_remote_spec_contents $url "diskman" $package_path_rel
+		url="https://github.com/lisaac/luci-app-diskman.git/applications/luci-app-diskman?ref=master"
+		get_remote_spec_contents "${url}" "diskman" "${package_path_rel}/package_path_rel"
 	fi
 }
 
@@ -391,7 +387,7 @@ function get_remote_repo()
 	if [ $repo_remote_cond -eq 3 ]; then
 		url="https://github.com/shidahuilang/openwrt-package.git?ref=Official"
 		sync_repo_contents $url $package_path_rel
-	fi	
+	fi
 
 	if [ $repo_remote_cond -eq 4 ]; then
 		url="https://github.com/kiddin9/openwrt-packages.git?ref=master"
