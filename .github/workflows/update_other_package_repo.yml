@@ -61,7 +61,7 @@ jobs:
     - name: Get other repository contents
       if: env.REPO_OTHER_COND != 0 && !cancelled()
       run: |
-        package_path_rel="otherpackage"
+        package_path_rel="$PWD/otherpackage"
         mkdir -p "$package_path_rel"
         
         scripts_file=${{ env.scripts }}

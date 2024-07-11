@@ -136,17 +136,9 @@ function get_remote_spec_contents()
 	
 	# 目标路径
 	local target_path="${local_path}"
-	
-	echo "test1=$target_path"
-	#ls -al "$target_path"
-	
 	if [ ! -d "${target_path}" ]; then
-		echo "tttt"
 		mkdir -p "${target_path}"
 	fi
-	
-	echo "test2=$target_path"
-	ls -al "$target_path"
 	
 	# 判断目标目录是否为空
 	if [ ! -z "$(ls -A ${target_path})" ]; then
@@ -158,9 +150,6 @@ function get_remote_spec_contents()
 	if [ -e "${temp_dir}/${repo_path}" ]; then
 		cp -rf ${temp_dir}/${repo_path}/* ${target_path}
 	fi
-	
-	echo "test3=$target_path"
-	ls -al "$target_path"
 	
 	# 返回原始目录
     popd > /dev/null
