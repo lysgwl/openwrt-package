@@ -83,7 +83,8 @@ function get_remote_repo_contents()
 function get_remote_spec_contents() 
 {
 	local remote_repo=$1        # 远程仓库URL
-	local local_path=$2    		# 本地指定路径
+	local remote_alias=$2		# 远程仓库别名
+	local local_path=$3    		# 本地指定路径
 	
 	# 获取.git的前缀和后缀字符
 	git_prefix="${remote_repo%%.git*}"
@@ -103,8 +104,6 @@ function get_remote_spec_contents()
 	
 	repo_url="${git_prefix}.git"			# url地址
 	repo_path="${suffix_before_mark}"		# 指定路径
-	
-	remote_alias=$(echo ${suffix_before_mark} | awk -F '/' '{print $2}')		# 远程仓库别名
 	repo_branch=$(echo ${suffix_after_mark} | awk -F '=' '{print $2; exit}')	# 远程分支名称
 	
 	# 临时目录，用于克隆远程仓库
@@ -130,9 +129,7 @@ function get_remote_spec_contents()
 	fi
 	
 	echo "${repo_path}" >> ${sparse_file}
-	echo "Pulling from $remote_alias branch $branch..."
-	
-	echo "name=$remote_alias"
+	echo "Pulling from $remote_alias branch $repo_branch..."
 	
 	# 从远程将目标目录或文件拉取下来
 	git pull ${remote_alias} ${repo_branch}
@@ -371,7 +368,7 @@ function clone_remote_repo()
 		#clone_repo_contents https://github.com/sbwml/luci-app-alist.git?ref=master $package_path_rel
 		
 		url="https://github.com/lisaac/luci-app-diskman.git/applications?ref=master"
-		get_remote_spec_contents $url $package_path_rel
+		get_remote_spec_contents $url "diskman" $package_path_rel
 	fi
 }
 
