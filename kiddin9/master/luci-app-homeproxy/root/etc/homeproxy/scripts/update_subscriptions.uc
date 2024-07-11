@@ -16,7 +16,7 @@ import { init_action } from 'luci.sys';
 
 import {
 	calcStringMD5, wGET, executeCommand, decodeBase64Str,
-	getTime, isEmpty, parseURL, validation,
+	getTime, isEmpty, parseURL, validation, filterCheck,
 	HP_DIR, RUN_DIR
 } from 'homeproxy';
 
@@ -31,7 +31,7 @@ const ucimain = 'config',
       ucisubscription = 'subscription';
 
 const allow_insecure = uci.get(uciconfig, ucisubscription, 'allow_insecure') || '0',
-      filter_mode = uci.get(uciconfig, ucisubscription, 'filter_nodes') || 'disabled',
+      filter_mode = uci.get(uciconfig, ucisubscription, 'filter_nodes') || 'nil',
       filter_keywords = uci.get(uciconfig, ucisubscription, 'filter_keywords') || [],
       packet_encoding = uci.get(uciconfig, ucisubscription, 'packet_encoding') || 'xudp',
       subscription_urls = uci.get(uciconfig, ucisubscription, 'subscription_url') || [],
@@ -46,21 +46,6 @@ if (routing_mode !== 'custom') {
 /* UCI config end */
 
 /* String helper start */
-function filter_check(name) {
-	if (isEmpty(name) || filter_mode === 'disabled' || isEmpty(filter_keywords))
-		return false;
-
-	let ret = false;
-	for (let i in filter_keywords) {
-		const patten = regexp(i);
-		if (match(name, patten))
-			ret = true;
-	}
-	if (filter_mode === 'whitelist')
-		ret = !ret;
-
-	return ret;
-}
 /* String helper end */
 
 /* Common var start */
@@ -457,13 +442,10 @@ function main() {
 		node_cache[groupHash] = {};
 
 		const res = wGET(url);
-		if (!res) {
+		if (isEmpty(res)) {
 			log(sprintf('Failed to fetch resources from %s.', url));
 			continue;
 		}
-
-		push(node_result, []);
-		const subindex = length(node_result) - 1;
 
 		let nodes;
 		try {
@@ -491,7 +473,7 @@ function main() {
 			      nameHash = calcStringMD5(label);
 			config.label = label;
 
-			if (filter_check(config.label))
+			if (filterCheck(config.label, filter_mode, filter_keywords))
 				log(sprintf('Skipping blacklist node: %s.', config.label));
 			else if (node_cache[groupHash][confHash] || node_cache[groupHash][nameHash])
 				log(sprintf('Skipping duplicate node: %s.', config.label));
@@ -502,7 +484,8 @@ function main() {
 					config.packet_encoding = packet_encoding;
 
 				config.grouphash = groupHash;
-				push(node_result[subindex], config);
+				push(node_result, []);
+				push(node_result[length(node_result)-1], config);
 				node_cache[groupHash][confHash] = config;
 				node_cache[groupHash][nameHash] = config;
 
@@ -510,7 +493,10 @@ function main() {
 			}
 		}
 
-		log(sprintf('Successfully fetched %s nodes of total %s from %s.', count, length(nodes), url));
+		if (count == 0)
+			log(sprintf('No valid node found in %s.', url));
+		else
+			log(sprintf('Successfully fetched %s nodes of total %s from %s.', count, length(nodes), url));
 	}
 
 	if (isEmpty(node_result)) {
