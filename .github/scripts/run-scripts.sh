@@ -361,10 +361,9 @@ function clone_remote_repo()
 		#clone_repo_contents https://github.com/destan19/OpenAppFilter.git?ref=master  $package_path_rel
 		#clone_repo_contents https://github.com/esirplayground/luci-app-poweroff.git?ref=master $package_path_rel
 		#clone_repo_contents https://github.com/chenmozhijin/luci-app-socat.git?ref=main $package_path_rel
-		#clone_repo_contents https://github.com/sbwml/luci-app-alist.git?ref=master $package_path_rel
-		
+
 		url="https://github.com/sbwml/luci-app-alist.git?ref=master"
-		get_remote_spec_contents "${url}" "alist" "${package_path_rel}/luci-app-alist"
+		clone_repo_contents "${url}" "${package_path_rel}"
 		
 		url="https://github.com/lisaac/luci-app-diskman.git/applications/luci-app-diskman?ref=master"
 		get_remote_spec_contents "${url}" "diskman" "${package_path_rel}/luci-app-diskman"
