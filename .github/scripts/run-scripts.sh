@@ -134,8 +134,6 @@ function get_remote_spec_contents()
 	# 从远程将目标目录或文件拉取下来
 	git pull ${remote_alias} ${repo_branch}
 	
-	ls -al $temp_dir
-		
 	# 目标路径
 	local target_path="${local_path}"
 	if [ ! -d "${target_path}" ]; then
@@ -152,8 +150,6 @@ function get_remote_spec_contents()
 	if [ -e "${temp_dir}/${repo_path}" ]; then
 		cp -rf ${temp_dir}/${repo_path}/* ${target_path}
 	fi
-	
-	ls -al $target_path
 	
 	# 返回原始目录
     popd > /dev/null
@@ -368,7 +364,13 @@ function clone_remote_repo()
 		#clone_repo_contents https://github.com/sbwml/luci-app-alist.git?ref=master $package_path_rel
 		
 		url="https://github.com/lisaac/luci-app-diskman.git/applications/luci-app-diskman?ref=master"
-		get_remote_spec_contents "${url}" "diskman" "${package_path_rel}/package_path_rel"
+		get_remote_spec_contents "${url}" "diskman" "${package_path_rel}/luci-app-diskman"
+		
+		echo "11111111111111111"
+		ls -al $package_path_rel
+		
+		echo "22222222222222222"
+		ls -al "${package_path_rel}/luci-app-diskman"
 	fi
 }
 
