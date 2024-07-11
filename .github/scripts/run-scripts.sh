@@ -356,8 +356,6 @@ function clone_remote_repo()
 	package_path_rel=$2
  
 	if [ $repo_other_cond -eq 1 ]; then
-		#clone_repo_contents https://github.com/destan19/OpenAppFilter.git?ref=master  $package_path_rel
-
 		url="https://github.com/sbwml/luci-app-alist.git?ref=master"
 		clone_repo_contents "${url}" "${package_path_rel}"
 		
@@ -371,6 +369,9 @@ function clone_remote_repo()
 		clone_repo_contents "${url}" "${package_path_rel}"
 		
 		url="https://github.com/chenmozhijin/luci-app-socat.git?ref=main"
+		clone_repo_contents "${url}" "${package_path_rel}"
+		
+		url="https://github.com/destan19/OpenAppFilter.git?ref=master"
 		clone_repo_contents "${url}" "${package_path_rel}"
 	fi
 }
