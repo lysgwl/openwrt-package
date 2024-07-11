@@ -133,6 +133,8 @@ function get_remote_spec_contents()
 	
 	# 从远程将目标目录或文件拉取下来
 	git pull ${remote_alias} ${repo_branch}
+	
+	ls -al $temp_dir
 		
 	# 目标路径
 	local target_path="${local_path}"
@@ -150,6 +152,8 @@ function get_remote_spec_contents()
 	if [ -e "${temp_dir}/${repo_path}" ]; then
 		cp -rf ${temp_dir}/${repo_path}/* ${target_path}
 	fi
+	
+	ls -al $target_path
 	
 	# 返回原始目录
     popd > /dev/null
