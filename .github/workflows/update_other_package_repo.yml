@@ -16,9 +16,9 @@ on:
 env:
   BUILD_SCRIPT: run-scripts.sh
   REPO_OTHER_COND: 1
-  REPO_LEDE_COND:  0
-  REPO_SDHL_COND:  0
-  REPO_KDDN_COND:  0
+  REPO_LEDE_COND:  1
+  REPO_SDHL_COND:  1
+  REPO_KDDN_COND:  1
   
 jobs:
   build:   # update build repo-sync

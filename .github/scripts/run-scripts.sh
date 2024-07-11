@@ -355,12 +355,12 @@ function clone_remote_repo()
 	repo_other_cond=$1
 	package_path_rel=$2
  
-	if [ $repo_other_cond -eq 1 ]; then
+	if [ ${repo_other_cond} -eq 1 ]; then
 		url="https://github.com/sbwml/luci-app-alist.git?ref=master"
 		clone_repo_contents "${url}" "${package_path_rel}"
 		
 		url="https://github.com/sirpdboy/luci-app-ddns-go.git?ref=main"
-		clone_repo_contents "${url}" "${package_path_rel}"
+		#clone_repo_contents "${url}" "${package_path_rel}"
 		
 		url="https://github.com/lisaac/luci-app-diskman.git/applications/luci-app-diskman?ref=master"
 		get_remote_spec_contents "${url}" "diskman" "${package_path_rel}/luci-app-diskman"
@@ -382,23 +382,23 @@ function get_remote_repo()
 	repo_remote_cond=$1
 	package_path_rel=$2
 	
-	if [ $repo_remote_cond -eq 1 ]; then
+	if [ ${repo_remote_cond} -eq 1 ]; then
 		url="https://github.com/coolsnowwolf/luci.git/applications?ref=master"
-		get_remote_spec_contents $url $package_path_rel
+		get_remote_spec_contents "$url" "coolsnowwolf" "${package_path_rel}"
 	fi
 	
-	if [ $repo_remote_cond -eq 2 ]; then
+	if [ ${repo_remote_cond} -eq 2 ]; then
 		url="https://api.github.com/repos/coolsnowwolf/luci/contents/applications?ref=master"
-		get_http_repo_contents $url $package_path_rel
+		get_http_repo_contents "$url" "${package_path_rel}"
 	fi
 
-	if [ $repo_remote_cond -eq 3 ]; then
+	if [ ${repo_remote_cond} -eq 3 ]; then
 		url="https://github.com/shidahuilang/openwrt-package.git?ref=Official"
-		sync_repo_contents $url $package_path_rel
+		sync_repo_contents "$url" "${package_path_rel}"
 	fi
 
-	if [ $repo_remote_cond -eq 4 ]; then
+	if [ ${repo_remote_cond} -eq 4 ]; then
 		url="https://github.com/kiddin9/openwrt-packages.git?ref=master"
-		sync_repo_contents $url $package_path_rel
+		sync_repo_contents "$url" "${package_path_rel}"
 	fi	
 }
