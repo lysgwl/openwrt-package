@@ -40,11 +40,20 @@ function check_git_commit()
 # 添加获取远程仓库内容
 function get_remote_repo_contents() 
 {
-	local branch=$1             # 分支名
-	local remote_alias=$2       # 远程仓库别名
-	local remote_url_path=$3    # 远程仓库路径
-	local local_dir_name=$4     # 本地目录名
-	local package_path_rel=$5   # 相对于顶层目录的路径
+	# 分支名
+	local branch=$1
+	
+	# 远程仓库别名
+	local remote_alias=$2
+	
+	# 远程仓库路径
+	local remote_url_path=$3
+	
+	# 本地目录名
+	local local_dir_name=$4
+	
+	# 相对于顶层目录的路径
+	local package_path_rel=$5   
 	
 	# 添加远程仓库
 	echo "add remote repository: $remote_alias"
@@ -232,10 +241,11 @@ function clone_repo_contents()
 # 同步远程仓库内容
 function sync_repo_contents()
 {
+	# 远程仓库URL
 	local remote_repo=$1        
-	local package_path_rel=$2
+	local local_path=$2
 	
-	# 获取?的前缀和后缀字符
+	# 获取?前缀和后缀字符
 	mark_prefix="${remote_repo%%\?*}"
 	mark_suffix="${remote_repo#*\?}"
 	
@@ -243,10 +253,13 @@ function sync_repo_contents()
 		return
 	fi
 	
-	repo_url="${mark_prefix}"	# 远程仓库URL
-	repo_branch=$(echo ${mark_suffix} | awk -F '=' '{print $2; exit}')		# 分支名
+	# 远程仓库URL
+	repo_url="${mark_prefix}"
+	
+	# 远程分支名称
+	repo_branch=$(echo ${mark_suffix} | awk -F '=' '{print $2; exit}')
 
-	git ls-remote --heads $repo_url | while read -r line ; do
+	git ls-remote --heads ${repo_url} | while read -r line ; do
 		branch_name=$(echo $line | sed 's?.*refs/heads/??')
 		if [ -z "${branch_name}" ]; then
 			continue
@@ -259,8 +272,9 @@ function sync_repo_contents()
 			fi
 		fi
 		
-		echo "branch name: $branch_name"
-		local target_path="${package_path_rel}/${branch_name}"
+		echo "Current branch name: $branch_name"
+		
+		local target_path="${local_path}/${branch_name}"
 		if [ ! -d "${target_path}" ]; then
 			mkdir -p "${target_path}"
 		fi
@@ -272,10 +286,10 @@ function sync_repo_contents()
 		git clone --single-branch --branch ${branch_name} ${repo_url} ${temp_dir}
 		
 		if [ $? -eq 0 ]; then
-			rsync -a --delete $temp_dir/ $target_path/ --exclude .git
+			rsync -a --delete ${temp_dir}/ ${target_path}/ --exclude .git
 		fi
 		
-		rm -rf $temp_dir
+		rm -rf ${temp_dir}
 	done
 }
 
