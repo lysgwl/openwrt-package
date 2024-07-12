@@ -60,31 +60,21 @@ jobs:
           fi
         }
         function git_sparse_clone() {
-          branch="$1" rurl="$2" localdir="$3" && shift 3
-          git clone -b $branch --depth 1 --filter=blob:none --sparse $rurl $localdir
-          if [ "$?" != 0 ]; then
-            echo "error on $rurl"
-            pid="$( ps -q $$ )"
-            kill $pid
-          fi
-          cd $localdir
-          git sparse-checkout init --cone
-          git sparse-checkout set $@
-          mv -n $@ ../ || true
-          cd ..
-          rm -rf $localdir
-          }
-        function git_sparse_clone2() {
-          commitid="$1" rurl="$2" localdir="$3" && shift 3
-          git clone --filter=blob:none --sparse $rurl $localdir
-          cd $localdir
-          git checkout $commitid
-          git sparse-checkout init --cone
-          git sparse-checkout set $@
-          mv -n $@ ../ || true
-          cd ..
-          rm -rf $localdir
-          }
+        trap 'rm -rf "$tmpdir"' EXIT
+        branch="$1" curl="$2" && shift 2
+        rootdir="$PWD"
+        tmpdir="$(mktemp -d)" || exit 1
+        git clone -b "$branch" --depth 1 --filter=blob:none --sparse "$curl" "$tmpdir"
+        if [ "$?" != 0 ]; then
+            echo "error on $curl"
+            exit 1
+        fi
+        cd "$tmpdir"
+        git sparse-checkout init --cone
+        git sparse-checkout set "$@"
+        mv -n $@ $rootdir/ || true
+        cd $rootdir
+        }
         function mvdir() {
         mv -n `find $1/* -maxdepth 0 -type d` ./
         rm -rf $1
@@ -331,27 +321,27 @@ jobs:
         # git_clone https://github.com/0x676e67/luci-app-wireguard-ui wireguardui && mvdir wireguardui
         ) &
         (
-        git_sparse_clone master "https://github.com/QiuSimons/OpenWrt-Add" "OpenWrt-Add" luci-app-irqbalance
-        git_sparse_clone main "https://github.com/lucikap/Brukamen" "Brukamen" luci-app-ua2f
-        git_sparse_clone master "https://github.com/lunatickochiya/Matrix-Action-Openwrt" "kochiya" package/kochiya/brlaser package/kochiya/luci-app-banmac-ipt package/kochiya/luci-app-banmac-nft package/kochiya/luci-app-nvr package/kochiya/luci-app-openvpn-server
-        git_sparse_clone istoreos-22.03 "https://github.com/jjm2473/packages" "jjm2473" net/miniupnpd
+        git_sparse_clone master "https://github.com/QiuSimons/OpenWrt-Add" luci-app-irqbalance
+        git_sparse_clone main "https://github.com/lucikap/Brukamen" luci-app-ua2f
+        git_sparse_clone master "https://github.com/lunatickochiya/Matrix-Action-Openwrt" package/kochiya/brlaser package/kochiya/luci-app-banmac-ipt package/kochiya/luci-app-banmac-nft package/kochiya/luci-app-nvr package/kochiya/luci-app-openvpn-server
+        git_sparse_clone istoreos-22.03 "https://github.com/jjm2473/packages" net/miniupnpd
         ) &
         (
-        git_sparse_clone master "https://github.com/coolsnowwolf/packages" "leanpkg" multimedia/UnblockNeteaseMusic-Go \
+        git_sparse_clone master "https://github.com/coolsnowwolf/packages" multimedia/UnblockNeteaseMusic-Go \
         multimedia/UnblockNeteaseMusic net/amule net/softethervpn5 net/antileech multimedia/gmediarender net/go-aliyundrive-webdav \
         net/qBittorrent-static net/phtunnel net/frp net/headscale \
         net/uugamebooster net/verysync net/vlmcsd net/dnsforwarder net/tcpping net/netatalk net/pgyvpn
-        git_sparse_clone openwrt-23.05 "https://github.com/openwrt/packages" "oppackages" \
+        git_sparse_clone openwrt-23.05 "https://github.com/openwrt/packages" \
         utils/coremark utils/watchcat utils/dockerd utils/cgroupfs-mount net/uwsgi net/ddns-scripts net/smartdns net/curl \
         net/ariang net/rp-pppoe net/tailscale
         ) &
         (
-        git_sparse_clone openwrt-23.05 "https://github.com/openwrt/openwrt" "openwrt" \
+        git_sparse_clone openwrt-23.05 "https://github.com/openwrt/openwrt" \
         package/base-files package/network/config/firewall4 package/network/config/firewall package/system/opkg package/network/services/ppp \
         package/network/services/dnsmasq
-        git_sparse_clone main "https://github.com/openwrt/openwrt" "opmain" \
+        git_sparse_clone main "https://github.com/openwrt/openwrt" \
         package/network/config/wifi-scripts
-        git_sparse_clone openwrt-23.05 "https://github.com/openwrt/luci" "opluci" applications/luci-app-attendedsysupgrade applications/luci-app-aria2 \
+        git_sparse_clone openwrt-23.05 "https://github.com/openwrt/luci" applications/luci-app-attendedsysupgrade applications/luci-app-aria2 \
         applications/luci-app-ddns applications/luci-app-acme applications/luci-app-opkg applications/luci-app-firewall \
         applications/luci-app-ksmbd applications/luci-app-samba4 applications/luci-app-watchcat applications/luci-app-upnp \
         applications/luci-app-transmission modules/luci-base modules/luci-mod-network \
@@ -359,7 +349,7 @@ jobs:
         ) &
 
         (
-        git_sparse_clone openwrt-23.05 "https://github.com/immortalwrt/packages" "immpkgs" net/mwol net/n2n net/dae \
+        git_sparse_clone openwrt-23.05 "https://github.com/immortalwrt/packages" net/mwol net/n2n net/dae \
         net/sub-web net/dnsproxy net/haproxy net/v2raya net/cdnspeedtest net/keepalived \
         net/go-nats net/go-wol net/bitsrunlogin-go net/transfer net/cloudreve net/daed \
         net/subconverter net/ngrokc net/oscam net/njitclient net/scutclient net/gost net/ua2f net/dufs net/qBittorrent-Enhanced-Edition \
@@ -371,21 +361,21 @@ jobs:
         multimedia/you-get multimedia/lux multimedia/ykdl multimedia/gallery-dl devel/go-rice admin/gotop admin/netdata
         ) &
         (
-        git_sparse_clone develop "https://github.com/Ysurac/openmptcprouter-feeds" "openmptcp" luci-app-snmpd \
+        git_sparse_clone develop "https://github.com/Ysurac/openmptcprouter-feeds" luci-app-snmpd \
         luci-app-packet-capture luci-app-mail msmtp luci-app-iperf atinout
-        git_sparse_clone master "https://github.com/xiaoqingfengATGH/feeds-xiaoqingfeng" "xiaoqingfeng" homeredirect luci-app-homeredirect
-        git_sparse_clone master "https://github.com/immortalwrt/immortalwrt" "immortal" \
+        git_sparse_clone master "https://github.com/xiaoqingfengATGH/feeds-xiaoqingfeng" homeredirect luci-app-homeredirect
+        git_sparse_clone master "https://github.com/immortalwrt/immortalwrt" \
         package/kernel/r8168 package/kernel/r8125 package/kernel/rtl8189es package/emortal/autocore package/emortal/automount \
         package/network/utils/fullconenat package/emortal/cpufreq package/network/utils/fullconenat-nft package/network/utils/nftables \
         package/utils/mhz package/libs/libnftnl package/firmware/wireless-regdb
         ) &
         (
-        git_sparse_clone master "https://github.com/x-wrt/com.x-wrt" "x-wrt" luci-app-macvlan luci-app-xwan
+        git_sparse_clone master "https://github.com/x-wrt/com.x-wrt" luci-app-macvlan luci-app-xwan
         ) &
-        git_sparse_clone master "https://github.com/coolsnowwolf/luci" "leluci" applications libs/luci-lib-fs
+        git_sparse_clone master "https://github.com/coolsnowwolf/luci" applications libs/luci-lib-fs
         mv -f applications luciapp
         rm -rf luciapp/{luci-app-qbittorrent,luci-app-cpufreq,luci-app-e2guardian,luci-app-aliyundrive-fuse,luci-app-syncdial}
-        git_sparse_clone master "https://github.com/immortalwrt/luci" "immluci" applications protocols/luci-proto-minieap
+        git_sparse_clone master "https://github.com/immortalwrt/luci" applications protocols/luci-proto-minieap
         mv -n applications/* luciapp/; rm -rf applications
 
         for ipk in $(ls -d luciapp/!(luci-app-rclone|luci-app-filebrowser)/); do
@@ -394,7 +384,7 @@ jobs:
         	fi
         done
 
-        git_sparse_clone master "https://github.com/coolsnowwolf/lede" "leanlede" package/lean package/network/services/shellsync package/wwan
+        git_sparse_clone master "https://github.com/coolsnowwolf/lede" package/lean package/network/services/shellsync package/wwan
 
     - name: Delete duplicated packages
       run: |
@@ -523,6 +513,7 @@ jobs:
           -e 's/+ca-certificates/+ca-bundle/' \
           -e 's/php7/php8/g' \
           -e 's/+docker\( \|$\)/+docker +dockerd /g' \
+          -e 's/+iptables\( \|$\)//g' \
           -e 's/URL:=@IMMORTALWRT/URL:=https:\/\/mirror2.immortalwrt.org\/sources/g' \
           */Makefile
         ) &
