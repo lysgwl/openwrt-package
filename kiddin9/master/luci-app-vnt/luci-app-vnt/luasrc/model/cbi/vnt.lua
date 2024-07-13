@@ -455,7 +455,7 @@ subnet.datatype = "ip4addr"
 subnet.placeholder = "10.10.0.1"
 
 servern_netmask = s:taboption("gen",Value, "servern_netmask", translate("指定子网掩码"))
-servern_netmask.placeholder = "225.225.225.0"
+servern_netmask.placeholder = "255.255.255.0"
 
 web = s:taboption("gen",Flag, "web", translate("启用WEB管理"),
 	translate("WEB管理界面，图形化显示所有客户端详情"))
