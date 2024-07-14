@@ -178,7 +178,6 @@ jobs:
         git_clone https://github.com/pymumu/luci-app-smartdns
         git_clone https://github.com/CHN-beta/rkp-ipid
         git_clone https://github.com/Erope/openwrt_nezha nezha && mvdir nezha
-        git_clone https://github.com/muink/luci-app-homeproxy
         ) &
         (
         git_clone https://github.com/koshev-msk/modemfeed && mv -n modemfeed/*/!(telephony)/* ./ && rm -rf modemfeed
@@ -374,7 +373,7 @@ jobs:
         ) &
         git_sparse_clone master "https://github.com/coolsnowwolf/luci" applications libs/luci-lib-fs
         mv -f applications luciapp
-        rm -rf luciapp/{luci-app-qbittorrent,luci-app-cpufreq,luci-app-e2guardian,luci-app-aliyundrive-fuse,luci-app-syncdial}
+        rm -rf luciapp/{luci-app-qbittorrent,luci-app-zerotier,luci-app-cpufreq,luci-app-e2guardian,luci-app-aliyundrive-fuse,luci-app-syncdial}
         git_sparse_clone master "https://github.com/immortalwrt/luci" applications protocols/luci-proto-minieap
         mv -n applications/* luciapp/; rm -rf applications
 
