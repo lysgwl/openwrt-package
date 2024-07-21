@@ -1,15 +1,15 @@
 # luci-app-vnt
 <p align="center">
-<a href="https://github.com/lmq8267/luci-app-vnt/releases"><img src="https://img.shields.io/github/downloads/lmq8267/luci-app-vnt/total">
-<a href="https://github.com/lmq8267/luci-app-vnt/graphs/contributors"><img src="https://img.shields.io/github/contributors-anon/lmq8267/luci-app-vnt">
-<a href="https://github.com/lmq8267/luci-app-vnt/releases/"><img src="https://img.shields.io/github/release/lmq8267/luci-app-vnt">
-<a href="https://github.com/lmq8267/luci-app-vnt/issues"><img src="https://img.shields.io/github/issues-raw/lmq8267/luci-app-vnt">
-<a href="https://github.com/lmq8267/luci-app-vnt/discussions"><img src="https://img.shields.io/github/discussions/lmq8267/luci-app-vnt">
-<a href="GitHub repo size"><img src="https://img.shields.io/github/repo-size/lmq8267/luci-app-vnt?color=red&style=flat-square">
-<a href="https://github.com/lmq8267/luci-app-vnt/actions?query=workflow%3ABuild"><img src="https://img.shields.io/github/actions/workflow/status/lmq8267/luci-app-vnt/build.yml?branch=main" alt="Build status">
+<a href="https://github.com/lmq8267/luci-app-vnt/releases"><img src="https://img.shields.io/github/downloads/lmq8267/luci-app-vnt/total"/></a
+<a href="https://github.com/lmq8267/luci-app-vnt/graphs/contributors"><img src="https://img.shields.io/github/contributors-anon/lmq8267/luci-app-vnt"/></a
+<a href="https://github.com/lmq8267/luci-app-vnt/releases/"><img src="https://img.shields.io/github/release/lmq8267/luci-app-vnt"/></a
+<a href="https://github.com/lmq8267/luci-app-vnt/issues"><img src="https://img.shields.io/github/issues-raw/lmq8267/luci-app-vnt"/></a
+<a href="https://github.com/lmq8267/luci-app-vnt/discussions"><img src="https://img.shields.io/github/discussions/lmq8267/luci-app-vnt"/></a
+<a href="GitHub repo size"><img src="https://img.shields.io/github/repo-size/lmq8267/luci-app-vnt?color=red&style=flat-square"/></a
+<a href="https://github.com/lmq8267/luci-app-vnt/actions?query=workflow%3ABuild"><img src="https://img.shields.io/github/actions/workflow/status/lmq8267/luci-app-vnt/build.yml?branch=main" alt="Build status"/></a
 </p>
 
-项目地址：https://github.com/lbl8603/vnt
+项目地址：https://github.com/vnt-dev/vnt
 
 非专业，编写自用，有大佬完善一下也好，自1.2.9版本起可以多开了，要是有大佬重写一个可以支持多开、多配置快速切换 就好啦，多配置快速切换
 

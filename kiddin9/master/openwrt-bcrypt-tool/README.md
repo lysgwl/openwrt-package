@@ -13,31 +13,7 @@ Module `github.com/shoenig/bcrypt-tool` provides a simple command line tool.
 
 #### Install from Releases
 
-The `bcrypt-tool` tool is available from the [Releases](https://github.com/shoenig/bcrypt-tool/releases) page.
-
-It is pre-compiled for many operating systems and architectures including
-
-- Linux
-- Windows
-- MacOS
-- FreeBSD
-- OpenBSD
-- Plan9
-
-#### Install from SnapCraft
-
-[![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-white.svg)](https://snapcraft.io/bcrypt-tool)
-
-The `bcrypt-tool` command can be installed as a snap
-```bash
-$ sudo snap install bcrypt-tool
-```
-
-#### Build from source
-The `bcrypt-tool` command can be compiled by running
-```bash
-$ go get github.com/shoenig/bcrypt-tool
-```
+The `bcrypt-tool` tool is available for the ```aarch64_cortex-a53``` architechure from the [Releases](https://github.com/xptsp/openwrt-bcrypt-tool/releases) page.
 
 ### Examples
 

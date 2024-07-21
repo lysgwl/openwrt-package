@@ -168,6 +168,9 @@ jobs:
         git_clone https://github.com/linkease/openwrt-app-actions
         git_clone https://github.com/lucikap/luci-app-brukamen && mv -n luci-app-brukamen/{luci*,dogcom,mentohust,iii/*} ./;rm -rf luci-app-brukamen
         git_clone https://github.com/mchome/openwrt-dogcom
+        git_clone https://github.com/yichya/luci-app-xray yichya && mv -f yichya/status ./luci-app-xray-status;mv -f yichya/core ./luci-app-xray
+        git_clone https://github.com/rafmilecki/luci-app-xjay
+        git_clone https://github.com/kiddin9/openwrt-thunder && mvdir openwrt-thunder
         ) &
         (
         git_clone https://github.com/honwen/luci-app-aliddns
@@ -189,7 +192,6 @@ jobs:
         git_clone https://github.com/xptsp/luci-mod-listening-ports
         git_clone https://github.com/xptsp/luci-app-squid-adv
         git_clone https://github.com/xptsp/openwrt-bcrypt-tool
-        git clone https://github.com/chenmozhijin/turboacc && cd turboacc && cp -rf luci-app-turboacc ../; git checkout package && cp -rf shortcut-fe ../;cd ../ && rm -rf turboacc
         ) &
         (
         git_clone https://github.com/honwen/luci-app-shadowsocks-rust
@@ -226,6 +228,7 @@ jobs:
         git_clone https://github.com/JiaY-shi/fancontrol fanc && mvdir fanc
         git_clone https://github.com/Siriling/5G-Modem-Support && mv -n 5G-Modem-Support/{luci-app-modem,luci-app-cpe,luci-app-sms-tool} ./;rm -rf 5G-Modem-Support
         git_clone https://github.com/danchexiaoyang/luci-app-syncthing
+        git_clone https://github.com/aa65535/openwrt-dist-luci
         ) &
         (
         git_clone https://github.com/muink/luci-app-dnsproxy
@@ -258,10 +261,7 @@ jobs:
         ) &
         (
         git_clone https://github.com/liudf0716/luci-app-yt-dlp
-        git_clone https://github.com/liudf0716/luci-app-ss-redir
         git_clone https://github.com/liudf0716/luci-app-kcptun
-        git_clone https://github.com/liudf0716/luci-app-whispercpp
-        git_clone https://github.com/liudf0716/whispercpp
         git_clone https://github.com/liudf0716/luci-app-xfrpc
         git_clone https://github.com/liudf0716/luci-app-apfree-wifidog
         git_clone https://github.com/liudf0716/actions-apfree-wifidog && mv actions-apfree-wifidog/apfree-wifidog ./; rm -rf actions-apfree-wifidog
@@ -308,7 +308,6 @@ jobs:
         git_clone https://github.com/ttimasdf/luci-app-jederproxy
         git_clone https://github.com/ApeaSuperz/luci-app-cqustdotnet
         git_clone https://github.com/shenyunet/luci-app-hypercpe
-        git_clone https://github.com/rafmilecki/luci-app-xjay
         git_clone https://github.com/xcode75/luci-app-xclient
         git_clone https://github.com/chenzhen6666/luci-app-mproxy mproxy && mvdir mproxy
         git_clone https://github.com/a904055262/luci-app-ipv6clientfilter
@@ -336,12 +335,12 @@ jobs:
         ) &
         (
         git_sparse_clone openwrt-23.05 "https://github.com/openwrt/openwrt" \
-        package/base-files package/network/config/firewall4 package/network/config/firewall package/system/opkg package/network/services/ppp \
+        package/base-files package/system/opkg package/network/services/ppp \
         package/network/services/dnsmasq
         git_sparse_clone main "https://github.com/openwrt/openwrt" \
         package/network/config/wifi-scripts
         git_sparse_clone openwrt-23.05 "https://github.com/openwrt/luci" applications/luci-app-attendedsysupgrade applications/luci-app-aria2 \
-        applications/luci-app-ddns applications/luci-app-acme applications/luci-app-opkg applications/luci-app-firewall \
+        applications/luci-app-ddns applications/luci-app-acme applications/luci-app-opkg \
         applications/luci-app-ksmbd applications/luci-app-samba4 applications/luci-app-watchcat applications/luci-app-upnp \
         applications/luci-app-transmission modules/luci-base modules/luci-mod-network \
         modules/luci-mod-status modules/luci-mod-system
@@ -366,24 +365,25 @@ jobs:
         git_sparse_clone master "https://github.com/immortalwrt/immortalwrt" \
         package/kernel/r8168 package/kernel/r8125 package/kernel/rtl8189es package/emortal/autocore package/emortal/automount \
         package/network/utils/fullconenat package/emortal/cpufreq package/network/utils/fullconenat-nft package/network/utils/nftables \
-        package/utils/mhz package/libs/libnftnl package/firmware/wireless-regdb
+        package/network/config/firewall package/network/config/firewall4 \
+        package/utils/mhz package/libs/libnftnl package/firmware/wireless-regdb 
         ) &
         (
         git_sparse_clone master "https://github.com/x-wrt/com.x-wrt" luci-app-macvlan luci-app-xwan
         ) &
         git_sparse_clone master "https://github.com/coolsnowwolf/luci" applications libs/luci-lib-fs
         mv -f applications luciapp
-        rm -rf luciapp/{luci-app-qbittorrent,luci-app-zerotier,luci-app-cpufreq,luci-app-e2guardian,luci-app-aliyundrive-fuse,luci-app-syncdial}
+        rm -rf luciapp/{luci-app-qbittorrent,luci-app-zerotier,luci-app-cpufreq,luci-app-e2guardian,luci-app-aliyundrive-fuse,luci-app-syncdial,luci-app-firewall}
         git_sparse_clone master "https://github.com/immortalwrt/luci" applications protocols/luci-proto-minieap
         mv -n applications/* luciapp/; rm -rf applications
 
-        for ipk in $(ls -d luciapp/!(luci-app-rclone|luci-app-filebrowser)/); do
+        for ipk in $(ls -d luciapp/!(luci-app-rclone|luci-app-filebrowser|luci-app-firewall)/); do
         	if [[ $(ls $ipk/po | wc -l) -gt 3 ]]; then
             rm -rf $ipk
         	fi
         done
 
-        git_sparse_clone master "https://github.com/coolsnowwolf/lede" package/lean package/network/services/shellsync package/wwan
+        git_sparse_clone master "https://github.com/coolsnowwolf/lede" package/lean package/network/services/shellsync package/wwan package/qca/shortcut-fe
 
     - name: Delete duplicated packages
       run: |
@@ -419,6 +419,7 @@ jobs:
         sed -i \
         -e "s/\(network\..*\)\.ifname/\1.device/g" \
         `find \( -path "*/root/*" -o -path "*/files/*" -o -path "*/luasrc/*" \) ! -path "./base-files/*" ! -path "./dnsmasq/*" ! -path "./luci-base/*" ! -path "./ppp/*" -type f` &
+        wget https://github.com/xiechangan123/luci-i18n-xray-zh-cn/raw/main/po/zh-cn/xray.zh-cn.po -P luci-app-xray/po/zh_Hans/
         (
         function latest() {
           (curl -gs -H 'Content-Type: application/json' \
@@ -495,7 +496,7 @@ jobs:
         -e '/^\/etc\/shinit/d' \
         base-files/Makefile
         sed -i '$a cgi-timeout = 300' uwsgi/files-luci-support/luci-webui.ini
-        sed -i '$a cgi-timeout = 90' uwsgi/files-luci-support/luci-cgi_io.ini
+        sed -i '$a cgi-timeout = 300' uwsgi/files-luci-support/luci-cgi_io.ini
         sed -i '/limit-as/c\limit-as = 5000' uwsgi/files-luci-support/luci-webui.ini
         sed -i 's/procd_set_param stderr 1/procd_set_param stderr 0/' uwsgi/files/uwsgi.init
         mkdir -p luci-app-passwall/root/www/luci-static/passwall
@@ -512,7 +513,8 @@ jobs:
           -e 's/+ca-certificates/+ca-bundle/' \
           -e 's/php7/php8/g' \
           -e 's/+docker\( \|$\)/+docker +dockerd /g' \
-          -e 's/+iptables\( \|$\)//g' \
+          -e 's/+iptables-zz-legacy\( \|$\)//g' \
+          -e 's/+ip6tables-zz-legacy\( \|$\)//g' \
           -e 's/URL:=@IMMORTALWRT/URL:=https:\/\/mirror2.immortalwrt.org\/sources/g' \
           */Makefile
         ) &

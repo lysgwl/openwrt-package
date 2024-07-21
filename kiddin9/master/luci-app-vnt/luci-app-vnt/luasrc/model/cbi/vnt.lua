@@ -79,6 +79,10 @@ forward = s:taboption("general",Flag, "forward", translate("启用IP转发"),
 	translate("内置的IP代理较为简单，而且一般来说直接使用网卡NAT转发性能会更高,所以默认开启IP转发关闭内置的ip代理"))
 forward.rmempty = false
 
+allow_wg = s:taboption("general",Flag, "allow_wg", translate("允许WireGuard接入"),
+	translate("由于WireGuard是来自vnts转发的，如果vnts不受信任，这将会有安全隐患，所以默认不允许WireGuard流量访问本机"))
+allow_wg.rmempty = false
+
 log = s:taboption("general",Flag, "log", translate("启用日志"),
 	translate("运行日志在/tmp/vnt.log,可在上方客户端日志查看，无法启动等详细错误日志在 状态-系统日志里查看"))
 log.rmempty = false

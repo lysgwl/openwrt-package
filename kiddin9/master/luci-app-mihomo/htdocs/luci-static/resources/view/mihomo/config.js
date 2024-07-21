@@ -5,6 +5,7 @@
 'require fs';
 'require rpc';
 'require poll';
+'require tools.widgets as widgets';
 
 const profilesDir = '/etc/mihomo/profiles';
 const runProfilePath = '/etc/mihomo/run/config.yaml';
@@ -153,7 +154,7 @@ return view.extend({
         o = s.option(form.FileUpload, 'upload_profile', _('Upload Profile'));
         o.root_directory = profilesDir;
 
-        o = s.option(form.Flag, 'mixin', _('Mixin'), _('Even if this option is disabled, the neccesary config will still mixin to make sure it works properly!'));
+        o = s.option(form.Flag, 'mixin', _('Mixin'));
         o.rmempty = false;
 
         s = m.section(form.NamedSection, 'proxy', 'proxy', _('Proxy Config'));
@@ -171,10 +172,11 @@ return view.extend({
         o.retain = true;
         o.value('allow', _('Allow Mode'));
         o.value('block', _('Block Mode'));
+        o.value('forbid', _('Forbid Mode'));
         o.depends('transparent_proxy', '1');
 
         o = s.option(form.DynamicList, 'acl_ip', _('Access Control IP'));
-        o.datatype = 'ipaddr';
+        o.datatype = 'ipmask4';
         o.retain = true;
         o.depends({ 'transparent_proxy': '1', 'access_control_mode': 'allow' });
         o.depends({ 'transparent_proxy': '1', 'access_control_mode': 'block' });
@@ -185,15 +187,32 @@ return view.extend({
         o.depends({ 'transparent_proxy': '1', 'access_control_mode': 'allow' });
         o.depends({ 'transparent_proxy': '1', 'access_control_mode': 'block' });
 
-        o = s.option(form.Flag, 'dns_hijack', _('DNS Hijack'), _('When disabled, DNS request will not redirect to core, you need handle this by yourself!'));
+        o = s.option(form.Flag, 'dns_hijack', _('DNS Hijack'));
         o.retain = true;
         o.rmempty = false;
         o.depends('transparent_proxy', '1');
 
-        o = s.option(form.Flag, 'bypass_china_mainland_ip', _('Bypass China Mainland IP'), _('This option does not work well with Fake-IP.'));
+        o = s.option(form.Flag, 'bypass_china_mainland_ip', _('Bypass China Mainland IP'));
         o.retain = true;
         o.rmempty = false;
         o.depends('transparent_proxy', '1');
+
+        o = s.option(form.Value, 'acl_tcp_dport', _('Destination TCP Port to Proxy'));
+        o.retain = true;
+        o.value('1-65535', _('All Port'))
+        o.value('21 22 80 110 143 194 443 465 993 995 8080 8443', _('Commonly Used Port'));
+        o.depends('transparent_proxy', '1');
+
+        o = s.option(form.Value, 'acl_udp_dport', _('Destination UDP Port to Proxy'));
+        o.retain = true;
+        o.value('1-65535', _('All Port'))
+        o.value('123 443 8443', _('Commonly Used Port'));
+        o.depends('transparent_proxy', '1');
+
+        o = s.option(widgets.NetworkSelect, 'wan_interfaces', _('WAN Interfaces'));
+        o.multiple = true;
+        o.optional = false;
+        o.rmempty = false;
 
         s = m.section(form.TableSection, 'subscription', _('Subscription Config'));
         s.addremove = true;
@@ -207,29 +226,33 @@ return view.extend({
 
         s = m.section(form.NamedSection, 'mixin', 'mixin', _('Mixin Config'));
 
-        s.tab('global', _('Global Config'));
+        s.tab('general', _('General Config'));
 
-        o = s.taboption('global', form.ListValue, 'mode', _('Proxy Mode'));
-        o.value('global', _('Global Mode'));
+        o = s.taboption('general', form.ListValue, 'mode', _('Proxy Mode'));
+        o.value('general', _('Global Mode'));
         o.value('rule', _('Rule Mode'));
         o.value('direct', _('Direct Mode'));
 
-        o = s.taboption('global', form.ListValue, 'match_process', _('Match Process'));
+        o = s.taboption('general', form.ListValue, 'match_process', _('Match Process'));
         o.value('always');
         o.value('strict');
         o.value('off');
 
-        o = s.taboption('global', form.Flag, 'unify_delay', _('Unify Delay'));
+        o = s.taboption('general', widgets.NetworkSelect, 'outbound_interface', _('Outbound Interface'));
+        o.optional = true;
         o.rmempty = false;
 
-        o = s.taboption('global', form.Flag, 'tcp_concurrent', _('TCP Concurrent'));
+        o = s.taboption('general', form.Flag, 'unify_delay', _('Unify Delay'));
         o.rmempty = false;
 
-        o = s.taboption('global', form.Value, 'tcp_keep_alive_interval', _('TCP Keep Alive Interval'));
+        o = s.taboption('general', form.Flag, 'tcp_concurrent', _('TCP Concurrent'));
+        o.rmempty = false;
+
+        o = s.taboption('general', form.Value, 'tcp_keep_alive_interval', _('TCP Keep Alive Interval'));
         o.datatype = 'integer';
         o.placeholder = '600';
 
-        o = s.taboption('global', form.ListValue, 'log_level', _('Log Level'));
+        o = s.taboption('general', form.ListValue, 'log_level', _('Log Level'));
         o.value('silent');
         o.value('error');
         o.value('warning');
@@ -437,8 +460,8 @@ return view.extend({
 
         s.tab('sniffer', _('Sniffer Config'));
 
-        s.taboption('sniffer', form.Flag, 'sniffer', _('Enable'));
-        s.rmempty = false;
+        o = s.taboption('sniffer', form.Flag, 'sniffer', _('Enable'));
+        o.rmempty = false;
 
         o = s.taboption('sniffer', form.Flag, 'sniff_dns_mapping', _('Sniff Redir-Host'));
         o.retain = true;
@@ -515,7 +538,7 @@ return view.extend({
 
         s.tab('mixin_file_content', _('Mixin File Content'));
 
-        o = s.taboption('mixin_file_content', form.TextValue, '_mixin_file_content', null, _('The file\'s content above will be merged into profile before other mixin config(means low priority), and it will overwrite the same field in the profile.'));
+        o = s.taboption('mixin_file_content', form.TextValue, '_mixin_file_content');
         o.rows = 20;
         o.cfgvalue = function (section_id) {
             return L.resolveDefault(fs.read_direct(mixinPath));

@@ -9,6 +9,7 @@ LUCI_TITLE:=Better LuCI support for Squid
 LUCI_DEPENDS:=+squid +luci-base +lua-cjson
 LUCI_PKGARCH:=all
 PKG_NAME:=luci-app-squid-adv
+PKG_MAINTAINER:=Douglas Orend <doug.orend2@gmail.com>
 
 include $(TOPDIR)/feeds/luci/luci.mk
 
