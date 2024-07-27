@@ -10,8 +10,8 @@ include $(TOPDIR)/rules.mk
 PKG_ARCH_routergo:=$(ARCH)
 
 PKG_NAME:=routergo
-PKG_VERSION:=0.14.9
-PKG_RELEASE:=3
+PKG_VERSION:=0.14.10
+PKG_RELEASE:=5
 PKG_SOURCE:=$(PKG_NAME)-binary-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://github.com/Carseason/openwrt-packages/releases/download/prebuilt/
 PKG_HASH:=skip
@@ -27,7 +27,7 @@ define Package/$(PKG_NAME)
 	CATEGORY:=Network
 	SUBMENU:=Web Servers/Proxies
 	TITLE:=RouterGo
-	DEPENDS:=@(x86_64||aarch64||arm) +docker +dockerd 
+	DEPENDS:=@(x86_64||aarch64||arm) +docker +dockerd +luci-app-linkease
 	URL:=https://github.com/Carseason/openwrt-packages
 endef
 

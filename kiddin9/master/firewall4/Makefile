@@ -5,7 +5,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=firewall4
-PKG_RELEASE:=31
+PKG_RELEASE:=36
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL=$(PROJECT_GIT)/project/firewall4.git
@@ -26,7 +26,7 @@ define Package/firewall4
 	+kmod-nft-nat +kmod-nft-fullcone \
 	+nftables-json \
 	+ucode +ucode-mod-fs +ucode-mod-ubus +ucode-mod-uci \
-	+iptables +ip6tables +miniupnpd-nftables +kmod-nft-socket +kmod-nft-tproxy
+	+iptables +ip6tables +kmod-nft-socket +kmod-nft-tproxy
   EXTRA_DEPENDS:=ucode (>=2022.03.22)
   PROVIDES:=uci-firewall
 endef
@@ -39,10 +39,13 @@ endef
 define Package/firewall4/conffiles
 /etc/config/firewall
 /etc/nftables.d/
+/etc/firewall.include
 endef
 
 define Package/firewall4/install
 	$(CP) -a $(PKG_BUILD_DIR)/root/* $(1)/
+	$(INSTALL_DIR) $(1)/etc/
+	$(INSTALL_CONF) ./files/firewall.include $(1)/etc/firewall.include
 endef
 
 define Build/Compile

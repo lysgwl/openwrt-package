@@ -199,20 +199,24 @@ return view.extend({
 
         o = s.option(form.Value, 'acl_tcp_dport', _('Destination TCP Port to Proxy'));
         o.retain = true;
-        o.value('1-65535', _('All Port'))
+        o.rmempty = false;
+        o.value('1-65535', _('All Port'));
         o.value('21 22 80 110 143 194 443 465 993 995 8080 8443', _('Commonly Used Port'));
         o.depends('transparent_proxy', '1');
 
         o = s.option(form.Value, 'acl_udp_dport', _('Destination UDP Port to Proxy'));
         o.retain = true;
-        o.value('1-65535', _('All Port'))
+        o.rmempty = false;
+        o.value('1-65535', _('All Port'));
         o.value('123 443 8443', _('Commonly Used Port'));
         o.depends('transparent_proxy', '1');
 
         o = s.option(widgets.NetworkSelect, 'wan_interfaces', _('WAN Interfaces'));
         o.multiple = true;
         o.optional = false;
+        o.retain = true;
         o.rmempty = false;
+        o.depends('transparent_proxy', '1');
 
         s = m.section(form.TableSection, 'subscription', _('Subscription Config'));
         s.addremove = true;
@@ -539,7 +543,7 @@ return view.extend({
         s.tab('mixin_file_content', _('Mixin File Content'));
 
         o = s.taboption('mixin_file_content', form.TextValue, '_mixin_file_content');
-        o.rows = 20;
+        o.rows = 25;
         o.cfgvalue = function (section_id) {
             return L.resolveDefault(fs.read_direct(mixinPath));
         };
