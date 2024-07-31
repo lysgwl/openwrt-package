@@ -1,6 +1,6 @@
 #!/bin/sh
 
-apk_name="luci-app-droidnet"
+apk_name="luci-app-dnsleaktest"
 version="1.1"
 
 echo "Updating packages"

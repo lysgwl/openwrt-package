@@ -1,7 +1,7 @@
 #!/bin/sh
 
-apk_name="luci-app-droidnet"
-version="1.1"
+apk_name="luci-app-alpha-config"
+version="2.1"
 
 echo "Updating packages"
 if ! opkg update; then

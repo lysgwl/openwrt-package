@@ -260,7 +260,7 @@ jobs:
         git_clone https://github.com/Carseason/openwrt-packages Carseason && mv -n Carseason/*/* ./;mv services/routergo ./;rm -rf Carseason
         git_clone https://github.com/Carseason/openwrt-themedog && mv -n openwrt-themedog/luci/* ./;rm -rf openwrt-themedog
         git_clone https://github.com/Carseason/openwrt-app-actions Carseason && mv -n Carseason/applications/* ./;rm -rf Carseason
-        git_clone https://github.com/VergilGao/openwrt-sblite && mvdir openwrt-sblite
+        # git_clone https://github.com/VergilGao/openwrt-sblite && mvdir openwrt-sblite
         ) &
         (
         git_clone https://github.com/liudf0716/luci-app-yt-dlp
@@ -333,7 +333,7 @@ jobs:
         net/qBittorrent-static net/phtunnel net/frp net/headscale \
         net/uugamebooster net/verysync net/vlmcsd net/dnsforwarder net/tcpping net/netatalk net/pgyvpn
         git_sparse_clone openwrt-23.05 "https://github.com/openwrt/packages" \
-        utils/coremark utils/watchcat utils/dockerd utils/cgroupfs-mount net/uwsgi net/ddns-scripts net/smartdns net/curl \
+        utils/coremark utils/watchcat utils/dockerd utils/cgroupfs-mount net/uwsgi net/p910nd net/ddns-scripts net/smartdns net/curl \
         net/ariang net/rp-pppoe net/tailscale
         ) &
         (
