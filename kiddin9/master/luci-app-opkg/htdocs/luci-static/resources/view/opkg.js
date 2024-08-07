@@ -1011,7 +1011,7 @@ function handleOpkg(ev)
 
 		fs.exec_direct('/usr/libexec/opkg-call', argv, 'json').then(function(res) {
 			dlg.removeChild(dlg.lastChild);
-			var showModalFlag = cmd !== 'update' && !res.stderr;
+			var showModalFlag = (cmd !== 'update' && pkg) || res.stderr;
 			if (showModalFlag) {
 			if (res.stdout)
 				dlg.appendChild(E('pre', [ res.stdout ]));
@@ -1141,27 +1141,33 @@ return view.extend({
 		var checkUpdateNeeded = function() {
             return Promise.all([
                 L.resolveDefault(fs.stat('/tmp/opkg-lists'), null),
+                L.resolveDefault(fs.list('/tmp/opkg-lists'), []),
                 L.resolveDefault(fs.read('/tmp/resolv.conf.d/resolv.conf.auto'), '')
             ]).then(function(results) {
                 var stat = results[0];
-                var resolvContent = results[1];
+				var files = results[1];
+                var resolvContent = results[2];
 
-                // 检查 /tmp/opkg-lists 的更新时间
-                var needTimeUpdate = false;
-                if (!stat) {
-                    needTimeUpdate = true; // 如果文件夹不存在，需要更新
+				var isEmpty = files.length === 0;
+                var needUpdate = false;
+
+                if (isEmpty) {
+                    needUpdate = true;
+                } else if (stat) {
+                    var currentDate = new Date();
+                    var lastUpdateDate = new Date(stat.mtime * 1000);  // Convert seconds to milliseconds
+                    // 检查是否在今天的零点之后更新过
+                    var today = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
+                    needUpdate = lastUpdateDate < today;
                 } else {
-                    var currentTime = Math.floor(Date.now() / 1000);
-                    var lastUpdateTime = stat.mtime;
-                    var timeDifference = currentTime - lastUpdateTime;
-                    needTimeUpdate = timeDifference > 3600; // 如果超过1小时，需要更新
+                    needUpdate = true;
                 }
 
                 // 检查 resolv.conf.auto 文件内容
                 var hasResolvContent = resolvContent && resolvContent.trim().length > 0;
 
-                // 只有当需要时间更新且 resolv.conf.auto 不为空时，才返回 true
-                return needTimeUpdate && hasResolvContent;
+                // 只有当需要更新且 resolv.conf.auto 不为空时，才返回 true
+                return needUpdate && hasResolvContent;
             }).catch(function(error) {
                 console.error('Error checking update status:', error);
                 return false; // 如果出错，不执行更新

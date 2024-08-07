@@ -82,6 +82,12 @@ msgstr "TPROXY 模式"
 msgid "TUN Mode"
 msgstr "TUN 模式"
 
+msgid "IPv4 DNS Hijack"
+msgstr "IPv4 DNS 劫持"
+
+msgid "IPv6 DNS Hijack"
+msgstr "IPv6 DNS 劫持"
+
 msgid "IPv4 Proxy"
 msgstr "IPv4 代理"
 
@@ -91,8 +97,8 @@ msgstr "IPv6 代理"
 msgid "Router Proxy"
 msgstr "路由器代理"
 
-msgid "DNS Hijack"
-msgstr "DNS 劫持"
+msgid "Lan Proxy"
+msgstr "局域网代理"
 
 msgid "Access Control"
 msgstr "访问控制"
@@ -105,9 +111,6 @@ msgstr "白名单模式"
 
 msgid "Block Mode"
 msgstr "黑名单模式"
-
-msgid "Forbid Mode"
-msgstr "禁止模式"
 
 msgid "Bypass"
 msgstr "绕过"
@@ -295,6 +298,9 @@ msgstr "使用系统的 Hosts"
 msgid "Use Hosts"
 msgstr "使用 Hosts"
 
+msgid "Overwrite Hosts"
+msgstr "覆盖 Hosts"
+
 msgid "Edit Hosts"
 msgstr "编辑 Hosts"
 
@@ -361,14 +367,17 @@ msgstr "标准加载器"
 msgid "Memory Conservative Loader"
 msgstr "为内存受限设备优化的加载器"
 
+msgid "GeoSite Url"
+msgstr "GeoSite 下载地址"
+
 msgid "GeoIP(MMDB) Url"
 msgstr "GeoIP(MMDB) 下载地址"
 
 msgid "GeoIP(DAT) Url"
 msgstr "GeoIP(DAT) 下载地址"
 
-msgid "GeoSite Url"
-msgstr "GeoSite 下载地址"
+msgid "GeoIP(ASN) Url"
+msgstr "GeoIP(ASN) 下载地址"
 
 msgid "GeoX Auto Update"
 msgstr "定时更新GeoX文件"
@@ -384,6 +393,9 @@ msgstr "混入文件内容"
 
 msgid "Editor"
 msgstr "编辑器"
+
+msgid "Profile for Startup"
+msgstr "用于启动的配置文件"
 
 msgid "Log"
 msgstr "日志"

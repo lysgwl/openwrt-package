@@ -74,7 +74,10 @@ define_global() {
 	local error=0
 	local v ucivv="enable def_tcp_stun def_udp_stun def_http_server def_fwmark_value def_tcp_interval def_udp_interval"
 	for v in $ucivv; do
-		[ -z "$(config_get $1 $v)" ] && err_msg__empty $1 $v && let error++
+		[ -z "$(config_get $1 $v)" ] && grep -qEv "^(def_fwmark_value)$" <<< "$v" && {
+			err_msg__empty $1 $v
+			let error++
+		}
 		config_get GLOBAL_$v $1 $v
 	done
 
@@ -288,8 +291,19 @@ natmap_instance() {
 }
 
 clear_status_files() {
+	local f sid="$1"
+
 	mkdir -p "${STATUS_PATH}" 2>/dev/null
-	find "${STATUS_PATH}" -type f -print0 | xargs -0 rm -f --
+	pushd "${STATUS_PATH}" >/dev/null
+	if [ -n "$sid" ]; then
+		for f in *.json; do
+			[ "$(jsonfilter -q -i $f -e '@.sid')" = "$sid" ] || continue
+			rm -f $f; break
+		done
+	else
+		find * -type f -print0 | xargs -0 rm -f --
+	fi
+	popd >/dev/null
 }
 
 # err_msg__empty <section> <option>
@@ -302,11 +316,13 @@ launcher() {
 	[ "$enable" = 0 ] && return 0
 
 	# global options
-	[ "$udp_mode" = 1 ] \
-		&& echo ${stun_server:=$GLOBAL_def_udp_stun} ${interval:=$GLOBAL_def_udp_interval} >/dev/null \
-		|| echo ${stun_server:=$GLOBAL_def_tcp_stun} ${interval:=$GLOBAL_def_tcp_interval} >/dev/null
-	echo ${http_server:=$GLOBAL_def_http_server} >/dev/null
-	echo ${fwmark_value:=$GLOBAL_def_fwmark_value} >/dev/null
+	if [ "$udp_mode" = 1 ]; then
+		local stun_server=${stun_server:-$GLOBAL_def_udp_stun} interval=${interval:-$GLOBAL_def_udp_interval}
+	else
+		local stun_server=${stun_server:-$GLOBAL_def_tcp_stun} interval=${interval:-$GLOBAL_def_tcp_interval}
+	fi
+	local http_server=${http_server:-$GLOBAL_def_http_server}
+	local fwmark_value=${fwmark_value:-$GLOBAL_def_fwmark_value}
 	# natmap options
 	local error=0
 	local proto ifname bind_ip lan_addr
@@ -315,7 +331,8 @@ launcher() {
 		ipv4) network_get_device ifname "$DEF_WAN";;
 		ipv6) network_get_device ifname "$DEF_WAN6";;
 	esac
-	[ -z "${bind_ifname:=$ifname}" ] && >&2 echo "$(basename $0): section $1 option bind_ifname parsing failed, there may be no $family network connection" && let error++
+	local bind_ifname=${bind_ifname:-$ifname}
+	[ -z "$bind_ifname" ] && >&2 echo "$(basename $0): section $1 option bind_ifname parsing failed, there may be no $family network connection" && let error++
 	case "$family" in
 		ipv4)
 			eval "bind_ip=\"\${NIC_${bind_ifname//[[:punct:]]/_}%/*}\""
@@ -363,7 +380,7 @@ launcher() {
 		[ -x "$ddns_script" ] || { >&2 echo "$(basename $0): section $1 option ddns_script '$ddns_script' is empty or non-executable"; let error++; }
 		if [ -n "$ddns_srv" ]; then
 			[ -z "$ddns_srv_serv" ] && err_msg__empty $1 ddns_srv_serv && let error++
-			echo ${ddns_srv_target:=$ddns_srv} >/dev/null
+			local ddns_srv_target=${ddns_srv_target:-$ddns_srv}
 		fi
 	fi
 
@@ -410,6 +427,7 @@ start_service() {
 	[ "${GLOBAL_enable:=0}" == "0" ] && return 1
 
 	if [ -n "$sid" ]; then
+		clear_status_files "$sid"
 		validate_section_natmap "$sid" launcher
 	else
 		clear_status_files
@@ -417,14 +435,16 @@ start_service() {
 	fi
 }
 
+stop_service() {
+	local sid="$1"
+	clear_status_files "$sid"
+}
+
 reload_service() {
-	stop
-	start
+	stop "$@"
+	start "$@"
 }
 
 service_started() { procd_set_config_changed firewall; }
 
-service_stopped() {
-	clear_status_files
-	procd_set_config_changed firewall
-}
+service_stopped() { procd_set_config_changed firewall; }

@@ -102,8 +102,6 @@ jobs:
         git_clone https://github.com/riverscn/openwrt-iptvhelper && mvdir openwrt-iptvhelper
         ) &
         (
-        git_clone https://github.com/jerrykuku/luci-theme-argon
-        git_clone https://github.com/jerrykuku/luci-app-argon-config
         #git_clone https://github.com/jerrykuku/luci-app-vssr
         #git_clone https://github.com/jerrykuku/luci-app-ttnode
         git_clone https://github.com/sirpdboy/luci-app-advancedplus
@@ -231,6 +229,8 @@ jobs:
         git_clone https://github.com/danchexiaoyang/luci-app-syncthing
         git_clone https://github.com/aa65535/openwrt-dist-luci
         git_clone https://github.com/morytyann/OpenWrt-msd && mvdir OpenWrt-msd
+        git_clone https://github.com/lwz322/luci-app-k3screenctrl
+        git_clone https://github.com/lwz322/k3screenctrl_build k3screenctrl
         ) &
         (
         git_clone https://github.com/muink/luci-app-dnsproxy
@@ -377,11 +377,11 @@ jobs:
         git_sparse_clone master "https://github.com/coolsnowwolf/luci" applications libs/luci-lib-fs
         mv -f applications luciapp
         rm -rf luciapp/{luci-app-qbittorrent,luci-app-zerotier,luci-app-cpufreq,luci-app-e2guardian,luci-app-aliyundrive-fuse,luci-app-syncdial,luci-app-firewall}
-        git_sparse_clone master "https://github.com/immortalwrt/luci" applications protocols/luci-proto-minieap
-        mv -n applications/* luciapp/; rm -rf applications
+        git_sparse_clone master "https://github.com/immortalwrt/luci" applications protocols/luci-proto-minieap themes/luci-theme-argon
+        mv -n luciapp/* applications/; rm -rf luciapp
 
-        for ipk in $(ls -d luciapp/!(luci-app-rclone|luci-app-filebrowser|luci-app-firewall)/); do
-        	if [[ $(ls $ipk/po | wc -l) -gt 3 ]]; then
+        for ipk in $(ls -d applications/!(luci-app-rclone|luci-app-filebrowser|luci-app-firewall)/); do
+        	if [[ $(ls $ipk/po | wc -l) -gt 4 ]]; then
             rm -rf $ipk
         	fi
         done
@@ -391,7 +391,7 @@ jobs:
     - name: Delete duplicated packages
       run: |
         shopt -s extglob
-        mv -n luciapp/!(luci-app-noddos|luci-app-openvpn-server|luci-app-cshark|luci-app-dnscrypt-proxy|luci-app-https-dns-proxy|luci-app-ssr-mudb-server|luci-app-ledtrig-*) ./ ; rm -Rf luciapp
+        mv -n applications/!(luci-app-noddos|luci-app-openvpn-server|luci-app-kodexplorer|luci-app-cshark|luci-app-dnscrypt-proxy|luci-app-https-dns-proxy|luci-app-ssr-mudb-server|luci-app-ledtrig-*) ./ ; rm -Rf applications
         mv -n lean/* ./ ; rm -Rf lean
         cp -rf wwan/*/* ./ ; rm -Rf wwan
         mv -n liep/* ./ ; rm -Rf liep
@@ -422,6 +422,9 @@ jobs:
         sed -i \
         -e "s/\(network\..*\)\.ifname/\1.device/g" \
         `find \( -path "*/root/*" -o -path "*/files/*" -o -path "*/luasrc/*" \) ! -path "./base-files/*" ! -path "./dnsmasq/*" ! -path "./luci-base/*" ! -path "./ppp/*" -type f` &
+        sed -i -e "s/\(killall .*\)-[0-9] /\1-3 /g" \
+        -e "s/killall \([^-]+*\)/killall -3 \1/g" \
+        `find \( -path "*/files/root/etc/init.d/*" -o -path "*/root/etc/init.d/*" -o -path "*/files/*.init" \) -type f` &
         wget https://github.com/xiechangan123/luci-i18n-xray-zh-cn/raw/main/po/zh-cn/xray.zh-cn.po -P luci-app-xray/po/zh_Hans/
         (
         function latest() {

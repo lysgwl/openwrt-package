@@ -1,12 +1,13 @@
 #!/bin/sh
 
 # permission
-MIHOMO_USER="mihomo"
+MIHOMO_USER="root"
 MIHOMO_GROUP="mihomo"
 
 # routing
-FW_TABLE=80
+FW_TABLE="mihomo"
 FW_MARK=80
+ROUTE_TABLE=80
 TUN_DEVICE="tun"
 
 # paths
@@ -28,8 +29,5 @@ TUN_SH="$SH_DIR/tun.sh"
 # nftables
 NFT_DIR="$HOME_DIR/nftables"
 HIJACK_NFT="$NFT_DIR/hijack.nft"
-HIJACK6_NFT="$NFT_DIR/hijack6.nft"
-HIJACK_TUN_NFT="$NFT_DIR/hijack_tun.nft"
-HIJACK6_TUN_NFT="$NFT_DIR/hijack6_tun.nft"
 GEOIP_CN_NFT="$NFT_DIR/geoip_cn.nft"
 GEOIP6_CN_NFT="$NFT_DIR/geoip6_cn.nft"
