@@ -5,12 +5,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=firewall4
-PKG_RELEASE:=36
+PKG_RELEASE:=40
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL=$(PROJECT_GIT)/project/firewall4.git
-PKG_SOURCE_DATE:=2024-05-21
-PKG_SOURCE_VERSION:=4c01d1ebf99e8ecfa69758a9b4f450ecef7b93cd
+PKG_SOURCE_DATE:=2024-06-03
+PKG_SOURCE_VERSION:=dfbcc1cd127c78fc61bb870d36d2512b571d223b
 PKG_MIRROR_HASH:=skip
 PKG_MAINTAINER:=Jo-Philipp Wich <jo@mein.io>
 PKG_LICENSE:=ISC
@@ -39,13 +39,14 @@ endef
 define Package/firewall4/conffiles
 /etc/config/firewall
 /etc/nftables.d/
-/etc/firewall.include
+/etc/firewall.user
 endef
 
 define Package/firewall4/install
 	$(CP) -a $(PKG_BUILD_DIR)/root/* $(1)/
 	$(INSTALL_DIR) $(1)/etc/
-	$(INSTALL_CONF) ./files/firewall.include $(1)/etc/firewall.include
+	$(INSTALL_CONF) ./files/firewall.include $(1)/etc/firewall.user
+	$(INSTALL_CONF) ./files/firewall.exwan $(1)/etc/firewall.exwan
 endef
 
 define Build/Compile
