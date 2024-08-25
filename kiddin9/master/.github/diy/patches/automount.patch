@@ -11,20 +11,12 @@
      +block-mount \
      +e2fsprogs \
      +kmod-usb-storage \
-@@ -47,11 +51,6 @@ define Build/Compile
- endef
+@@ -51,7 +55,7 @@ define Package/automount/install
+ 	$(INSTALL_BIN) ./files/11-anonmount $(1)/etc/uci-defaults/
  
- define Package/automount/install
--	$(INSTALL_DIR) $(1)/etc/uci-defaults
--	$(INSTALL_BIN) ./files/11-anonmount $(1)/etc/uci-defaults/
--
--	$(INSTALL_DIR) $(1)/etc/hotplug.d/block
+ 	$(INSTALL_DIR) $(1)/etc/hotplug.d/block
 -	$(INSTALL_BIN) ./files/15-automount $(1)/etc/hotplug.d/block/
++	$(INSTALL_BIN) ./files/05-automount $(1)/etc/hotplug.d/block/
  endef
  
  define Package/ntfs3-mount/install
-@@ -60,4 +59,3 @@ define Package/ntfs3-mount/install
- endef
- 
- $(eval $(call BuildPackage,automount))
--$(eval $(call BuildPackage,ntfs3-mount))

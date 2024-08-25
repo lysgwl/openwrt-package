@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=automount
 PKG_FLAGS:=nonshared
-PKG_RELEASE:=40
+PKG_RELEASE:=51
 
 PKG_CONFIG_DEPENDS:= \
 	CONFIG_TARGET_ramips
@@ -51,6 +51,11 @@ define Build/Compile
 endef
 
 define Package/automount/install
+	$(INSTALL_DIR) $(1)/etc/uci-defaults
+	$(INSTALL_BIN) ./files/11-anonmount $(1)/etc/uci-defaults/
+
+	$(INSTALL_DIR) $(1)/etc/hotplug.d/block
+	$(INSTALL_BIN) ./files/05-automount $(1)/etc/hotplug.d/block/
 endef
 
 define Package/ntfs3-mount/install
@@ -59,3 +64,4 @@ define Package/ntfs3-mount/install
 endef
 
 $(eval $(call BuildPackage,automount))
+$(eval $(call BuildPackage,ntfs3-mount))
