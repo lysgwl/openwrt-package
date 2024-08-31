@@ -4,8 +4,8 @@ START=99
 STOP=10
 USE_PROCD=1
 
-. $IPKG_INSTROOT/lib/functions/network.sh
-. $IPKG_INSTROOT/etc/mihomo/scripts/constants.sh
+. "$IPKG_INSTROOT/lib/functions/network.sh"
+. "$IPKG_INSTROOT/etc/mihomo/scripts/constants.sh"
 
 start_service() {
 	# clear log
@@ -47,10 +47,11 @@ start_service() {
 	config_get acl_udp_dport "proxy" "acl_udp_dport" "1-65535"
 	## mixin config
 	### general
-	local mode match_process outbound_interface unify_delay tcp_concurrent tcp_keep_alive_interval log_level
+	local mode match_process outbound_interface ipv6 unify_delay tcp_concurrent tcp_keep_alive_interval log_level
 	config_get mode "mixin" "mode"
 	config_get match_process "mixin" "match_process"
 	config_get outbound_interface "mixin" "outbound_interface"
+	config_get_bool ipv6 "mixin" "ipv6" 0
 	config_get_bool unify_delay "mixin" "unify_delay" 0
 	config_get_bool tcp_concurrent "mixin" "tcp_concurrent" 0
 	config_get tcp_keep_alive_interval "mixin" "tcp_keep_alive_interval" 600
@@ -110,7 +111,7 @@ start_service() {
 	config_get geox_update_interval "mixin" "geox_update_interval" "24"
 	# get profile
 	if [[ "$profile" == "file:"* ]]; then
-		local profile_name; profile_name=$(basename ${profile/file:/})
+		local profile_name; profile_name=$(basename "${profile/file:/}")
 		cp -f "$PROFILES_DIR/$profile_name" "$RUN_PROFILE_PATH"
 		log "Use Profile: $profile_name"
 	elif [[ "$profile" == "subscription:"* ]]; then
@@ -139,16 +140,16 @@ start_service() {
 		if [ "$subscription_convert" == 0 ]; then
 			url="$subscription_url"
 		else
-			url="$subscription_convert_backend?target=clash&url=$(echo -n $subscription_url | yq -M -o uri)"
+			url="$subscription_convert_backend?target=clash&url=$(echo -n "$subscription_url" | yq -M -o uri)"
 			if [ -n "$subscription_convert_template" ]; then
-				url="$url&config=$(echo -n $subscription_convert_template | yq -M -o uri)"
+				url="$url&config=$(echo -n "$subscription_convert_template" | yq -M -o uri)"
 			fi
 			if [ "$subscription_convert_advanced" == 1 ]; then
 				if [ -n "$subscription_convert_include" ]; then
-					url="$url&include=$(echo -n $subscription_convert_include | yq -M -o uri)"
+					url="$url&include=$(echo -n "$subscription_convert_include" | yq -M -o uri)"
 				fi
 				if [ -n "$subscription_convert_exclude" ]; then
-					url="$url&exclude=$(echo -n $subscription_convert_exclude | yq -M -o uri)"
+					url="$url&exclude=$(echo -n "$subscription_convert_exclude" | yq -M -o uri)"
 				fi
 				url="$url&udp=$([ "$subscription_convert_udp" == 1 ] && echo -n "true" || echo -n "false")"
 				url="$url&emoji=$([ "$subscription_convert_emoji" == 1 ] && echo -n "true" || echo -n "false")"
@@ -167,13 +168,13 @@ start_service() {
 	if [ "$mixin" == 0 ]; then
 		log "Mixin is disabled, only mixin neccesary config."
 		# do mixin
-		log_level="$log_level" \
+		log_level="$log_level" ipv6="$ipv6" \
 		ui_path="ui" ui_name="$ui_name" ui_url="$ui_url" api_listen="0.0.0.0:$api_port" api_secret="$api_secret" \
 		http_port="$http_port" socks_port="$socks_port" mixed_port="$mixed_port" redir_port="$redir_port" tproxy_port="$tproxy_port" \
 		tun_stack="$tun_stack" tun_device="$TUN_DEVICE" tun_mtu="$tun_mtu" tun_gso="$tun_gso" tun_gso_max_size="$tun_gso_max_size" tun_endpoint_independent_nat="$tun_endpoint_independent_nat" \
 		dns_enable="true" dns_listen="0.0.0.0:$dns_port" \
 		yq -M -i '
-		.log-level = env(log_level) | .ipv6 = true |
+		.log-level = env(log_level) | .ipv6 = env(ipv6) == 1 |
 		.external-ui = env(ui_path) | .external-ui-name = env(ui_name) | .external-ui-url = env(ui_url) | .external-controller = env(api_listen) | .secret = env(api_secret) |
 		.port = env(http_port) | .socks-port = env(socks_port) | .mixed-port = env(mixed_port) | .redir-port = env(redir_port) | .tproxy-port = env(tproxy_port) |
 		.tun.stack = env(tun_stack) | .tun.device = env(tun_device) | .tun.mtu = env(tun_mtu) | .tun.gso = env(tun_gso) == 1 | .tun.gso-max-size = env(tun_gso_max_size) | .tun.endpoint-independent-nat = env(tun_endpoint_independent_nat) == 1 |
@@ -182,7 +183,7 @@ start_service() {
 	else
 		log "Mixin is enabled, mixin all config."
 		# do mixin
-		mode="$mode" match_process="$match_process" unify_delay="$unify_delay" tcp_concurrent="$tcp_concurrent" tcp_keep_alive_interval="$tcp_keep_alive_interval" log_level="$log_level" \
+		log_level="$log_level" mode="$mode" match_process="$match_process" unify_delay="$unify_delay" tcp_concurrent="$tcp_concurrent" tcp_keep_alive_interval="$tcp_keep_alive_interval" ipv6="$ipv6" \
 		ui_path="ui" ui_name="$ui_name" ui_url="$ui_url" api_listen="0.0.0.0:$api_port" api_secret="$api_secret" selection_cache="$selection_cache" \
 		allow_lan="$allow_lan" http_port="$http_port" socks_port="$socks_port" mixed_port="$mixed_port" redir_port="$redir_port" tproxy_port="$tproxy_port" \
 		tun_stack="$tun_stack" tun_device="$TUN_DEVICE" tun_mtu="$tun_mtu" tun_gso="$tun_gso" tun_gso_max_size="$tun_gso_max_size" tun_endpoint_independent_nat="$tun_endpoint_independent_nat" \
@@ -192,7 +193,7 @@ start_service() {
 		geoip_format="$geoip_format" geodata_loader="$geodata_loader" geosite_url="$geosite_url" geoip_mmdb_url="$geoip_mmdb_url" geoip_dat_url="$geoip_dat_url" geoip_asn_url="$geoip_asn_url" \
 		geox_auto_update="$geox_auto_update" geox_update_interval="$geox_update_interval" \
 		yq -M -i '
-		.mode = env(mode) | .find-process-mode = env(match_process) | .unified-delay = env(unify_delay) == 1 | .tcp-concurrent = env(tcp_concurrent) == 1 | .keep-alive-interval = env(tcp_keep_alive_interval) | .log-level = env(log_level) | .ipv6 = true |
+		.log-level = env(log_level) | .mode = env(mode) | .find-process-mode = env(match_process) | .unified-delay = env(unify_delay) == 1 | .tcp-concurrent = env(tcp_concurrent) == 1 | .keep-alive-interval = env(tcp_keep_alive_interval) | .ipv6 = env(ipv6) == 1 |
 		.external-ui = env(ui_path) | .external-ui-name = env(ui_name) | .external-ui-url = env(ui_url) | .external-controller = env(api_listen) | .secret = env(api_secret) | .profile.store-selected = env(selection_cache) == 1 |
 		.allow-lan = env(allow_lan) == 1 | .port = env(http_port) | .socks-port = env(socks_port) | .mixed-port = env(mixed_port) | .redir-port = env(redir_port) | .tproxy-port = env(tproxy_port) |
 		.tun.stack = env(tun_stack) | .tun.device = env(tun_device) | .tun.mtu = env(tun_mtu) | .tun.gso = env(tun_gso) == 1 | .tun.gso-max-size = env(tun_gso_max_size) | .tun.endpoint-independent-nat = env(tun_endpoint_independent_nat) == 1 |
@@ -311,23 +312,25 @@ start_service() {
 			fi
 		fi
 		nft -f "$HIJACK_NFT" -D FW_MARK="$FW_MARK" -D FW_MARK_MASK="$FW_MARK_MASK" -D TUN_DEVICE="$TUN_DEVICE" -D MIHOMO_USER="$MIHOMO_USER" -D TPROXY_PORT="$tproxy_port" -D DNS_PORT="$dns_port"
+		nft -f "$RESERVED_IP_NFT"
+		nft -f "$RESERVED_IP6_NFT"
 		# dns hijack
 		if [ "$ipv4_dns_hijack" == 1 ]; then
 			log "Transparent Proxy: IPv4 DNS Hijack is enabled, IPv4 dns request will redirect to the core."
-			nft add element inet $FW_TABLE dns_hijack_nfproto { ipv4 }
+			nft add element inet "$FW_TABLE" dns_hijack_nfproto \{ ipv4 \}
 		fi
 		if [ "$ipv6_dns_hijack" == 1 ]; then
 			log "Transparent Proxy: IPv6 DNS Hijack is enabled, IPv6 dns request will redirect to the core."
-			nft add element inet $FW_TABLE dns_hijack_nfproto { ipv6 }
+			nft add element inet "$FW_TABLE" dns_hijack_nfproto \{ ipv6 \}
 		fi
 		# proxy
 		if [ "$ipv4_proxy" == 1 ]; then
 			log "Transparent Proxy: IPv4 Proxy is enabled, set proxy for IPv4 traffic."
-			nft add element inet $FW_TABLE proxy_nfproto { ipv4 }
+			nft add element inet "$FW_TABLE" proxy_nfproto \{ ipv4 \}
 		fi
 		if [ "$ipv6_proxy" == 1 ]; then
 			log "Transparent Proxy: IPv6 Proxy is enabled, set proxy for IPv6 traffic."
-			nft add element inet $FW_TABLE proxy_nfproto { ipv6 }
+			nft add element inet "$FW_TABLE" proxy_nfproto \{ ipv6 \}
 		fi
 		# bypass china mainland ip
 		if [ "$bypass_china_mainland_ip" == 1 ]; then
@@ -342,13 +345,13 @@ start_service() {
 		# destination port to proxy
 		log "Transparent Proxy: Destination TCP Port to Proxy: $acl_tcp_dport."
 		log "Transparent Proxy: Destination UDP Port to Proxy: $acl_udp_dport."
-		nft add element inet $FW_TABLE fake_ip \{ "$fake_ip_range" \}
+		nft add element inet "$FW_TABLE" fake_ip \{ "$fake_ip_range" \}
 		local acl_dport
 		for acl_dport in $acl_tcp_dport; do
-			nft add element inet $FW_TABLE acl_dport \{ "tcp" . "$acl_dport" \}
+			nft add element inet "$FW_TABLE" acl_dport \{ "tcp" . "$acl_dport" \}
 		done
 		for acl_dport in $acl_udp_dport; do
-			nft add element inet $FW_TABLE acl_dport \{ "udp" . "$acl_dport" \}
+			nft add element inet "$FW_TABLE" acl_dport \{ "udp" . "$acl_dport" \}
 		done
 		# exclusion
 		log "Transparent Proxy: Add exclusions."
@@ -356,8 +359,8 @@ start_service() {
 		# router proxy
 		if [ "$router_proxy" == 1 ]; then
 			log "Transparent Proxy: Router Proxy is enabled, set proxy for router."
-			nft add rule inet $FW_TABLE nat_output jump router_dns_hijack
-			nft add rule inet $FW_TABLE mangle_output jump router_reroute
+			nft add rule inet "$FW_TABLE" nat_output jump router_dns_hijack
+			nft add rule inet "$FW_TABLE" mangle_output jump router_reroute
 		fi
 		# lan proxy
 		if [ "$lan_proxy" == 1 ]; then
@@ -373,14 +376,15 @@ start_service() {
 			config_list_foreach "proxy" "acl_ip" add_acl_ip
 			config_list_foreach "proxy" "acl_ip6" add_acl_ip6
 			config_list_foreach "proxy" "acl_mac" add_acl_mac
-			nft add rule inet $FW_TABLE dstnat jump ${access_control_mode}_dns_hijack
-			nft add rule inet $FW_TABLE mangle_prerouting jump ${access_control_mode}_${transparent_proxy_mode}
+			nft add rule inet "$FW_TABLE" dstnat jump "${access_control_mode}_dns_hijack"
+			nft add rule inet "$FW_TABLE" mangle_prerouting jump "${access_control_mode}_${transparent_proxy_mode}"
 		fi
 	fi
 	# cron
 	if [[ "$scheduled_restart" == 1 && -n "$cron_expression" ]]; then
 		log "Add crontab for scheduled restart."
 		echo "$cron_expression /etc/init.d/mihomo restart #mihomo" >> "/etc/crontabs/root"
+		/etc/init.d/cron restart
 	fi
 	log "Start Successful!"
 }
@@ -413,7 +417,7 @@ cleanup() {
 	ip -6 rule del table "$ROUTE_TABLE" > /dev/null 2>&1
 	ip -6 route flush table "$ROUTE_TABLE" > /dev/null 2>&1
 	ip tuntap del dev "$TUN_DEVICE" mode tun > /dev/null 2>&1
-	nft delete table inet $FW_TABLE > /dev/null 2>&1
+	nft delete table inet "$FW_TABLE" > /dev/null 2>&1
 	local handles handle
 	handles=$(nft --json list table inet fw4 | yq '.nftables[] | select(has("rule")) | .rule | select(.family == "inet" and .table == "fw4" and .chain == "input" and .expr[0].match.right == "tun") | .handle')
 	for handle in $handles; do
@@ -425,6 +429,7 @@ cleanup() {
 	done
 	# delete cron
 	sed -i '/#mihomo/d' "/etc/crontabs/root" > /dev/null 2>&1
+	/etc/init.d/cron restart
 }
 
 log() {
@@ -552,15 +557,15 @@ mixin_sniff() {
 }
 
 add_acl_ip() {
-	nft add element inet $FW_TABLE acl_ip \{ "$1" \}
+	nft add element inet "$FW_TABLE" acl_ip \{ "$1" \}
 }
 
 add_acl_ip6() {
-	nft add element inet $FW_TABLE acl_ip6 \{ "$1" \}
+	nft add element inet "$FW_TABLE" acl_ip6 \{ "$1" \}
 }
 
 add_acl_mac() {
-	nft add element inet $FW_TABLE acl_mac \{ "$1" \}
+	nft add element inet "$FW_TABLE" acl_mac \{ "$1" \}
 }
 
 add_wan_inbound_exclusions() {
@@ -569,26 +574,28 @@ add_wan_inbound_exclusions() {
 }
 
 add_wan_inbound_exclusion() {
+	local wan; wan=$1
 	local wan_ip
-	network_get_ipaddr wan_ip $1
+	network_get_ipaddr wan_ip "$wan"
 	if [ -n "$wan_ip" ]; then
-		nft add element inet $FW_TABLE wan_ip \{ "$wan_ip" \}
+		nft add element inet "$FW_TABLE" wan_ip \{ "$wan_ip" \}
 	fi
 }
 
 add_wan6_inbound_exclusion() {
+	local wan6; wan6=$1
 	local wan6_subnets wan6_subnet
-	network_get_subnets6 wan6_subnets $1
+	network_get_subnets6 wan6_subnets "$wan6"
 	if [ -n "$wan6_subnets" ]; then
 		for wan6_subnet in $wan6_subnets; do
-			nft add element inet $FW_TABLE wan_ip6 \{ "$wan6_subnet" \}
+			nft add element inet "$FW_TABLE" wan_ip6 \{ "$wan6_subnet" \}
 		done
 	fi
 	local wan6_prefixes wan6_prefix
-	network_get_prefixes6 wan6_prefixes $1
+	network_get_prefixes6 wan6_prefixes "$wan6"
 	if [ -n "$wan6_prefixes" ]; then
 		for wan6_prefix in $wan6_prefixes; do
-			nft add element inet $FW_TABLE wan_ip6 \{ "$wan6_prefix" \}
+			nft add element inet "$FW_TABLE" wan_ip6 \{ "$wan6_prefix" \}
 		done
 	fi
 }

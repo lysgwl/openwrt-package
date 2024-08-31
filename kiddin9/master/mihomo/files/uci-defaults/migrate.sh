@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. $IPKG_INSTROOT/lib/functions/network.sh
+. "$IPKG_INSTROOT/lib/functions/network.sh"
 
 # delete mihomo.proxy.routing_mark
 routing_mark=$(uci -q get mihomo.proxy.routing_mark); [ -n "$routing_mark" ] && uci del mihomo.proxy.routing_mark
@@ -134,6 +134,9 @@ ui_metacubexd_url=$(uci -q get mihomo.mixin.ui_metacubexd_url); [ -n "$ui_metacu
 
 # add mihomo.config.fast_reload
 fast_reload=$(uci -q get mihomo.config.fast_reload); [ -z "$fast_reload" ] && uci set mihomo.config.fast_reload=1
+
+# add mihomo.mixin.ipv6
+ipv6=$(uci -q get mihomo.mixin.ipv6); [ -z "$ipv6" ] && uci set mihomo.mixin.ipv6=$(uci -q get mihomo.proxy.ipv6_proxy)
 
 # commit
 uci commit mihomo
