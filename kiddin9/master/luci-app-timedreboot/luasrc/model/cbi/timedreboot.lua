@@ -39,9 +39,4 @@ once=s:option(Flag,"once",translate("Only once"))
 once.rmempty = false
 once.default=0
 
-local apply =luci.http.formvalue("cbi.apply")
-if apply then
-    luci.sys.call("/etc/init.d/timedreboot restart")
-end
-
 return m

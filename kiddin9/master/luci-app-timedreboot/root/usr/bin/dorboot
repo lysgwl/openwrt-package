@@ -3,8 +3,6 @@
 # [K] (C)2020
 # http://github.com/kongfl888/luci-app-timedreboot
 
-sleep 5s
-
 if [ ! -e "/etc/config/timedreboot" ]; then
     echo "timedreboot cfg is not exit" >> /tmp/timedreboot.log
     logger "timedreboot cfg is not exit. Stop!"
@@ -60,7 +58,6 @@ rebootsys() {
     fi
     sleep 5s
     touch /etc/banner
-    sleep 5s
     reboot
 }
 
@@ -122,8 +119,6 @@ fi
 if [ "${1}" = "0" -o "${1}" = "1" ]; then
     rebootsys
 else
-    justcfg
-    sleep 10s
     justcfg
 fi
 
