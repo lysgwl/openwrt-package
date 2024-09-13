@@ -37,7 +37,7 @@ function getSingboxVersion() {
         }
     }
     
-    return 'Unknown version';
+    return '未知版本';
 }
 
 $singBoxVersion = getSingboxVersion();
@@ -60,6 +60,9 @@ $singBoxVersion = getSingboxVersion();
   <body>
 <head>
     <meta charset="UTF-8">
+   <head>
+    <meta charset="UTF-8">
+      <title>双击显示图标</title>
     <style>
         .container-sm {
             margin: 20px auto;
@@ -77,10 +80,10 @@ $singBoxVersion = getSingboxVersion();
             var btn = document.getElementById('showHideButton');
             if (img.style.display === 'none') {
                 img.style.display = 'block';
-                btn.innerText = 'Hide Icon';
+                btn.innerText = '隐藏图标';
             } else {
                 img.style.display = 'none';
-                btn.innerText = 'Show Icon';
+                btn.innerText = '显示图标';
             }
         }
 
@@ -89,7 +92,7 @@ $singBoxVersion = getSingboxVersion();
             var btn = document.getElementById('showHideButton');
             if (img.style.display === 'block') {
                 img.style.display = 'none';
-                btn.innerText = 'Show Icon';
+                btn.innerText = '显示图标';
             }
         }
 
@@ -100,177 +103,228 @@ $singBoxVersion = getSingboxVersion();
 
     <div class="container-sm container-bg text-center callout border border-3 rounded-4 col-11">
         <div class="row">
-            <a href="./" class="col btn btn-lg">Home</a>
-            <a href="./dashboard.php" class="col btn btn-lg">Dashboard</a>
-            <a href="./configs.php" class="col btn btn-lg">Configs</a>
-            <a href="#" class="col btn btn-lg">Settings</a>
+            <a href="./" class="col btn btn-lg">首页</a>
+            <a href="./dashboard.php" class="col btn btn-lg">面板</a>
+            <a href="./configs.php" class="col btn btn-lg">配置</a>
+            <a href="#" class="col btn btn-lg">设定</a>
         </div>
     </div>
-    <div class="container text-left p-3">
+<div class="container text-left p-3">
     <div class="container container-bg border border-3 rounded-4 col-12 mb-4">
-        <h2 class="text-center p-2 mb-3">Theme Settings</h2>
-            <form action="settings.php" method="post">
-                <div class="container text-center justify-content-md-center">
+        <h2 class="text-center p-2 mb-3">主题设定</h2>
+        <form action="settings.php" method="post">
+            <div class="container text-center justify-content-md-center">
+                <div class="row justify-content-md-center">
+                    <div class="col mb-3 justify-content-md-center">
+                        <select class="form-select" name="themechange" aria-label="themex">
+                            <option selected>Change Theme (<?php echo $neko_theme ?>)</option>
+                            <?php foreach ($arrFiles as $file) echo "<option value=\"".$file.'">'.$file."</option>" ?>
+                        </select>
+                    </div>
                     <div class="row justify-content-md-center">
-                        <div class="col mb-3 justify-content-md-center">
-                          <select class="form-select" name="themechange" aria-label="themex">
-                                <option selected>Change Theme (<?php echo $neko_theme ?>)</option>
-                                <?php foreach ($arrFiles as $file) echo "<option value=\"".$file.'">'.$file."</option>" ?>
-                          </select>
+                        <div class="col justify-content-md-center mb-3">
+                            <input class="btn btn-info" type="submit" value="更改主题">
                         </div>
-                        <div class="row justify-content-md-center">
-                            <div class="col justify-content-md-center mb-3">
-                              <input class="btn btn-info" type="submit" value="Change Theme">
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <h2 class="text-center p-2 mb-3">软体资讯</h2>
+        <table class="table table-borderless mb-3">
+            <tbody>
+                <tr>
+                    <td colspan="2">
+                        <h3 class="text-center mb-3">自动重载防火墙</h3>
+                        <form action="settings.php" method="post">
+                            <div class="btn-group d-flex justify-content-center">
+                                <button type="submit" name="fw" value="enable" class="btn btn<?php if($fwstatus==1) echo "-outline" ?>-success <?php if($fwstatus==1) echo "disabled" ?>">启用</button>
+                                <button type="submit" name="fw" value="disable" class="btn btn<?php if($fwstatus==0) echo "-outline" ?>-danger <?php if($fwstatus==0) echo "disabled" ?>">停用</button>
+                            </div>
+                        </form>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <div class="text-center">
+                                    <h3>客户端版本</h3>
+                                    <div class="form-control text-center" style="font-family: monospace; text-align: center;">
+                                        <div id="cliver"></div>
+                                    </div>
+                                    <div class="text-center mt-2">
+                                        <button class="btn btn-primary" id="updateButton">更新到最新版本</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="text-center">
+                                    <h3>Sing-box核心版本</h3>
+                                    <div class="form-control text-center">
+                                        <div id="singBoxCorever">
+                                            <?php echo htmlspecialchars($singBoxVersion); ?>
+                                        </div>
+                                    </div>
+                                    <div class="text-center mt-2">
+                                        <button class="btn btn-pink" id="updateSingboxButton">更新Singbox内核</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="text-center">
+                                    <h3>Mihomo核心版本</h3>
+                                    <div class="form-control text-center">
+                                        <div id="corever">-</div>
+                                    </div>
+                                    <div class="text-center mt-2">
+                                        <button class="btn btn-success" id="updateCoreButton">切换Mihomo内核</button>
+                                        <button class="btn btn-info" id="updateNekoButton">切换NeKo内核</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </form>
-<h2 class="text-center p-2 mb-3">Software Information</h2>
-<table class="table table-borderless mb-3" style="border-radius: 15px; overflow: hidden;">
-    <tbody>
-        <tr>
-            <td class="col-2">Auto Reload Firewall</td>
-            <form action="settings.php" method="post">
-                <td class="d-grid">
-                    <div class="btn-group col" role="group" aria-label="ctrl">
-                        <button type="submit" name="fw" value="enable" class="btn btn<?php if($fwstatus==1) echo "-outline" ?>-success <?php if($fwstatus==1) echo "disabled" ?> d-grid">Enable</button>
-                        <button type="submit" name="fw" value="disable" class="btn btn<?php if($fwstatus==0) echo "-outline" ?>-danger <?php if($fwstatus==0) echo "disabled" ?> d-grid">Disable</button>
-                    </div>
-                </td>
-            </form>
-        </tr>
-        <tr>
-            <td class="col-2">Client Version</td>
-            <td class="col-4">
-                <div class="form-control text-center" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;">
-                    <div style="font-family: monospace; flex-grow: 1; text-align: left;">
-                    <div class="form-control text-center" id="cliver">-</div>
-                    </div>
-                    <button class="form-control text-center" id="updateButton" ">Update to Latest Version</button>
-                </div>
-                <div id="logOutput"></div>
-            </td>
-        </tr>
-        <tr>
-            <td class="col-2">Sing-box Core Version</td>
-            <td class="col-4">
-                <div class="form-control text-center" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;">
-                    <div class="form-control text-center"  id="singBoxCorever">
-                        <?php echo htmlspecialchars($singBoxVersion); ?>
-                    </div>    
-                    <button class="form-control text-center"  id="updateSingboxButton">Update Singbox Core</button>
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td class="col-2">Mihomo Core Version</td>
-            <td class="col-4">
-                <div class="form-control text-center" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;">
-                    <div class="form-control text-center"  id="corever">-</div>
-                    <button class="form-control text-center"  id="updateNekoButton">Switch to NeKo Core</button>
-                    <button class="form-control text-center"  id="updateCoreButton" >Switch to Mihomo Core</button>
-                </div>
-            </td>
-        </tr>
-    </tbody>
-</table>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
 
-<style>
-    #updateButton:hover {
-        background-color: #20B2AA; 
-    }
+        <div id="logOutput" class="mt-3"></div>
 
-    #updateSingboxButton:hover {
-        background-color: #FF69B4; 
-    }
-
-    #updateCoreButton:hover {
-        background-color: #90EE90; 
-    }
-
-    #updateNekoButton:hover {
-        background-color: #87CEFA; 
-    }
-</style>
-
-<script>
-    document.getElementById('updateButton').addEventListener('click', function() {
-        const xhr = new XMLHttpRequest();
-        xhr.open('POST', 'update_script.php', true); 
-        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-
-        document.getElementById('logOutput').innerHTML = 'Starting to download updates...';
-
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                document.getElementById('logOutput').innerHTML += '\nUpdate completed!';
-                document.getElementById('logOutput').innerHTML += '\n' + xhr.responseText; 
-            } else {
-                document.getElementById('logOutput').innerHTML += '\nError occurred: ' + xhr.statusText;
+        <style>
+            .table-container {
+                overflow-x: auto;
             }
-        };
 
-        xhr.send(); 
-    });
-
-    document.getElementById('updateSingboxButton').addEventListener('click', function() {
-        const xhr = new XMLHttpRequest();
-        xhr.open('POST', 'singbox.php', true); 
-        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-
-        document.getElementById('logOutput').innerHTML = 'Starting to download core update...';
-
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                document.getElementById('logOutput').innerHTML += '\nCore update completed!';
-                document.getElementById('logOutput').innerHTML += '\n' + xhr.responseText; 
-            } else {
-                document.getElementById('logOutput').innerHTML += '\nError occurred: ' + xhr.statusText;
+            .table {
+                width: 100%;
+                border-collapse: collapse;
             }
-        };
 
-        xhr.send(); 
-    });
-
-    document.getElementById('updateCoreButton').addEventListener('click', function() {
-        const xhr = new XMLHttpRequest();
-        xhr.open('POST', 'core.php', true); 
-        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-
-        document.getElementById('logOutput').innerHTML = 'Starting to download core update...';
-
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                document.getElementById('logOutput').innerHTML += '\nCore update completed!';
-                document.getElementById('logOutput').innerHTML += '\n' + xhr.responseText; 
-            } else {
-                document.getElementById('logOutput').innerHTML += '\nError occurred: ' + xhr.statusText;
+            .table td {
+                padding: 10px;
+                word-wrap: break-word;
             }
-        };
 
-        xhr.send(); 
-    });
-
-    document.getElementById('updateNekoButton').addEventListener('click', function() {
-        const xhr = new XMLHttpRequest();
-        xhr.open('POST', 'neko.php', true); 
-        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-
-        document.getElementById('logOutput').innerHTML = 'Starting to download core update...';
-
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                document.getElementById('logOutput').innerHTML += '\nCore update completed!';
-                document.getElementById('logOutput').innerHTML += '\n' + xhr.responseText; 
-            } else {
-                document.getElementById('logOutput').innerHTML += '\nError occurred: ' + xhr.statusText;
+            .form-control {
+                width: 100%;
             }
-        };
 
-        xhr.send(); 
-    });
-</script>
+            .btn {
+                white-space: nowrap;
+                flex: 1;
+            }
+
+            @media (max-width: 767px) {
+                .table td {
+                    display: block;
+                    width: 100%;
+                }
+
+                .form-control {
+                    display: flex;
+                    flex-direction: column;
+                }
+
+                .btn-group {
+                    flex-direction: column;
+                }
+            }
+
+            #updateButton:hover {
+                background-color: #20B2AA;
+            }
+
+            #updateSingboxButton:hover {
+                background-color: #FF69B4;
+            }
+
+            #updateCoreButton:hover {
+                background-color: #90EE90;
+            }
+
+            #updateNekoButton:hover {
+                background-color: #87CEFA;
+            }
+        </style>
+
+        <script>
+            document.getElementById('updateButton').addEventListener('click', function() {
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', 'update_script.php', true);
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+                document.getElementById('logOutput').innerHTML = '开始下载更新...';
+
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        document.getElementById('logOutput').innerHTML += '\n更新完成！';
+                        document.getElementById('logOutput').innerHTML += '\n' + xhr.responseText;
+                    } else {
+                        document.getElementById('logOutput').innerHTML += '\n发生错误：' + xhr.statusText;
+                    }
+                };
+
+                xhr.send();
+            });
+
+            document.getElementById('updateSingboxButton').addEventListener('click', function() {
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', 'singbox.php', true);
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+                document.getElementById('logOutput').innerHTML = '开始下载核心更新...';
+
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        document.getElementById('logOutput').innerHTML += '\n核心更新完成！';
+                        document.getElementById('logOutput').innerHTML += '\n' + xhr.responseText;
+                    } else {
+                        document.getElementById('logOutput').innerHTML += '\n发生错误：' + xhr.statusText;
+                    }
+                };
+
+                xhr.send();
+            });
+
+            document.getElementById('updateCoreButton').addEventListener('click', function() {
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', 'core.php', true);
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+                document.getElementById('logOutput').innerHTML = '开始下载核心更新...';
+
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        document.getElementById('logOutput').innerHTML += '\n核心更新完成！';
+                        document.getElementById('logOutput').innerHTML += '\n' + xhr.responseText;
+                    } else {
+                        document.getElementById('logOutput').innerHTML += '\n发生错误：' + xhr.statusText;
+                    }
+                };
+
+                xhr.send();
+            });
+
+            document.getElementById('updateNekoButton').addEventListener('click', function() {
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', 'neko.php', true);
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+                document.getElementById('logOutput').innerHTML = '开始下载核心更新...';
+
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        document.getElementById('logOutput').innerHTML += '\n核心更新完成！';
+                        document.getElementById('logOutput').innerHTML += '\n' + xhr.responseText;
+                    } else {
+                        document.getElementById('logOutput').innerHTML += '\n发生错误：' + xhr.statusText;
+                    }
+                };
+
+                xhr.send();
+            });
+        </script>
 <!DOCTYPE html>
 <html lang="zh">
 <head>
@@ -351,35 +405,35 @@ $singBoxVersion = getSingboxVersion();
 </head>
 <body>
     <div class="container mt-4">
-        <h2 class="text-center mb-4">About NekoClash</h2>
+        <h2 class="text-center mb-4">关于 NekoClash</h2>
         <div class="feature-box text-center">
             <h5>NekoClash</h5>
-            <p>NekoClash is a thoughtfully designed Mihomo proxy tool, created specifically for home users, aimed at providing a simple yet powerful proxy solution. Built on PHP and BASH technologies, NekoClash simplifies complex proxy configurations into an intuitive experience, allowing every user to easily enjoy an efficient and secure network environment.</p>
+            <p>NekoClash 是一款精心设计的 Mihomo 代理工具，专为家庭用户打造，旨在提供简洁而强大的代理解决方案。基于 PHP 和 BASH 技术，NekoClash 将复杂的代理配置简化为直观的操作体验，让每个用户都能轻松享受高效、安全的网络环境。</p>
         </div>
 
-        <h5 class="text-center mb-4">Core Features</h5>
+        <h5 class="text-center mb-4">核心特点</h5>
         <div class="row">
             <div class="col-md-4 mb-4 d-flex">
                 <div class="feature-box text-center flex-fill">
-                    <h6>Simplified Configuration</h6>
-                    <p>With a user-friendly interface and smart configuration features, easily set up and manage Mihomo proxies.。</p>
+                    <h6>简化配置</h6>
+                    <p>采用用户友好的界面和智能配置功能，轻松实现 Mihomo 代理的设置与管理。</p>
                 </div>
             </div>
             <div class="col-md-4 mb-4 d-flex">
                 <div class="feature-box text-center flex-fill">
-                    <h6>Optimized Performance</h6>
-                    <p>Ensures optimal proxy performance and stability through efficient scripts and automation.</p>
+                    <h6>优化性能</h6>
+                    <p>通过高效的脚本和自动化处理，确保最佳的代理性能和稳定性。</p>
                 </div>
             </div>
             <div class="col-md-4 mb-4 d-flex">
                 <div class="feature-box text-center flex-fill">
-                    <h6>Seamless Experience</h6>
-                    <p>Designed for home users, balancing ease of use and functionality, ensuring every family member can conveniently use the proxy service.</p>
+                    <h6>无缝体验</h6>
+                    <p>专为家庭用户设计，兼顾易用性与功能性，确保每个家庭成员都能便捷地使用代理服务。</p>
                 </div>
             </div>
         </div>
 
-<h5 class="text-center mb-4">Tool Information</h5>
+<h5 class="text-center mb-4">工具信息</h5>
 <div class="d-flex justify-content-center">
     <div class="table-container">
         <table class="table table-borderless mb-5">
@@ -404,7 +458,7 @@ $singBoxVersion = getSingboxVersion();
         </table>
     </div>
 </div>
-    <h5 class="text-center mb-4">External Links</h5>
+    <h5 class="text-center mb-4">外部链接</h5>
         <div class="table-container">
             <table class="table table-borderless mb-5">
                 <tbody>
@@ -443,7 +497,7 @@ $singBoxVersion = getSingboxVersion();
                 </tbody>
             </table>
         </div>
-<h5 class="text-center mb-4">Sing-box Subscription Template Collection</h5>
+<h5 class="text-center mb-4">Sing-box订阅模板收集</h5>
 <div class="d-flex justify-content-center">
     <div class="table-container">
         <table class="table table-borderless mb-5">

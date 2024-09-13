@@ -32,9 +32,9 @@ $dashboard_link = $neko_cfg['ctrl_host'] . ':' . $neko_cfg['ctrl_port'] . '/ui/d
     <script type="text/javascript" src="./assets/js/jquery-2.1.3.min.js"></script>
   </head>
   <body>
-   <head>
+<head>
     <meta charset="UTF-8">
-
+    <title>双击显示图标</title>
     <style>
         .container-sm {
             margin: 20px auto;
@@ -43,7 +43,7 @@ $dashboard_link = $neko_cfg['ctrl_host'] . ':' . $neko_cfg['ctrl_port'] . '/ui/d
 </head>
 <body>
     <div class="container-sm text-center col-8">
-        <img src="./assets/img/neko.png" class="img-fluid mb-5 draggable" style="display: none;">
+        <img src="./assets/img/neko.png" class="img-fluid mb-5" style="display: none;">
     </div>
 
     <script>
@@ -52,10 +52,10 @@ $dashboard_link = $neko_cfg['ctrl_host'] . ':' . $neko_cfg['ctrl_port'] . '/ui/d
             var btn = document.getElementById('showHideButton');
             if (img.style.display === 'none') {
                 img.style.display = 'block';
-                btn.innerText = 'Hide Icon';
+                btn.innerText = '隐藏图标';
             } else {
                 img.style.display = 'none';
-                btn.innerText = 'Show Icon';
+                btn.innerText = '显示图标';
             }
         }
 
@@ -64,7 +64,7 @@ $dashboard_link = $neko_cfg['ctrl_host'] . ':' . $neko_cfg['ctrl_port'] . '/ui/d
             var btn = document.getElementById('showHideButton');
             if (img.style.display === 'block') {
                 img.style.display = 'none';
-                btn.innerText = 'Show Icon';
+                btn.innerText = '显示图标';
             }
         }
 
@@ -74,11 +74,11 @@ $dashboard_link = $neko_cfg['ctrl_host'] . ':' . $neko_cfg['ctrl_port'] . '/ui/d
     </script>
 
     <div class="container-sm container-bg text-center callout border border-3 rounded-4 col-11">
-      <div class="row">
-            <a href="./" class="col btn btn-lg">Home</a>
-            <a href="#" class="col btn btn-lg">Dashboard</a>
-            <a href="./configs.php" class="col btn btn-lg">Configs</a>
-            <a href="./settings.php" class="col btn btn-lg">Settings</a>
+        <div class="row">
+            <a href="./" class="col btn btn-lg">首页</a>
+            <a href="#" class="col btn btn-lg">面板</a>
+            <a href="./configs.php" class="col btn btn-lg">配置</a>
+            <a href="./settings.php" class="col btn btn-lg">设定</a>
         </div>
     </div>
    <div class="container text-left p-3">
@@ -92,86 +92,101 @@ $dashboard_link = $neko_cfg['ctrl_host'] . ':' . $neko_cfg['ctrl_port'] . '/ui/d
         .text-center {
             text-align: center;
         }
+
         .btn-outline-info {
             height: 50px;
-            line-height: 40px;
-            display: inline-block; 
-            margin: 0; 
-            text-align: center; 
-            color: #fff; 
-            border: 3px solid; 
-            transition: background-color 0.3s, border-color 0.3s; 
-            width: 100%; 
-            box-sizing: border-box; 
+            line-height: 50px; 
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: center; 
+            margin: 0;
+            text-align: center;
+            color: #fff;
+            border: 3px solid;
+            transition: background-color 0.3s, border-color 0.3s;
+            width: 100%;
+            box-sizing: border-box;
+            text-decoration: none;
         }
+
         .btn-yacd {
-            background-color: #007bff; 
+            background-color: #007bff;
             border-color: #007bff;
         }
+
         .btn-yacd:hover {
-            background-color: #0056b3; 
+            background-color: #0056b3;
             border-color: #0056b3;
         }
+
         .btn-dashboard {
-            background-color: #28a745; 
+            background-color: #28a745;
             border-color: #28a745;
         }
+
         .btn-dashboard:hover {
-            background-color: #1e7e34; 
+            background-color: #1e7e34;
             border-color: #1e7e34;
         }
+
         .btn-meta {
-            background-color: #dc3545; 
+            background-color: #dc3545;
             border-color: #dc3545;
         }
+
         .btn-meta:hover {
             background-color: #c82333;
             border-color: #c82333;
         }
+
         .btn-container {
             display: flex;
-            flex-direction: column; 
+            flex-direction: column;
             justify-content: center;
-            align-items: stretch; 
-            width: 100%; 
-            position: relative; 
-            top: -15px; 
-            margin-top: 20px; 
+            align-items: stretch;
+            width: 100%;
+            position: relative;
+            top: -15px;
+            margin-top: 20px;
         }
+
         .btn-container a {
-            margin: 5px 0; 
+            margin: 5px 0;
         }
+
         @media (min-width: 768px) {
             .btn-container {
-                flex-direction: row; 
-                justify-content: space-between; 
+                flex-direction: row;
+                justify-content: space-between;
             }
             .btn-container a {
-                flex: 1; 
+                flex: 1;
                 margin: 0 5px;
             }
         }
+
         iframe {
-            border: 3px solid #ddd; 
+            border: 3px solid #ddd;
             width: 100%;
             height: auto;
-            min-height: 700px; 
+            min-height: 700px;
         }
+
         footer {
-            margin-top: 20px; 
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
     <div class="container-fluid container-bg border border-3 rounded-4 mb-3">
-     <h2 class="text-center p-2">Meta Panel</h2>
+        <h2 class="text-center p-2">Meta面板</h2>
         <div class="container h-100 mb-5">
             <iframe class="border border-3 rounded-4 w-100" height="700" src="http://<?=$yacd_link ?>" title="yacd" allowfullscreen></iframe>
         </div>
         <div class="btn-container">
-        <a class="btn btn-outline-info btn-yacd" target="_blank" href="http://<?=$yacd_link ?>">Open YACD-META Panel</a>
-        <a class="btn btn-outline-info btn-dashboard" target="_blank" href="http://<?=$dashboard_link ?>">Open DASHBOARD Panel</a>
-        <a class="btn btn-outline-info btn-meta" target="_blank" href="http://<?=$meta_link ?>">Open METACUBEXD Panel</a>
+            <a class="btn btn-outline-info btn-yacd" target="_blank" href="http://<?=$yacd_link ?>">打开YACD-META面板</a>
+            <a class="btn btn-outline-info btn-dashboard" target="_blank" href="http://<?=$dashboard_link ?>">打开DASHBOARD面板</a>
+            <a class="btn btn-outline-info btn-meta" target="_blank" href="http://<?=$meta_link ?>">打开METACUBEXD面板</a>
         </div>
     </div>
     <footer class="text-center">
@@ -179,4 +194,3 @@ $dashboard_link = $neko_cfg['ctrl_host'] . ':' . $neko_cfg['ctrl_port'] . '/ui/d
     </footer>
 </body>
 </html>
-
