@@ -404,7 +404,7 @@ function clone_remote_repo()
 		clone_repo_contents "${url}" "${package_path_rel}/luci-app-socat"
 		
 		url="https://github.com/destan19/OpenAppFilter.git?ref=master"
-		clone_repo_contents "${url}" "${package_path_rel}/OpenAppFilter"
+		#clone_repo_contents "${url}" "${package_path_rel}/OpenAppFilter"
 	fi
 }
 
