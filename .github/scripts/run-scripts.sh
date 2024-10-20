@@ -392,19 +392,19 @@ function clone_remote_repo()
 		clone_repo_contents "${url}" "${package_path_rel}/luci-app-alist"
 		
 		url="https://github.com/sirpdboy/luci-app-ddns-go.git?ref=main"
-		#clone_repo_contents "${url}" "${package_path_rel}/luci-app-ddns-go"
+		clone_repo_contents "${url}" "${package_path_rel}/luci-app-ddns-go"
 		
 		url="https://github.com/lisaac/luci-app-diskman.git/applications/luci-app-diskman?ref=master"
-		#get_remote_spec_contents "${url}" "diskman" "${package_path_rel}/luci-app-diskman"
+		get_remote_spec_contents "${url}" "diskman" "${package_path_rel}/luci-app-diskman"
 		
 		url="https://github.com/sirpdboy/luci-app-poweroffdevice.git?ref=main"
-		#clone_repo_contents "${url}" "${package_path_rel}/luci-app-poweroffdevice"
+		clone_repo_contents "${url}" "${package_path_rel}/luci-app-poweroffdevice"
 		
 		url="https://github.com/chenmozhijin/luci-app-socat.git?ref=main"
-		#clone_repo_contents "${url}" "${package_path_rel}/luci-app-socat"
+		clone_repo_contents "${url}" "${package_path_rel}/luci-app-socat"
 		
 		url="https://github.com/destan19/OpenAppFilter.git?ref=master"
-		#clone_repo_contents "${url}" "${package_path_rel}/OpenAppFilter"
+		clone_repo_contents "${url}" "${package_path_rel}/OpenAppFilter"
 	fi
 }
 
