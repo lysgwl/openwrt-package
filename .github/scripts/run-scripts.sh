@@ -388,7 +388,7 @@ function clone_remote_repo()
 	package_path_rel=$2
  
 	if [ ${repo_other_cond} -eq 1 ]; then
-		url="https://github.com/sbwml/luci-app-alist.git?ref=master"
+		url="https://github.com/sbwml/luci-app-alist.git?ref=main"
 		clone_repo_contents "${url}" "${package_path_rel}/luci-app-alist"
 		
 		url="https://github.com/sirpdboy/luci-app-ddns-go.git?ref=main"
