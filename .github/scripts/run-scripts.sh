@@ -405,6 +405,9 @@ function clone_remote_repo()
 		
 		url="https://github.com/destan19/OpenAppFilter.git?ref=master"
 		#clone_repo_contents "${url}" "${package_path_rel}/OpenAppFilter"
+
+  		url="https://github.com/Lienol/openwrt-luci.git/applications/luci-app-hd-idle?ref=master"
+    		get_remote_spec_contents "${url}" "hd-idle" "${package_path_rel}/luci-app-hd-idle"
 	fi
 }
 
