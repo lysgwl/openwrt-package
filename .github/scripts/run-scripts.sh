@@ -396,6 +396,12 @@ function clone_remote_repo()
 		
 		url="https://github.com/lisaac/luci-app-diskman.git/applications/luci-app-diskman?ref=master"
 		get_remote_spec_contents "${url}" "diskman" "${package_path_rel}/luci-app-diskman"
+
+  		url="https://github.com/sirpdboy/luci-app-partexp.git?ref=main"
+    		clone_repo_contents "${url}" "${package_path_rel}/luci-app-partexp"
+
+      		url="https://github.com/sirpdboy/luci-app-netwizard.git?ref=main"
+		clone_repo_contents "${url}" "${package_path_rel}/luci-app-netwizard"
 		
 		url="https://github.com/sirpdboy/luci-app-poweroffdevice.git?ref=main"
 		clone_repo_contents "${url}" "${package_path_rel}/luci-app-poweroffdevice"
@@ -405,9 +411,6 @@ function clone_remote_repo()
 		
 		url="https://github.com/destan19/OpenAppFilter.git?ref=master"
 		#clone_repo_contents "${url}" "${package_path_rel}/OpenAppFilter"
-
-  		url="https://github.com/Lienol/openwrt-luci.git/applications/luci-app-hd-idle?ref=master"
-    		# get_remote_spec_contents "${url}" "hd-idle" "${package_path_rel}/luci-app-hd-idle"
 
       		url="https://github.com/coolsnowwolf/luci.git/applications/luci-app-filetransfer?ref=master"
     		# get_remote_spec_contents "${url}" "filetransfer" "${package_path_rel}/luci-app-filetransfer"
