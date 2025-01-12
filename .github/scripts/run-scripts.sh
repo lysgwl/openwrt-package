@@ -414,9 +414,6 @@ function clone_remote_repo()
 
       		url="https://github.com/coolsnowwolf/luci.git/applications/luci-app-filetransfer?ref=master"
     		# get_remote_spec_contents "${url}" "filetransfer" "${package_path_rel}/luci-app-filetransfer"
-
-      		url="https://github.com/sirpdboy/sirpdboy-package.git/luci-app-wolplus?ref=main"
-		# get_remote_spec_contents "${url}" "wolplus" "${package_path_rel}/luci-app-wolplus"
 	fi
 }
 
