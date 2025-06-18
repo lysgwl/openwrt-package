@@ -93,91 +93,133 @@ function get_remote_spec_contents()
 {
 	# 远程仓库URL
 	local remote_repo=$1
-	
-	# 远程仓库别名
-	local remote_alias=$2
+
+	# 远程分支名称
+	local repo_branch=${2:-main}
 	
 	# 本地指定路径
 	local local_path=$3
 	
+	if [[ -z "${local_path}" || "${local_path}" == "/" ]]; then
+		echo "[ERROR] 无效的本地克隆路径, 请检查! $local_path"
+		return 1
+	fi
+	
+	# 解析URL格式: https://domain/repo.git/path?param=value
+	if [[ ! "$remote_repo" =~ ^https?://.+\..+ ]]; then
+		echo "[ERROR] 无效的远程URL格式, 请检查! $remote_repo"
+        return 1
+	fi
+	
 	# 获取.git前缀和后缀字符
-	git_prefix="${remote_repo%%.git*}"
-	git_suffix="${remote_repo#*.git}"
-
-	if [ -z "${git_prefix}" ] || [ -z "${git_suffix}" ]; then
-		return
+	repo_base="${remote_repo%%.git*}"
+	path_params="${remote_repo#*.git}"
+	
+	if [[ -z "${repo_base}" || -z "${path_params}" ]]; then
+		echo "[ERROR] URL解析失败, 请检查! $remote_repo"
+		return 1
 	fi
 	
-	# 获取?前缀和后缀字符
-	suffix_before_mark="${git_suffix%%\?*}"	#
-	suffix_after_mark="${git_suffix#*\?}"	#
-
-	if [ -z "${suffix_before_mark}" ] || [ -z "${suffix_after_mark}" ]; then
-		return
+	# URL解析失败
+	local repo_url="${repo_base}.git"
+	
+	# 分离路径和查询参数
+	local repo_path="${path_params%%\?*}"
+    local query_params="${path_params#*\?}"
+	
+	# 处理没有查询参数的情况
+	if [[ "$query_params" == "$path_params" ]]; then
+        query_params=""
+    fi
+	
+	# 远程仓库别名
+	local repo_alias="origin"
+	if [[ -n "$query_params" ]]; then
+		# 尝试从查询参数中获取别名
+		if [[ "$query_params" =~ name=([^&]+) ]]; then
+			repo_alias="${BASH_REMATCH[1]}"
+		elif [[ "$query_params" =~ alias=([^&]+) ]]; then
+			repo_alias="${BASH_REMATCH[1]}"
+		fi
 	fi
 	
-	# url地址
-	repo_url="${git_prefix}.git"
-	
-	# 指定路径
-	repo_path="${suffix_before_mark}"
-	
-	# 远程分支名称
-	repo_branch=$(echo ${suffix_after_mark} | awk -F '=' '{print $2; exit}')
-	
-	# 临时目录，用于克隆远程仓库
+	# 清理路径开头的斜杠
+	repo_path="${repo_path#/}"
+
+	# 创建临时目录并设置自动清理
 	local temp_dir=$(mktemp -d)
+	trap "rm -rf '${temp_dir}'" EXIT
 	
 	# 初始化本地目录
-	git init -b main ${temp_dir}
+	if ! git init -b main ${temp_dir} >/dev/null 2>&1; then
+		echo "[ERROR] 临时仓库初始化失败, 请检查!"
+		return 2
+	fi
 	
-	# 使用pushd进入临时目录
-	pushd ${temp_dir} > /dev/null	# cd ${temp_dir}
+	# 进入临时目录 (cd ${temp_dir})
+	pushd ${temp_dir} > /dev/null
 	
 	# 添加远程仓库
-	echo "Add remote repository: ${remote_alias}"
-	git remote add ${remote_alias} ${repo_url} || true
+	if ! git remote show | grep -q "^${repo_alias}$"; then
+		echo "[INFO] 添加远程仓库: $repo_alias => $repo_url"
+		
+		if ! git remote add "${repo_alias}" "${repo_url}"; then
+			echo "[ERROR]: 添加远程仓库失败, 请检查! $repo_url"
+			
+            popd >/dev/null
+            return 3
+		fi
+	fi
 	
 	# 开启Sparse checkout模式
 	git config core.sparsecheckout true
 	
 	# 配置要检出的目录或文件
-	sparse_file=".git/info/sparse-checkout"
+	local sparse_file=".git/info/sparse-checkout"
 	
-	if [ ! -e "${sparse_file}" ]; then
-		touch "${sparse_file}"
-	fi
+	mkdir -p "$(dirname "${sparse_file}")"
 	
-	echo "${repo_path}" >> ${sparse_file}
-	echo "Pulling from $remote_alias branch $repo_branch..."
-	
-	# 从远程将目标目录或文件拉取下来
-	git pull ${remote_alias} ${repo_branch}
+	# 清空并写入指定路径
+	echo "${repo_path}" > "${sparse_file}"
 
-	if [ $? -eq 0 ]; then
-		local target_path="${local_path}"
+	# 从远程拉取指定内容
+	echo "[INFO] 拉取远程内容(分支: $repo_branch)..."
+	if ! git pull "${repo_alias}" "${repo_branch}" >/dev/null 2>&1; then
+        echo "[ERROR] 内容拉取失败, 请检查! $repo_branch => $repo_path"
 		
-		if [ ! -d "${target_path}" ]; then
-			mkdir -p "${target_path}"
-		fi
+        popd >/dev/null
+        return 4
+    fi
+	
+	# 检查源路径是否存在
+	local source_path="${temp_dir}/${repo_path}"
+    if [[ ! -e "${source_path}" ]]; then
+		echo "[ERROR] 远程仓库中不存在指定路径: $repo_path"
 		
-		# 判断目标目录是否为空
-		if [ ! -z "$(ls -A ${target_path})" ]; then
-			rm -rf "${target_path:?}"/*  
-		fi
-		
-		echo "Copying remote repo directory to local...."
-		
-		if [ -e "${temp_dir}/${repo_path}" ]; then
-			cp -rf ${temp_dir}/${repo_path}/* ${target_path}
-		fi
+		popd >/dev/null
+        return 1
 	fi
 	
+	# 准备目标目录
+    mkdir -p "${local_path}"
+	if [[ $(ls -A "${local_path}" 2>/dev/null) ]]; then
+		echo "[INFO] 清理目标目录..."
+		rm -rf "${local_path:?}"/*
+	fi
+
+	# 复制内容（使用rsync保留隐藏文件）
+	echo "[INFO] 复制内容到本地...$source_path => $local_path"
+    if [[ -d "${source_path}" ]]; then
+        # 目录复制
+        rsync -a --exclude='.git' "${source_path}/" "${local_path}/"
+    else
+        # 文件复制
+        cp -f "${source_path}" "${local_path}/"
+    fi
+
 	# 返回原始目录
     popd > /dev/null
-	
-	# 清理临时目录
-	rm -rf ${temp_dir}
+	return 0
 }
 
 # 克隆仓库内容
@@ -186,56 +228,37 @@ function clone_repo_contents()
 	# 远程仓库URL
 	local remote_repo=$1
 	
-	# 本地指定路径
-	local local_path=$2
-	
-	# 获取.git前缀和后缀字符
-	git_prefix="${remote_repo%%.git*}"
-	git_suffix="${remote_repo#*.git}"
-	
-	if [ -z "${git_prefix}" ] || [ -z "${git_suffix}" ]; then
-		return
-	fi
-	
-	# 获取?前缀和后缀字符
-	suffix_before_mark="${git_suffix%%\?*}"
-	suffix_after_mark="${git_suffix#*\?}"
-	
-	# url地址
-	repo_url="${git_prefix}.git"
-
 	# 远程分支名称
-	repo_branch=$(echo ${suffix_after_mark} | awk -F '=' '{print $2; exit}')
+	local repo_branch=${2:-main}
+	
+	# 本地指定路径
+	local local_path=$3
+	
+	if [[ -z "${local_path}" || "${local_path}" == "/" ]]; then
+		echo "[ERROR]: 无效的本地克隆路径, 请检查! $local_path"
+		return 1
+	fi
 	
 	# 临时目录，用于克隆远程仓库
 	local temp_dir=$(mktemp -d)
+	trap "rm -rf '${temp_dir}'" EXIT
 	
-	echo "Cloning branch code... ${repo_branch}"
-
 	# 克隆远程仓库到临时目录 ${proxy_cmd}
-	git clone --depth 1 --branch ${repo_branch} ${repo_url} ${temp_dir}
+	echo "[INFO] 克隆远程仓库: ${repo_branch}"
+	git clone --depth 1 --branch ${repo_branch} ${repo_url} ${temp_dir} || {
+		echo "[ERROR] 克隆远程仓库失败! URL:$repo_url, 分支:$repo_branch"
+		return
+	}
 	
-	if [ $? -eq 0 ]; then
-		local target_path="${local_path}"
-		
-		if [ ! -d "${target_path}" ]; then
-			mkdir -p "${target_path}"
-		fi
-		
-		# 判断目标目录是否为空
-		if [ ! -z "$(ls -A ${target_path})" ]; then
-			# 使用:?防止变量为空时删除根目录
-			rm -rf "${target_path:?}"/*  
-		fi
-		
-		echo "Copying repo directory to local...."
-		
-		# 复制克隆的内容到目标路径
-		cp -r ${temp_dir}/* "${local_path}"
-	fi
+	# 准备目标目录
+	mkdir -p "${local_path}"
+	 
+	# 安全清空 
+	rm -rf "${local_path:?}"/* 2>/dev/null	
 	
-	# 清理临时目录
-	rm -rf ${temp_dir}
+	# 复制内容（包括隐藏文件，排除.git）
+	 echo "[INFO] 拷贝文件到本地路径..."
+	rsync -a --exclude='.git' "${temp_dir}/" "${local_path}/"
 }
 
 # 同步远程仓库内容
@@ -388,29 +411,29 @@ function clone_remote_repo()
 	package_path_rel=$2
  
 	if [ ${repo_other_cond} -eq 1 ]; then
-		url="https://github.com/sbwml/luci-app-alist.git?ref=main"
-		clone_repo_contents "${url}" "${package_path_rel}/luci-app-alist"
+		url="https://github.com/sbwml/luci-app-alist.git"
+		clone_repo_contents "${url}" "main" "${package_path_rel}/luci-app-alist"
 		
-		url="https://github.com/sirpdboy/luci-app-ddns-go.git?ref=main"
-		clone_repo_contents "${url}" "${package_path_rel}/luci-app-ddns-go"
+		url="https://github.com/sirpdboy/luci-app-ddns-go.git"
+		clone_repo_contents "${url}" "main" "${package_path_rel}/luci-app-ddns-go"
 		
-		url="https://github.com/lisaac/luci-app-diskman.git/applications/luci-app-diskman?ref=master"
-		get_remote_spec_contents "${url}" "diskman" "${package_path_rel}/luci-app-diskman"
+		url="https://github.com/lisaac/luci-app-diskman.git/applications/luci-app-diskman?name=diskman"
+		get_remote_spec_contents "${url}" "master" "${package_path_rel}/luci-app-diskman"
 
-  		url="https://github.com/sirpdboy/luci-app-partexp.git?ref=main"
-    	clone_repo_contents "${url}" "${package_path_rel}/luci-app-partexp"
+  		url="https://github.com/sirpdboy/luci-app-partexp.git"
+    	clone_repo_contents "${url}" "main" "${package_path_rel}/luci-app-partexp"
 
-      	url="https://github.com/sirpdboy/luci-app-netwizard.git?ref=main"
-		clone_repo_contents "${url}" "${package_path_rel}/luci-app-netwizard"
+      	url="https://github.com/sirpdboy/luci-app-netwizard.git"
+		clone_repo_contents "${url}" "main" "${package_path_rel}/luci-app-netwizard"
 		
-		url="https://github.com/sirpdboy/luci-app-poweroffdevice.git?ref=main"
-		clone_repo_contents "${url}" "${package_path_rel}/luci-app-poweroffdevice"
+		url="https://github.com/sirpdboy/luci-app-poweroffdevice.git"
+		clone_repo_contents "${url}" "main" "${package_path_rel}/luci-app-poweroffdevice"
 		
-		url="https://github.com/chenmozhijin/luci-app-socat.git?ref=main"
-		clone_repo_contents "${url}" "${package_path_rel}/luci-app-socat"
+		url="https://github.com/chenmozhijin/luci-app-socat.git"
+		clone_repo_contents "${url}" "main" "${package_path_rel}/luci-app-socat"
 		
-		url="https://github.com/destan19/OpenAppFilter.git?ref=master"
-		#clone_repo_contents "${url}" "${package_path_rel}/OpenAppFilter"
+		url="https://github.com/destan19/OpenAppFilter.git"
+		clone_repo_contents "${url}" "master" "${package_path_rel}/OpenAppFilter"
 
       	url="https://github.com/coolsnowwolf/luci.git/applications/luci-app-filetransfer?ref=master"
     	# get_remote_spec_contents "${url}" "filetransfer" "${package_path_rel}/luci-app-filetransfer"
