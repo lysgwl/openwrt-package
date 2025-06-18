@@ -414,28 +414,42 @@ function clone_remote_repo()
  
 	if [ ${repo_other_cond} -eq 1 ]; then
 		url="https://github.com/sbwml/luci-app-alist.git"
-		clone_repo_contents "$url" "main" "$package_path_rel/luci-app-alist"
+		clone_repo_contents "$url" "main" "$package_path_rel/luci-app-alist" && {
+			echo "[SUCCESS] 成功克隆远程仓库: $url"
+		}
 		
 		url="https://github.com/sirpdboy/luci-app-ddns-go.git"
-		clone_repo_contents "$url" "main" "$package_path_rel/luci-app-ddns-go"
+		clone_repo_contents "$url" "main" "$package_path_rel/luci-app-ddns-go" && {
+			echo "[SUCCESS] 成功克隆远程仓库: $url"
+		}
 		
 		url="https://github.com/lisaac/luci-app-diskman.git/applications/luci-app-diskman?name=diskman"
 		get_remote_spec_contents "$url" "master" "$package_path_rel/luci-app-diskman"
 
   		url="https://github.com/sirpdboy/luci-app-partexp.git"
-    	clone_repo_contents "$url" "main" "$package_path_rel/luci-app-partexp"
+    	clone_repo_contents "$url" "main" "$package_path_rel/luci-app-partexp" && {
+			echo "[SUCCESS] 成功克隆远程仓库: $url"
+		}
 
       	url="https://github.com/sirpdboy/luci-app-netwizard.git"
-		clone_repo_contents "$url" "main" "$package_path_rel/luci-app-netwizard"
+		clone_repo_contents "$url" "main" "$package_path_rel/luci-app-netwizard" && {
+			echo "[SUCCESS] 成功克隆远程仓库: $url"
+		}
 		
 		url="https://github.com/sirpdboy/luci-app-poweroffdevice.git"
-		clone_repo_contents "$url" "main" "$package_path_rel/luci-app-poweroffdevice"
+		clone_repo_contents "$url" "js" "$package_path_rel/luci-app-poweroffdevice" && {
+			echo "[SUCCESS] 成功克隆远程仓库: $url"
+		}
 		
 		url="https://github.com/chenmozhijin/luci-app-socat.git"
-		clone_repo_contents "$url" "main" "$package_path_rel/luci-app-socat"
+		clone_repo_contents "$url" "main" "$package_path_rel/luci-app-socat" && {
+			echo "[SUCCESS] 成功克隆远程仓库: $url"
+		}
 		
 		url="https://github.com/destan19/OpenAppFilter.git"
-		clone_repo_contents "$url" "master" "$package_path_rel/OpenAppFilter"
+		clone_repo_contents "$url" "master" "$package_path_rel/OpenAppFilter" && {
+			echo "[SUCCESS] 成功克隆远程仓库: $url"
+		}
 
       	url="https://github.com/coolsnowwolf/luci.git/applications/luci-app-filetransfer?ref=master"
     	# get_remote_spec_contents "$url" "filetransfer" "$package_path_rel/luci-app-filetransfer"
