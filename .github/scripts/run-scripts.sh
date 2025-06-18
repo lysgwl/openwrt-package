@@ -176,7 +176,6 @@ function get_remote_spec_contents()
 	
 	# 配置要检出的目录或文件
 	local sparse_file=".git/info/sparse-checkout"
-	
 	mkdir -p "$(dirname "${sparse_file}")"
 	
 	# 清空并写入指定路径
@@ -219,6 +218,8 @@ function get_remote_spec_contents()
 
 	# 返回原始目录
     popd > /dev/null
+	
+	echo "[SUCCESS] 成功获取远程仓库内容: $repo_url => $local_path"
 	return 0
 }
 
@@ -260,6 +261,7 @@ function clone_repo_contents()
 	echo "[INFO] 拷贝文件到本地路径..."
 	rsync -a --exclude='.git' "${temp_dir}/" "${local_path}/"
 	
+	echo "[SUCCESS] 成功克隆远程仓库: $remote_repo => $local_path"
 	return 0
 }
 
@@ -409,76 +411,45 @@ function get_http_repo_contents()
 # 克隆远程仓库内容
 function clone_remote_repo()
 {
-	repo_other_cond=$1
-	package_path_rel=$2
+	local repo_other_cond=$1
+	local package_path_rel=$2
  
 	if [ ${repo_other_cond} -eq 1 ]; then
-		url="https://github.com/sbwml/luci-app-alist.git"
-		clone_repo_contents "$url" "main" "$package_path_rel/luci-app-alist" && {
-			echo "[SUCCESS] 成功克隆远程仓库: $url"
-		}
+		local url="https://github.com/sbwml/luci-app-alist.git"
+		clone_repo_contents "$url" "main" "$package_path_rel/luci-app-alist"
 		
-		url="https://github.com/sirpdboy/luci-app-ddns-go.git"
-		clone_repo_contents "$url" "main" "$package_path_rel/luci-app-ddns-go" && {
-			echo "[SUCCESS] 成功克隆远程仓库: $url"
-		}
+		local url="https://github.com/sirpdboy/luci-app-ddns-go.git"
+		clone_repo_contents "$url" "main" "$package_path_rel/luci-app-ddns-go"
 		
-		url="https://github.com/lisaac/luci-app-diskman.git/applications/luci-app-diskman?name=diskman"
+		local url="https://github.com/lisaac/luci-app-diskman.git/applications/luci-app-diskman?name=diskman"
 		get_remote_spec_contents "$url" "master" "$package_path_rel/luci-app-diskman"
-
-  		url="https://github.com/sirpdboy/luci-app-partexp.git"
-    	clone_repo_contents "$url" "main" "$package_path_rel/luci-app-partexp" && {
-			echo "[SUCCESS] 成功克隆远程仓库: $url"
-		}
-
-      	url="https://github.com/sirpdboy/luci-app-netwizard.git"
-		clone_repo_contents "$url" "main" "$package_path_rel/luci-app-netwizard" && {
-			echo "[SUCCESS] 成功克隆远程仓库: $url"
-		}
 		
-		url="https://github.com/sirpdboy/luci-app-poweroffdevice.git"
-		clone_repo_contents "$url" "js" "$package_path_rel/luci-app-poweroffdevice" && {
-			echo "[SUCCESS] 成功克隆远程仓库: $url"
-		}
-		
-		url="https://github.com/chenmozhijin/luci-app-socat.git"
-		clone_repo_contents "$url" "main" "$package_path_rel/luci-app-socat" && {
-			echo "[SUCCESS] 成功克隆远程仓库: $url"
-		}
-		
-		url="https://github.com/destan19/OpenAppFilter.git"
-		clone_repo_contents "$url" "master" "$package_path_rel/OpenAppFilter" && {
-			echo "[SUCCESS] 成功克隆远程仓库: $url"
-		}
+  		local url="https://github.com/sirpdboy/luci-app-partexp.git"
+    	clone_repo_contents "$url" "main" "$package_path_rel/luci-app-partexp"
 
-      	url="https://github.com/coolsnowwolf/luci.git/applications/luci-app-filetransfer?ref=master"
-    	# get_remote_spec_contents "$url" "filetransfer" "$package_path_rel/luci-app-filetransfer"
+      	local url="https://github.com/sirpdboy/luci-app-netwizard.git"
+		clone_repo_contents "$url" "main" "$package_path_rel/luci-app-netwizard" 
+		
+		local url="https://github.com/sirpdboy/luci-app-poweroffdevice.git"
+		clone_repo_contents "$url" "js" "$package_path_rel/luci-app-poweroffdevice"
+		
+		local url="https://github.com/chenmozhijin/luci-app-socat.git"
+		clone_repo_contents "$url" "main" "$package_path_rel/luci-app-socat"
+		
+		local url="https://github.com/destan19/OpenAppFilter.git"
+		clone_repo_contents "$url" "master" "$package_path_rel/OpenAppFilter"
+
+      	local url="https://github.com/coolsnowwolf/luci.git/applications/luci-app-filetransfer?name=filetransfer"
+    	get_remote_spec_contents "$url" "master" "$package_path_rel/luci-app-filetransfer"
 	fi
 }
 
 # 获取远程仓库内容
 function get_remote_repo()
 {
-	repo_remote_cond=$1
-	package_path_rel=$2
+	local repo_remote_cond=$1
+	local package_path_rel=$2
 	
-	if [ ${repo_remote_cond} -eq 1 ]; then
-		url="https://github.com/coolsnowwolf/luci.git/applications?ref=master"
-		get_remote_spec_contents "$url" "coolsnowwolf" "${package_path_rel}"
-	fi
-	
-	if [ ${repo_remote_cond} -eq 2 ]; then
-		url="https://api.github.com/repos/coolsnowwolf/luci/contents/applications?ref=master"
-		get_http_repo_contents "$url" "${package_path_rel}"
-	fi
-
-	if [ ${repo_remote_cond} -eq 3 ]; then
-		url="https://github.com/shidahuilang/openwrt-package.git?ref=Official"
-		sync_repo_contents "$url" "${package_path_rel}"
-	fi
-
-	if [ ${repo_remote_cond} -eq 4 ]; then
-		url="https://github.com/kiddin9/openwrt-packages.git?ref=master"
-		sync_repo_contents "$url" "${package_path_rel}"
-	fi	
+	local url="https://github.com/coolsnowwolf/luci.git/applications?name=coolsnowwolf"
+	get_remote_spec_contents "$url" "master" "${package_path_rel}"
 }
