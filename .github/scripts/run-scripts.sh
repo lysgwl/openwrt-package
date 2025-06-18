@@ -107,7 +107,7 @@ function check_git_commit()
 	# 返回原始目录
 	popd > /dev/null
 	
-	echo "[SUCCESS] 成功提交仓库变更! $$target_path => $remote_name/$current_branch"
+	echo "[SUCCESS] 成功提交仓库变更! $target_path => $remote_repo/$current_branch"
 	return 0
 }
 
@@ -565,6 +565,6 @@ function get_remote_repo()
 	# sync_repo_contents "$url" "Official" "${package_path_rel}/shidahuilang"
 	
 	# kiddin9
-	local url="https://github.com/kiddin9/openwrt-packages.git?ref=master"
-	#sync_repo_contents "$url" "${package_path_rel}"
+	local url="https://github.com/kiddin9/openwrt-packages.git"
+	#sync_repo_contents "$url" "master" "$package_path_rel/kiddin9"
 }
