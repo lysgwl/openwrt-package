@@ -72,7 +72,7 @@ jobs:
         fi
         
         source ${scripts_file}
-        clone_remote_repo 1 ${package_path_rel}
+        get_other_repo ${package_path_rel}
         
     - name: Get remote repository contents
       if: env.REPO_LEDE_COND != 0 && !cancelled()
