@@ -7,33 +7,79 @@ function check_git_commit()
 	# 目标目录路径
 	local target_path=$1
 	
-	# 进入目标目录
-	pushd "$target_path" > /dev/null || { echo "Error: Unable to change directory to $target_path"; exit 1; }
-	
-	# 将所有变更添加到暂存区
-	git add .
-	
-	# 输出git状态
-	git status
-	
-	# 检查git状态
-	local has_changes=$(git status --porcelain | grep '^[MADRC]')
-	if [ -n "$has_changes" ]; then
-		current_date=$(date '+%Y-%m-%d')
-		
-		git commit -a -m "commit repository changes on ${current_date} [skip ci]"
-		git push git@github.com:lysgwl/openwrt-package.git HEAD:master
+	# 检查目录是否存在
+	if [[ ! -d "$target_path" ]]; then
+		echo "[ERROR] 目标目录不存在, 请检查! $target_path"
+		return 1
 	fi
 	
-	# 递归检查子目录的git状态
-	#for subdir in */; do
-	#	if [ -d "$subdir" ]; then
-	#		check_git_commit "$subdir"
-	#	fi
-	#done
+	# 进入目标目录
+	pushd "$target_path" > /dev/null || { 
+		echo "[ERROR] 目标目录不能进入, 请检查! $target_path"
+		return 1		
+	}
 	
+	# 检查是否在 Git 仓库中
+	if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+		echo "[ERROR] 当前目录不位于工作树, 请检查! $target_path"
+		popd >/dev/null
+		return 2
+	fi
+
+	# 获取当前分支
+	local current_branch=$(git symbolic-ref --short HEAD 2>/dev/null)
+	if [[ -z "$current_branch" ]]; then
+		echo "[ERROR] 无法确定当前分支, 请检查!"
+		popd >/dev/null
+		return 3
+	fi
+
+	# 获取远程仓库名称
+	local remote_name=$(git remote)
+	if [[ -z "$remote_name" ]]; then
+		echo "[ERROR] 获取远程仓库的名称, 请检查!"
+		popd >/dev/null
+		return 4
+	fi
+
+	# 添加所有变更到暂存区
+	git add . || {
+		echo "[ERROR] 将更改添加到暂存区失败, 请检查!"
+		popd >/dev/null
+		return 5
+	}
+	
+	# 检查是否有变更
+	local has_changes=$(git status --porcelain | grep '^[MADRC]')
+	if [[ -n "$has_changes" ]]; then
+		# 显示变更摘要
+		echo "[INFO] 工作路径检测到修改...$target_path"
+		git status
+		
+		# 创建提交
+		local current_date=$(date '+%Y-%m-%d')
+		local commit_message="Auto commit changes on ${current_date} [skip ci]"
+		
+		if ! git commit -m "$commit_message"; then
+			echo "[ERROR] 提交发生失败, 请检查! $target_path"
+			popd >/dev/null
+			return 6
+		fi
+		
+		# 推送变更
+		echo "[INFO] 提交修改内容到: $remote_name/$current_branch..."
+		if ! git push "$remote_name" "HEAD:$current_branch"; then
+			echo "[ERROR] 提交推送到远端发生失败, 请检查! $remote_name/$current_branch"
+			popd >/dev/null
+			return 7
+		fi
+	fi
+
 	# 返回原始目录
-    popd > /dev/null
+	popd > /dev/null
+	
+	echo "[SUCCESS] 成功提交仓库修改, $target_path"
+	return 0
 }
 
 #********************************************************************************#
@@ -108,7 +154,7 @@ function get_remote_spec_contents()
 	# 解析URL格式: https://domain/repo.git/path?param=value
 	if [[ ! "$remote_repo" =~ ^https?://.+\..+ ]]; then
 		echo "[ERROR] 无效的远程URL格式, 请检查! $remote_repo"
-        return 1
+		return 1
 	fi
 	
 	# 获取.git前缀和后缀字符
@@ -125,12 +171,12 @@ function get_remote_spec_contents()
 	
 	# 分离路径和查询参数
 	local repo_path="${path_params%%\?*}"
-    local query_params="${path_params#*\?}"
+	local query_params="${path_params#*\?}"
 	
 	# 处理没有查询参数的情况
 	if [[ "$query_params" == "$path_params" ]]; then
-        query_params=""
-    fi
+		query_params=""
+	fi
 	
 	# 远程仓库别名
 	local repo_alias="origin"
@@ -166,8 +212,8 @@ function get_remote_spec_contents()
 		if ! git remote add "${repo_alias}" "${repo_url}"; then
 			echo "[ERROR]: 添加远程仓库失败, 请检查! $repo_url"
 			
-            popd >/dev/null
-            return 3
+			popd >/dev/null
+			return 3
 		fi
 	fi
 	
@@ -184,23 +230,21 @@ function get_remote_spec_contents()
 	# 从远程拉取指定内容
 	echo "[INFO] 拉取远程内容(分支: $repo_branch)..."
 	if ! git pull "${repo_alias}" "${repo_branch}" >/dev/null 2>&1; then
-        echo "[ERROR] 内容拉取失败, 请检查! $repo_branch => $repo_path"
-		
-        popd >/dev/null
-        return 4
-    fi
+		echo "[ERROR] 内容拉取失败, 请检查! $repo_branch => $repo_path"
+		popd >/dev/null
+		return 4
+	fi
 	
 	# 检查源路径是否存在
 	local source_path="${temp_dir}/${repo_path}"
-    if [[ ! -e "${source_path}" ]]; then
+	if [[ ! -e "${source_path}" ]]; then
 		echo "[ERROR] 远程仓库中不存在指定路径: $repo_path"
-		
 		popd >/dev/null
-        return 1
+		return 1
 	fi
 	
 	# 准备目标目录
-    mkdir -p "${local_path}"
+	mkdir -p "${local_path}"
 	if [[ $(ls -A "${local_path}" 2>/dev/null) ]]; then
 		echo "[INFO] 清理目标目录..."
 		rm -rf "${local_path:?}"/*
@@ -208,16 +252,16 @@ function get_remote_spec_contents()
 
 	# 复制内容（使用rsync保留隐藏文件）
 	echo "[INFO] 复制内容到本地...$source_path => $local_path"
-    if [[ -d "${source_path}" ]]; then
-        # 目录复制
-        rsync -a --exclude='.git' "${source_path}/" "${local_path}/"
-    else
-        # 文件复制
-        cp -f "${source_path}" "${local_path}/"
-    fi
+	if [[ -d "${source_path}" ]]; then
+		# 目录复制
+		rsync -a --exclude='.git' "${source_path}/" "${local_path}/"
+	else
+		# 文件复制
+		cp -f "${source_path}" "${local_path}/"
+	fi
 
 	# 返回原始目录
-    popd > /dev/null
+	popd > /dev/null
 	
 	echo "[SUCCESS] 成功获取远程仓库内容: $repo_url => $local_path"
 	return 0
