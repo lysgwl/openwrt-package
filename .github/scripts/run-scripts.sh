@@ -15,13 +15,13 @@ function check_git_commit()
 	
 	# 进入目标目录
 	pushd "$target_path" > /dev/null || { 
-		echo "[ERROR] 目标目录不能进入, 请检查! $target_path"
+		echo "[ERROR] 无法进入目标目录, 请检查! $target_path"
 		return 1		
 	}
 	
 	# 检查是否在 Git 仓库中
 	if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-		echo "[ERROR] 当前目录不位于工作树, 请检查! $target_path"
+		echo "[ERROR] 当前目录不是 Git 仓库, 请检查! $target_path"
 		popd >/dev/null
 		return 2
 	fi
@@ -37,7 +37,7 @@ function check_git_commit()
 	# 获取远程仓库名称
 	local remote_name=$(git remote)
 	if [[ -z "$remote_name" ]]; then
-		echo "[ERROR] 获取远程仓库的名称, 请检查!"
+		echo "[ERROR] 未配置远程仓库, 请检查!"
 		popd >/dev/null
 		return 4
 	fi
@@ -52,41 +52,55 @@ function check_git_commit()
 
 	# 添加所有变更到暂存区
 	git add . || {
-		echo "[ERROR] 将更改添加到暂存区失败, 请检查!"
+		echo "[ERROR] 添加变更到暂存区失败, 请检查!"
 		popd >/dev/null
 		return 5
 	}
 	
 	# 检查是否有变更
-	local has_changes=$(git status --porcelain | grep '^[MADRC]')
+	local has_changes=$(git status --porcelain) # grep '^[MADRC]'
 	if [[ -n "$has_changes" ]]; then
 		# 显示变更摘要
-		echo "[INFO] 工作路径检测到修改...$target_path"
-		git status
+		echo "=============================================="
+		echo "[INFO] 检测到变更：$target_path"
+		git status --short
 		
 		# 创建提交
 		local current_date=$(date '+%Y-%m-%d')
 		local commit_message="Auto commit changes on ${current_date} [skip ci]"
 		
-		if ! git commit -m "$commit_message"; then
-			echo "[ERROR] 提交发生失败, 请检查! $target_path"
+		# 执行提交并捕获输出
+		local commit_output
+		if ! commit_output=$(git commit -m "$commit_message" 2>&1); then
+			echo "[ERROR] 提交失败, 请检查! $target_path"
+			echo "$commit_output"
+			
 			popd >/dev/null
 			return 6
 		fi
 		
+		# 显示提交信息
+		echo "$commit_output"
+		
+		# 获取提交哈希
+		local commit_hash=$(git rev-parse --short HEAD)
+		
 		# 推送变更
-		echo "[INFO] 提交修改内容到: $remote_name/$current_branch..."
+		echo "[INFO] 推送变更到: $remote_name/$current_branch..."
 		if ! git push "$remote_name" "HEAD:$current_branch"; then
-			echo "[ERROR] 提交推送到远端发生失败, 请检查! $remote_name/$current_branch"
+			echo "[ERROR] 推送失败, 请检查! $remote_name/$current_branch"
 			popd >/dev/null
 			return 7
 		fi
+		
+		# 显示成功信息
+		git show --stat --oneline $commit_hash | tail -n +2
 	fi
 
 	# 返回原始目录
 	popd > /dev/null
 	
-	echo "[SUCCESS] 成功提交仓库修改! $$target_path => $remote_name/$current_branch"
+	echo "[SUCCESS] 成功提交仓库变更! $$target_path => $remote_name/$current_branch"
 	return 0
 }
 
