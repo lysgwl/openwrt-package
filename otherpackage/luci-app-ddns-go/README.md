@@ -1,6 +1,7 @@
 ## 访问数：![hello](https://views.whatilearened.today/views/github/sirpdboy/deplives.svg)[![](https://img.shields.io/badge/TG群-点击加入-FFFFFF.svg)](https://t.me/joinchat/AAAAAEpRF88NfOK5vBXGBQ)
 ### 访问数：[![](https://visitor-badge.glitch.me/badge?page_id=sirpdboy-visitor-badge)] [![](https://img.shields.io/badge/TG群-点击加入-FFFFFF.svg)](https://t.me/joinchat/AAAAAEpRF88NfOK5vBXGBQ)
 
+
 ![screenshots](https://raw.githubusercontent.com/sirpdboy/openwrt/master/doc/说明1.jpg)
 
 本项目是 ([ddns-go](https://github.com/jeessy2/ddns-go.git)) 在 OpenWrt 上的移植。
@@ -25,6 +26,7 @@ luci-app-ddns-go 自动获得你的公网 IPv4 或 IPv6 地址，并解析到对
 <!-- TOC -->
 
 - [ddns-go](#ddns-go)
+  - [版本](# 版本说明)
   - [特性](#特性)
   - [使用方法](#使用方法)
   - [说明](#说明)
@@ -32,6 +34,14 @@ luci-app-ddns-go 自动获得你的公网 IPv4 或 IPv6 地址，并解析到对
   - [捐助](#捐助)
 
 <!-- /TOC -->
+
+## 版本说明
+
+## 2025.5.14  luci-app-ddns-go 1.5.2
+## 2025.5.12  luci-app-ddns-go 1.5.1
+- 更新日志：
+- 适配最新OPENWRT24.10，JS版本。老版18.06用LUA分支。
+
 
 ## 特性
 
@@ -86,11 +96,13 @@ luci-app-ddns-go 自动获得你的公网 IPv4 或 IPv6 地址，并解析到对
 
 ## 界面
 
-![screenshots](https://raw.githubusercontent.com/sirpdboy/openwrt/master/doc/ddnsgo1.jpg)
+![screenshots](./doc/ddnsgo1.png)
 
-![screenshots](https://raw.githubusercontent.com/sirpdboy/openwrt/master/doc/ddnsgo2.jpg)
+![screenshots](./doc/ddnsgo2.png)
 
-![screenshots](https://raw.githubusercontent.com/sirpdboy/openwrt/master/doc/ddnsgo3.jpg)
+![screenshots](./doc/ddnsgo3.png)
+
+![screenshots](./doc/ddnsgo4.png)
 
 
 
@@ -102,28 +114,21 @@ luci-app-ddns-go 自动获得你的公网 IPv4 或 IPv6 地址，并解析到对
 
 # My other project
 
-- 网络速度测试 ：https://github.com/sirpdboy/NetSpeedTest
-
-- 定时设置插件 : https://github.com/sirpdboy/luci-app-autotimeset
-
+- 路由安全看门狗 ：https://github.com/sirpdboy/luci-app-watchdog
+- 网络速度测试 ：https://github.com/sirpdboy/luci-app-netspeedtest
+- 计划任务插件（原定时设置） : https://github.com/sirpdboy/luci-app-taskplan
 - 关机功能插件 : https://github.com/sirpdboy/luci-app-poweroffdevice
-
 - opentopd主题 : https://github.com/sirpdboy/luci-theme-opentopd
-
-- kucat 主题: https://github.com/sirpdboy/luci-theme-kucat
-
+- kucat酷猫主题: https://github.com/sirpdboy/luci-theme-kucat
+- kucat酷猫主题设置工具: https://github.com/sirpdboy/luci-app-kucat-config
+- NFT版上网时间控制插件: https://github.com/sirpdboy/luci-app-timecontrol
 - 家长控制: https://github.com/sirpdboy/luci-theme-parentcontrol
-
+- 定时限速: https://github.com/sirpdboy/luci-app-eqosplus
 - 系统高级设置 : https://github.com/sirpdboy/luci-app-advanced
-
 - ddns-go动态域名: https://github.com/sirpdboy/luci-app-ddns-go
-
 - 进阶设置（系统高级设置+主题设置kucat/agron/opentopd）: https://github.com/sirpdboy/luci-app-advancedplus
-
-- 设置向导: https://github.com/sirpdboy/luci-app-wizard
-
-- 分区扩容: https://github.com/sirpdboy/luci-app-partexp
-
+- 网络设置向导: https://github.com/sirpdboy/luci-app-netwizard
+- 一键分区扩容: https://github.com/sirpdboy/luci-app-partexp
 - lukcy大吉: https://github.com/sirpdboy/luci-app-lukcy
 
 ## 捐助
