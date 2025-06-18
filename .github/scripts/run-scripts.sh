@@ -541,7 +541,7 @@ function get_remote_repo()
 	
 	# shidahuilang
 	local url="https://github.com/shidahuilang/openwrt-package.git"
-	sync_repo_contents "$url" "Official" "${package_path_rel}"
+	sync_repo_contents "$url" "Official" "${package_path_rel}/shidahuilang"
 	
 	# kiddin9
 	local url="https://github.com/kiddin9/openwrt-packages.git?ref=master"
