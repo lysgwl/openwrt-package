@@ -41,6 +41,14 @@ function check_git_commit()
 		popd >/dev/null
 		return 4
 	fi
+	
+	# 解决换行符警告配置
+	git config core.autocrlf false			# 禁用自动换行符转换
+	git config core.safecrlf false			# 禁用安全换行符检查
+	git config core.eol lf					# 设置工作区使用 LF 换行符
+	
+	# 重新规范化换行符
+	git add --renormalize . >/dev/null 2>&1
 
 	# 添加所有变更到暂存区
 	git add . || {
@@ -78,7 +86,7 @@ function check_git_commit()
 	# 返回原始目录
 	popd > /dev/null
 	
-	echo "[SUCCESS] 成功提交仓库修改, $target_path"
+	echo "[SUCCESS] 成功提交仓库修改! $$target_path => $remote_name/$current_branch"
 	return 0
 }
 
@@ -313,55 +321,89 @@ function clone_repo_contents()
 function sync_repo_contents()
 {
 	# 远程仓库URL
-	local remote_repo=$1        
-	local local_path=$2
-	
-	# 获取?前缀和后缀字符
-	mark_prefix="${remote_repo%%\?*}"
-	mark_suffix="${remote_repo#*\?}"
-	
-	if [ -z "${mark_prefix}" ] || [ -z "${mark_suffix}" ]; then
-		return
-	fi
-	
-	# 远程仓库URL
-	repo_url="${mark_prefix}"
+	local remote_repo=$1
 	
 	# 远程分支名称
-	repo_branch=$(echo ${mark_suffix} | awk -F '=' '{print $2; exit}')
-
-	git ls-remote --heads ${repo_url} | while read -r line ; do
-		branch_name=$(echo $line | sed 's?.*refs/heads/??')
-		if [ -z "${branch_name}" ]; then
+	local repo_branch=${2:-main}
+	
+	# 本地指定路径
+	local local_path=$3
+	
+	if [[ -z "${local_path}" || "${local_path}" == "/" ]]; then
+		echo "[ERROR]: 无效的本地克隆路径, 请检查! $local_path"
+		return 1
+	fi
+	
+	# 验证URL格式
+	if [[ ! "$remote_repo" =~ ^https?:// ]]; then
+		echo "[ERROR] 无效的远程URL格式: $remote_repo"
+		return 1
+	fi
+	
+	# 获取所有远程分支
+	echo "[INFO] 获取远程分支列表...$remote_repo"
+	local branch_list
+	if ! branch_list=$(git ls-remote --heads "$remote_repo" 2>/dev/null); then
+		echo "[ERROR] 无法获取远程仓库分支列表, 请检查! $remote_repo"
+		return 2
+	fi
+	
+	if [[ -z "$branch_list" ]]; then
+		echo "[WARNING] 未找到任何远程分支: $remote_repo"
+		return 0
+	fi
+	
+	local branch_found=0
+	
+	# 处理分支
+	 while read -r commit_hash branch_ref; do
+		# 提取分支名称
+		local branch_name="${branch_ref##*/}"
+		if [[ -z "$branch_name" ]]; then
 			continue
 		fi
 		
-		# 分支比较
-		if [ -n "${repo_branch}" ]; then
-			if [ "${repo_branch}" != "${branch_name}" ]; then
-				continue
-			fi
+		# 如果指定了分支，只处理该分支
+		if [[ -n "$repo_branch" && "$repo_branch" != "$branch_name" ]]; then
+			continue
 		fi
 		
-		echo "Current branch name: $branch_name"
+		branch_found=1
+		echo "[INFO] 处理分支: $branch_name"
 		
-		local target_path="${local_path}/${branch_name}"
-		if [ ! -d "${target_path}" ]; then
-			mkdir -p "${target_path}"
-		fi
+		# 创建目标路径
+		local target_path="$local_path/$branch_name"
+		mkdir -p "$target_path"
 		
-		# 临时目录，用于克隆远程仓库
+		# 创建临时目录
 		local temp_dir=$(mktemp -d)
+		trap "rm -rf '${temp_dir}'" EXIT
 		
-		# 克隆远程仓库到临时目录
-		git clone --single-branch --branch ${branch_name} ${repo_url} ${temp_dir}
+		# 克隆指定分支
+		echo "[INFO] 克隆分支: $branch_name"
 		
-		if [ $? -eq 0 ]; then
-			rsync -a --delete ${temp_dir}/ ${target_path}/ --exclude .git
+		if ! git clone --depth 1 --single-branch --branch "$branch_name" "$remote_repo" "$temp_dir"; then
+			echo "[ERROR] 克隆分支失败: $branch_name"
+			rm -rf "$temp_dir"
+			continue
 		fi
 		
-		rm -rf ${temp_dir}
-	done
+		# 同步内容到目标路径
+		echo "[INFO] 同步临时目录内容到: $target_path"
+		rsync -a --delete --exclude='.git' "$temp_dir/" "$target_path/"
+		
+		# 清理临时目录
+		rm -rf "$temp_dir"
+		
+	done <<< "$branch_list"
+	 
+	# 检查是否找到匹配的分支
+	if [[ $branch_found -eq 0 ]]; then
+		echo "[WARNING] 未找到匹配的分支: $repo_branch"
+	fi
+	
+	echo "[SUCCESS] 成功同步远程仓库: $remote_repo => $local_path"
+	return 0
 }
 
 # http协议获取远程仓库
@@ -498,8 +540,8 @@ function get_remote_repo()
 	# get_http_repo_contents "$url" "${package_path_rel}"
 	
 	# shidahuilang
-	local url="https://github.com/shidahuilang/openwrt-package.git?ref=Official"
-	#sync_repo_contents "$url" "${package_path_rel}"
+	local url="https://github.com/shidahuilang/openwrt-package.git"
+	sync_repo_contents "$url" "Official" "${package_path_rel}"
 	
 	# kiddin9
 	local url="https://github.com/kiddin9/openwrt-packages.git?ref=master"
