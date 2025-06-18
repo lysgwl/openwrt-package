@@ -447,8 +447,7 @@ function clone_remote_repo()
 # 获取远程仓库内容
 function get_remote_repo()
 {
-	local repo_remote_cond=$1
-	local package_path_rel=$2
+	local package_path_rel=$1
 	
 	local url="https://github.com/coolsnowwolf/luci.git/applications?name=coolsnowwolf"
 	get_remote_spec_contents "$url" "master" "$package_path_rel/coolsnowwolf"
