@@ -239,18 +239,15 @@ function clone_repo_contents()
 		return 1
 	fi
 	
-	echo "test1"
-	
 	# 临时目录，用于克隆远程仓库
 	local temp_dir=$(mktemp -d)
-	echo "test2"
 	trap "rm -rf '${temp_dir}'" EXIT
-	echo "test3"
+
 	# 克隆远程仓库到临时目录 ${proxy_cmd}
 	echo "[INFO] 克隆远程仓库: ${repo_branch}"
-	git clone --depth 1 --branch ${repo_branch} ${repo_url} ${temp_dir} || {
-		echo "[ERROR] 克隆远程仓库失败! URL:$repo_url, 分支:$repo_branch"
-		return
+	git clone --depth 1 --branch ${repo_branch} ${remote_repo} ${temp_dir} || {
+		echo "[ERROR] 克隆远程仓库失败! $repo_branch => $remote_repo"
+		return 2
 	}
 	
 	# 准备目标目录
@@ -260,8 +257,10 @@ function clone_repo_contents()
 	rm -rf "${local_path:?}"/* 2>/dev/null	
 	
 	# 复制内容（包括隐藏文件，排除.git）
-	 echo "[INFO] 拷贝文件到本地路径..."
+	echo "[INFO] 拷贝文件到本地路径..."
 	rsync -a --exclude='.git' "${temp_dir}/" "${local_path}/"
+	
+	return 0
 }
 
 # 同步远程仓库内容
@@ -418,25 +417,25 @@ function clone_remote_repo()
 		clone_repo_contents "$url" "main" "$package_path_rel/luci-app-alist"
 		
 		url="https://github.com/sirpdboy/luci-app-ddns-go.git"
-		#clone_repo_contents "$url" "main" "$package_path_rel/luci-app-ddns-go"
+		clone_repo_contents "$url" "main" "$package_path_rel/luci-app-ddns-go"
 		
 		url="https://github.com/lisaac/luci-app-diskman.git/applications/luci-app-diskman?name=diskman"
-		#get_remote_spec_contents "$url" "master" "$package_path_rel/luci-app-diskman"
+		get_remote_spec_contents "$url" "master" "$package_path_rel/luci-app-diskman"
 
   		url="https://github.com/sirpdboy/luci-app-partexp.git"
-    	#clone_repo_contents "$url" "main" "$package_path_rel/luci-app-partexp"
+    	clone_repo_contents "$url" "main" "$package_path_rel/luci-app-partexp"
 
       	url="https://github.com/sirpdboy/luci-app-netwizard.git"
-		#clone_repo_contents "$url" "main" "$package_path_rel/luci-app-netwizard"
+		clone_repo_contents "$url" "main" "$package_path_rel/luci-app-netwizard"
 		
 		url="https://github.com/sirpdboy/luci-app-poweroffdevice.git"
-		#clone_repo_contents "$url" "main" "$package_path_rel/luci-app-poweroffdevice"
+		clone_repo_contents "$url" "main" "$package_path_rel/luci-app-poweroffdevice"
 		
 		url="https://github.com/chenmozhijin/luci-app-socat.git"
-		#clone_repo_contents "$url" "main" "$package_path_rel/luci-app-socat"
+		clone_repo_contents "$url" "main" "$package_path_rel/luci-app-socat"
 		
 		url="https://github.com/destan19/OpenAppFilter.git"
-		#clone_repo_contents "$url" "master" "$package_path_rel/OpenAppFilter"
+		clone_repo_contents "$url" "master" "$package_path_rel/OpenAppFilter"
 
       	url="https://github.com/coolsnowwolf/luci.git/applications/luci-app-filetransfer?ref=master"
     	# get_remote_spec_contents "$url" "filetransfer" "$package_path_rel/luci-app-filetransfer"
