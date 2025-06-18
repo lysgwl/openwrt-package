@@ -93,7 +93,7 @@ function check_git_commit()
 		
 		# 推送变更
 		echo "[INFO] 推送变更到: $remote_url/$current_branch..."
-		if ! git push "$remote_url" "HEAD:$current_branch"; then
+		if ! git push "git@github.com:lysgwl/openwrt-package.git" "HEAD:$current_branch"; then
 			echo "[ERROR] 推送失败, 请检查! $remote_url/$current_branch"
 			popd >/dev/null
 			return 7
