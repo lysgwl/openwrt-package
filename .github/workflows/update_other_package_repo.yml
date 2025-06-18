@@ -17,16 +17,13 @@ on:
 env:
   BUILD_SCRIPT: run-scripts.sh
   REPO_OTHER_COND: 1
-  REPO_LEDE_COND:  1
-  REPO_SDHL_COND:  1
-  REPO_KDDN_COND:  1
+  REPO_REMOTE_COND: 1
   
 jobs:
   build:   # update build repo-sync
     runs-on: ubuntu-latest
     
     steps:
-
     - name: Checkout master branch
       uses: actions/checkout@v4
       with:
@@ -36,17 +33,25 @@ jobs:
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
+        # 设置脚本路径
         scripts_file="${GITHUB_WORKSPACE}/.github/scripts/${BUILD_SCRIPT}"
+        
+        # 验证脚本存在
         if [ ! -e "${scripts_file}" ]; then
-            echo "the script does not exist, please check!"
+            echo "::error file=${scripts_file}::Build script not found"
             exit 1
         fi
-
-        chmod +x "${scripts_file}"
-        echo "scripts=${scripts_file}" >> $GITHUB_ENV
         
-        set +e
+        # 设置可执行权限
+        chmod +x "${scripts_file}"
+        
+        # 输出磁盘信息
+        echo "Disk usage before operations:"
         df -hT
+        
+        # 设置环境变量
+        echo "SCRIPT_PATH=${scripts_file}" >> $GITHUB_ENV
+        echo "REPO_SSH_URL=git@github.com:${GITHUB_REPOSITORY}.git" >> $GITHUB_ENV
 
     - name: Set SSH key and known_hosts
       uses: webfactory/ssh-agent@v0.9.0   # appleboy/ssh-action@master
@@ -62,45 +67,27 @@ jobs:
     - name: Get other repository contents
       if: env.REPO_OTHER_COND != 0 && !cancelled()
       run: |
-        package_path_rel="$PWD/otherpackage"
-        mkdir -p "$package_path_rel"
-        
-        scripts_file=${{ env.scripts }}
-        if [ ! -x "${scripts_file}" ]; then
-            echo "the script cannot be executed, please check!"
-            exit 1
-        fi
-        
-        source ${scripts_file}
-        get_other_repo ${package_path_rel}
+        echo "=== SYNCING OTHER REPOSITORIES ==="
+        mkdir -p "$PWD/otherpackage"
+        source ${{ env.SCRIPT_PATH }}
+        get_other_repo "$PWD/otherpackage"
+        echo "::notice::Other repositories synced successfully"
         
     - name: Get remote repository contents
-      if: env.REPO_LEDE_COND != 0 && !cancelled()
+      if: env.REPO_REMOTE_COND != 0 && !cancelled()
       run: |
-        package_path_rel="$PWD/remotepackage"
-        mkdir -p "$package_path_rel"
-        
-        scripts_file=${{ env.scripts }}
-        if [ ! -x "${scripts_file}" ]; then
-            echo "the script cannot be executed, please check!"
-            exit 1
-        fi
-        
-        source ${scripts_file} 
-        get_remote_repo ${package_path_rel}
+        echo "=== SYNCING REMOTE REPOSITORIES ==="
+        mkdir -p "$PWD/remotepackage"
+        source ${{ env.SCRIPT_PATH }}
+        get_remote_repo "$PWD/remotepackage"
+        echo "::notice::Remote repositories synced successfully"
     
     - name: Commit and push repository using SSH
       run: |
-        package_path_rel="$PWD"
-        
-        scripts_file=${{ env.scripts }}
-        if [ ! -x "${scripts_file}" ]; then
-            echo "the script cannot be executed, please check!"
-            exit 1
-        fi
-    
-        source ${scripts_file}
-        check_git_commit ${package_path_rel}    
+        echo "=== COMMITTING AND PUSHING CHANGES ==="
+        source ${{ env.SCRIPT_PATH }}
+        check_git_commit "${{ env.REPO_SSH_URL }}" "$PWD"
+        echo "::notice::All changes committed and pushed"
 
     #- name: Push changes repository
     #  uses: ad-m/github-push-action@master

@@ -1,14 +1,15 @@
 #!/bin/bash
+set +e
 
 #********************************************************************************#
 # 提交代码
 function check_git_commit() 
 {
 	# 远程仓库URL
-	#local remote_repo=$1
+	local remote_repo=$1
 	
 	# 目标目录路径
-	local target_path=$1
+	local target_path=$2
 	
 	# 检查目录是否存在
 	if [[ ! -d "$target_path" ]]; then
@@ -45,8 +46,8 @@ function check_git_commit()
 		return 4
 	fi
 	
-	local remote_url=$(git remote get-url "$remote_name")
-	echo "[INFO] 远程仓库URL: $remote_url"
+	#local remote_url=$(git remote get-url "$remote_name")
+	echo "[INFO] 远程仓库URL: $remote_repo"
 	
 	# 解决换行符警告配置
 	git config core.autocrlf false			# 禁用自动换行符转换
@@ -92,9 +93,9 @@ function check_git_commit()
 		local commit_hash=$(git rev-parse --short HEAD)
 		
 		# 推送变更
-		echo "[INFO] 推送变更到: $remote_url/$current_branch..."
-		if ! git push "git@github.com:lysgwl/openwrt-package.git" "HEAD:$current_branch"; then
-			echo "[ERROR] 推送失败, 请检查! $remote_url/$current_branch"
+		echo "[INFO] 推送变更到: $remote_repo/$current_branch..."
+		if ! git push "$remote_repo" "HEAD:$current_branch"; then
+			echo "[ERROR] 推送失败, 请检查! $remote_repo/$current_branch"
 			popd >/dev/null
 			return 7
 		fi
