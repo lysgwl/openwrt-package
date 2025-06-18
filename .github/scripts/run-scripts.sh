@@ -451,5 +451,5 @@ function get_remote_repo()
 	local package_path_rel=$2
 	
 	local url="https://github.com/coolsnowwolf/luci.git/applications?name=coolsnowwolf"
-	get_remote_spec_contents "$url" "master" "${package_path_rel}"
+	get_remote_spec_contents "$url" "master" "$package_path_rel/coolsnowwolf"
 }
