@@ -520,8 +520,8 @@ function get_other_repo()
 {
 	local package_path_rel=$1
  
-	local url="https://github.com/sbwml/luci-app-alist.git"
-	clone_repo_contents "$url" "main" "$package_path_rel/luci-app-alist"
+	#local url="https://github.com/sbwml/luci-app-alist.git"
+	#clone_repo_contents "$url" "main" "$package_path_rel/luci-app-alist"
 	
 	local url="https://github.com/sirpdboy/luci-app-ddns-go.git"
 	clone_repo_contents "$url" "main" "$package_path_rel/luci-app-ddns-go"
@@ -544,8 +544,8 @@ function get_other_repo()
 	local url="https://github.com/destan19/OpenAppFilter.git"
 	clone_repo_contents "$url" "master" "$package_path_rel/OpenAppFilter"
 
-	local url="https://github.com/coolsnowwolf/luci.git/applications/luci-app-filetransfer?name=filetransfer"
-	get_remote_spec_contents "$url" "master" "$package_path_rel/luci-app-filetransfer"
+	#local url="https://github.com/coolsnowwolf/luci.git/applications/luci-app-filetransfer?name=filetransfer"
+	#get_remote_spec_contents "$url" "master" "$package_path_rel/luci-app-filetransfer"
 }
 
 # 获取远程仓库内容
