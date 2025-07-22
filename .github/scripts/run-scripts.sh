@@ -542,7 +542,7 @@ function get_other_repo()
 	clone_repo_contents "$url" "main" "$package_path_rel/luci-app-socat"
 	
 	local url="https://github.com/destan19/OpenAppFilter.git"
-	clone_repo_contents "$url" "master" "$package_path_rel/OpenAppFilter"
+	#clone_repo_contents "$url" "master" "$package_path_rel/OpenAppFilter"
 
 	#local url="https://github.com/coolsnowwolf/luci.git/applications/luci-app-filetransfer?name=filetransfer"
 	#get_remote_spec_contents "$url" "master" "$package_path_rel/luci-app-filetransfer"
