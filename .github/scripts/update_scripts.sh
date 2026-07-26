@@ -144,7 +144,7 @@ update_other_package()
 		
 	# luci-app-diskman
 	git_export_repo_contents \
-		"https://github.com/lisaac/luci-app-diskman.git@master#applications/luci-app-diskman" \
+		"https://github.com/lisaac/luci-app-diskman.git?ref=master#applications/luci-app-diskman" \
 		"origin" \
 		"${package_path}/luci-app-diskman"
 		
