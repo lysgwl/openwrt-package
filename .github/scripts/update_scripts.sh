@@ -141,6 +141,12 @@ update_other_package()
 		"https://github.com/destan19/OpenAppFilter.git" \
 		"master" \
 		"${package_path}/OpenAppFilter"
+		
+	# luci-app-diskman
+	git_export_repo_contents \
+		"https://github.com/lisaac/luci-app-diskman.git@/applications/luci-app-diskman#master"
+		"${package_path}/luci-app-diskman"
+		
 	return 0
 }
 
