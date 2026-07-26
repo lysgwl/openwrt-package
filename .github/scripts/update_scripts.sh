@@ -106,10 +106,29 @@ update_other_package()
 		return 1
 	fi
 	
+	# luci-app-ddns-go
 	git_export_repo \
 		"https://github.com/sirpdboy/luci-app-ddns-go.git" \
 		"main" \
 		"${package_path}/luci-app-ddns-go"
+		
+	# luci-app-partexp
+	git_export_repo \
+		"https://github.com/sirpdboy/luci-app-partexp.git" \
+		"main" \
+		"${package_path}/luci-app-partexp"
+		
+	# luci-app-netwizard
+	git_export_repo \
+		"https://github.com/sirpdboy/luci-app-netwizard.git"
+		"main" \
+		"${package_path}/luci-app-netwizard"
+	
+	# luci-app-poweroffdevice
+	git_export_repo \
+		"https://github.com/sirpdboy/luci-app-poweroffdevice.git"
+		"js" \
+		"${package_path}/luci-app-poweroffdevice"
 		
 	return 0
 }
