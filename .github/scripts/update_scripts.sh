@@ -120,13 +120,13 @@ update_other_package()
 		
 	# luci-app-netwizard
 	git_export_repo \
-		"https://github.com/sirpdboy/luci-app-netwizard.git"
+		"https://github.com/sirpdboy/luci-app-netwizard.git" \
 		"main" \
 		"${package_path}/luci-app-netwizard"
 	
 	# luci-app-poweroffdevice
 	git_export_repo \
-		"https://github.com/sirpdboy/luci-app-poweroffdevice.git"
+		"https://github.com/sirpdboy/luci-app-poweroffdevice.git" \
 		"js" \
 		"${package_path}/luci-app-poweroffdevice"
 		
