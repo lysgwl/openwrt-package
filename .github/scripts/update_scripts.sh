@@ -113,10 +113,10 @@ update_other_package()
 		"${package_path}/luci-app-ddns-go"
 		
 	# luci-app-partexp
-	git_export_repo \
-		"https://github.com/sirpdboy/luci-app-partexp.git" \
-		"main" \
-		"${package_path}/luci-app-partexp"
+	#git_export_repo \
+	#	"https://github.com/sirpdboy/luci-app-partexp.git" \
+	#	"main" \
+	#	"${package_path}/luci-app-partexp"
 		
 	# luci-app-netwizard
 	git_export_repo \
