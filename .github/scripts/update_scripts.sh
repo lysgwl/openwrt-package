@@ -139,7 +139,7 @@ update_other_package()
 	# OpenAppFilter
 	git_export_repo \
 		"https://github.com/destan19/OpenAppFilter.git" \
-		"master"
+		"master" \
 		"${package_path}/OpenAppFilter"
 	return 0
 }
