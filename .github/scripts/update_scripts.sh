@@ -129,7 +129,18 @@ update_other_package()
 		"https://github.com/sirpdboy/luci-app-poweroffdevice.git" \
 		"master" \
 		"${package_path}/luci-app-poweroffdevice"
+	
+	# luci-app-socat
+	git_export_repo \
+		"https://github.com/chenmozhijin/luci-app-socat.git" \
+		"main" \
+		"${package_path}/luci-app-socat"
 		
+	# OpenAppFilter
+	git_export_repo \
+		"https://github.com/destan19/OpenAppFilter.git" \
+		"master"
+		"${package_path}/OpenAppFilter"
 	return 0
 }
 
