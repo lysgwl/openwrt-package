@@ -99,7 +99,19 @@ _auto_load_utils()
 # 更新 other 包
 update_other_package()
 {
-	echo "update_other_package"
+	local package_path="$1"
+	
+	if [[ -z "$package_path" ]]; then
+		log_console "ERROR" "提供的包路径为空: $package_path"
+		return 1
+	fi
+	
+	git_export_repo \
+		"https://github.com/sirpdboy/luci-app-ddns-go.git" \
+		"main" \
+		"${package_path}/luci-app-ddns-go"
+		
+	return 0
 }
 
 # 自动加载 utils 模块

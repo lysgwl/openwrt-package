@@ -69,3 +69,6 @@ jobs:
         fi
         
         source "${UPDATE_SCRIPT}"
+        
+        update_other_package "${OTHER_PACKAGE_ROOT}"
+        ls -al "$OTHER_PACKAGE_ROOT"
