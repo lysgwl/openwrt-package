@@ -32,6 +32,37 @@ jobs:
       with:
         ref: master
         
+    - name: Initialization environment
+      env:
+        DEBIAN_FRONTEND: noninteractive
+      run: |
+        echo "=== INITIALIZE BUILD ENVIRONMENT ==="
+        
+        UPDATE_SCRIPT="${SCRIPT_ROOT}/${SCRIPT_NAME}"
+        SYSTEM_ROOT="${SCRIPT_ROOT}/${SYSTEM_DIR}"
+        
+        # 当前仓库地址
+        REPO_URL="git@github.com:${GITHUB_REPOSITORY}.git"
+        
+        if [ ! -e "${UPDATE_SCRIPT}" ]; then
+            echo "[ERROR] 更新脚本不存在: ${UPDATE_SCRIPT}"
+            exit 1
+        fi
+        
+        # 设置可执行权限
+        chmod +x "${UPDATE_SCRIPT}"
+        
+        # 创建脚本目录
+        mkdir -p "$SCRIPT_ROOT"
+        
+        # 磁盘信息
+        echo "磁盘信息:"
+        df -hT
+        
+        echo "SYSTEM_ROOT=${SYSTEM_ROOT}" >> "${GITHUB_ENV}"
+        echo "UPDATE_SCRIPT=${UPDATE_SCRIPT}" >> "${GITHUB_ENV}"
+        echo "REPO_URL=${REPO_URL}" >> "${GITHUB_ENV}"
+        
     - name: Set SSH key and known_hosts
       uses: webfactory/ssh-agent@v0.10.0   # appleboy/ssh-action@master
       with:
@@ -40,10 +71,6 @@ jobs:
     - name: Clone system-utils repository
       run: |
         echo "=== CLONE SYSTEM UTILS ==="
-        
-        SYSTEM_ROOT="${SCRIPT_ROOT}/${SYSTEM_DIR}"
-        mkdir -p "$SCRIPT_ROOT"
-        
         if [[ ! -d "${SYSTEM_ROOT}" ]]; then
             git clone \
                 --depth 1 \
@@ -52,22 +79,13 @@ jobs:
                 "${SYSTEM_ROOT}"
         fi
         
-        UPDATE_SCRIPT="${SCRIPT_ROOT}/${SCRIPT_NAME}"
-        
-        echo "SYSTEM_ROOT=${SYSTEM_ROOT}" >> "${GITHUB_ENV}"
-        echo "UPDATE_SCRIPT=${UPDATE_SCRIPT}" >> "${GITHUB_ENV}"
-        
     - name: Update other packages
       if: env.REPO_OTHER_COND != 0 && !cancelled()
       run: |
         echo "=== UPDATE OTHER REPOSITORIES ==="
         OTHER_PACKAGE_ROOT="${GITHUB_WORKSPACE}/otherpackage"
-        
-        if [[ ! -f "${UPDATE_SCRIPT}" ]]; then
-            echo "[ERROR] 更新脚本不存在: ${UPDATE_SCRIPT}"
-            exit 1
-        fi
-        
+       
+        # 加载更新脚本
         source "${UPDATE_SCRIPT}"
         
         update_other_package "${OTHER_PACKAGE_ROOT}"
