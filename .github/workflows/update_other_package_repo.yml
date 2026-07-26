@@ -18,6 +18,7 @@ env:
   REPO_OTHER_COND: 1
   REPO_REMOTE_COND: 1
   BUILD_SCRIPT: run-scripts.sh
+  SYSTEM_DIR: system-utils
   SCRIPT_ROOT: ${{ github.workspace }}/.github/scripts
   SYSTEM_REPO: git@github.com:lysgwl/system-utils.git
   
@@ -38,12 +39,19 @@ jobs:
         
     - name: Clone system-utils repository
       run: |
+        SYSTEM_ROOT="${SCRIPT_ROOT}/${SYSTEM_DIR}"
         mkdir -p "$SCRIPT_ROOT"
         
         git clone \
             --depth 1 \
             --branch master \
             "${SYSTEM_REPO}" \
-            "${SCRIPT_ROOT}/system-utils"
+            "${SYSTEM_ROOT}"
             
-        ls -la "${SCRIPT_ROOT}"
+        echo "SYSTEM_ROOT=${SYSTEM_ROOT}" >> "${GITHUB_ENV}"
+        
+    - name: Update other packages
+      if: env.REPO_OTHER_COND != 0 && !cancelled()
+      run: |
+        echo "=== UPDATE OTHER REPOSITORIES ==="
+        echo "$PWD"
