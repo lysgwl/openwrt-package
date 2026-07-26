@@ -17,7 +17,7 @@ on:
 env:
   REPO_OTHER_COND: 1
   REPO_REMOTE_COND: 1
-  UPDATE_SCRIPT: update_scripts.sh
+  SCRIPT_NAME: update_scripts.sh
   SYSTEM_DIR: system-utils
   SCRIPT_ROOT: ${{ github.workspace }}/.github/scripts
   SYSTEM_REPO: git@github.com:lysgwl/system-utils.git
@@ -52,7 +52,7 @@ jobs:
                 "${SYSTEM_ROOT}"
         fi
         
-        UPDATE_SCRIPT="${SCRIPT_ROOT}/${UPDATE_SCRIPT}"
+        UPDATE_SCRIPT="${SCRIPT_ROOT}/${SCRIPT_NAME}"
         
         echo "SYSTEM_ROOT=${SYSTEM_ROOT}" >> "${GITHUB_ENV}"
         echo "UPDATE_SCRIPT=${UPDATE_SCRIPT}" >> "${GITHUB_ENV}"
@@ -62,5 +62,10 @@ jobs:
       run: |
         echo "=== UPDATE OTHER REPOSITORIES ==="
         OTHER_PACKAGE_ROOT="${GITHUB_WORKSPACE}/otherpackage"
-        echo "$UPDATE_SCRIPT"
-        echo "$SYSTEM_ROOT"
+        
+        if [[ ! -f "${UPDATE_SCRIPT}" ]]; then
+            echo "[ERROR] 更新脚本不存在: ${UPDATE_SCRIPT}"
+            exit 1
+        fi
+        
+        source "${UPDATE_SCRIPT}"
