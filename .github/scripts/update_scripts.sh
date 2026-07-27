@@ -166,7 +166,8 @@ update_coolsnowwolf_repo()
 		"https://github.com/coolsnowwolf/luci.git?ref=master#applications" \
 		"origin" \
 		"${package_path}/coolsnowwolf"
-		
+	
+	ls -al "${package_path}/coolsnowwolf"
 	return 0
 }
 
