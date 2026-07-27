@@ -15,7 +15,7 @@ on:
   workflow_dispatch:
   
 env:
-  REPO_OTHER_COND: 1
+  REPO_OTHER_COND: 0
   REPO_REMOTE_COND: 1
   SCRIPT_NAME: update_scripts.sh
   SYSTEM_DIR: system-utils
@@ -68,6 +68,12 @@ jobs:
       with:
         ssh-private-key: ${{ secrets.PERSONAL_SSH_KEY }}
         
+    - name: Setup git config
+      run: |
+        git config --global user.name "lysgwl"
+        git config --global user.email "lysgwl@163.com"
+        git config --global init.defaultBranch main
+        
     - name: Clone system-utils repository
       run: |
         echo "=== CLONE SYSTEM UTILS ==="
@@ -89,4 +95,12 @@ jobs:
         source "${UPDATE_SCRIPT}"
         
         update_other_package "${OTHER_PACKAGE_ROOT}"
-        ls -al "$OTHER_PACKAGE_ROOT"
+        
+    - name: update coolsnowwolf packages
+      run: |
+        test_root="${GITHUB_WORKSPACE}/test"
+        
+         # 加载更新脚本
+        source "${UPDATE_SCRIPT}"
+        
+        update_coolsnowwolf_repo "${test_root}"

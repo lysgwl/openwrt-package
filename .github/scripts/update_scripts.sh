@@ -96,7 +96,7 @@ _auto_load_utils()
 }
 
 # ============================================================================
-# 更新 other 包
+# 更新 other 仓库
 update_other_package()
 {
 	local package_path="$1"
@@ -136,6 +136,12 @@ update_other_package()
 		"main" \
 		"${package_path}/luci-app-socat"
 		
+	# luci-app-openlist2
+	git_export_repo \
+		"https://github.com/sbwml/luci-app-openlist2.git" \
+		"main" \
+		"${package_path}/luci-app-openlist2"
+		
 	# OpenAppFilter
 	git_export_repo \
 		"https://github.com/destan19/OpenAppFilter.git" \
@@ -147,6 +153,19 @@ update_other_package()
 		"https://github.com/lisaac/luci-app-diskman.git?ref=master#applications/luci-app-diskman" \
 		"origin" \
 		"${package_path}/luci-app-diskman"
+		
+	return 0
+}
+
+# 更新 coolsnowwolf 仓库
+update_coolsnowwolf_repo()
+{
+	local package_path="$1"
+	
+	git_export_repo_contents \
+		"https://github.com/coolsnowwolf/luci.git?ref=master#applications" \
+		"origin" \
+		"${package_path}/coolsnowwolf"
 		
 	return 0
 }
