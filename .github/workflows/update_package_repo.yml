@@ -104,3 +104,4 @@ jobs:
         source "${UPDATE_SCRIPT}"
         
         update_coolsnowwolf_repo "${test_root}"
+        ls -al "$test_root"
