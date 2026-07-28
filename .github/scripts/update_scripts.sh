@@ -167,7 +167,7 @@ update_remote_repo()
 	#	"origin" \
 	#	"${package_path}/coolsnowwolf"
 	
-	git_export_branches
+	git_export_branches \
 		"https://github.com/shidahuilang/openwrt-package.git" \
 		"Official" \
 		"$package_path/shidahuilang"
