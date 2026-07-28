@@ -169,10 +169,10 @@ update_remote_repo()
 	
 	git_export_branches \
 		"https://github.com/shidahuilang/openwrt-package.git" \
-		"Official" \
+		"Lede" \
 		"$package_path/shidahuilang"
 	
-	ls -al "${package_path}/shidahuilang"
+	ls -al "${package_path}/shidahuilang/Lede"
 	return 0
 }
 
