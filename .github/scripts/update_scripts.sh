@@ -117,6 +117,7 @@ _export_repo_config()
 	local type=$(jq -r '.type // empty' <<< "$config")
 	local ref=$(jq -r '.ref // empty' <<< "$config")
 	local path=$(jq -r '.path // empty' <<< "$config")
+	local enabled=$(jq -r '.enabled // true' <<< "$config")
 	
 	if [[ -z "$url" ||
 		  -z "$type" ||
@@ -124,6 +125,9 @@ _export_repo_config()
 		log_console "ERROR" "仓库配置不完整: $repo_name"
 		return 1
 	fi
+	
+	# 配置是否启用
+	[[ "$enabled" == "true" ]] || return 0
 	
 	# 默认目标目录
 	local target_name=$(jq -r '.target // empty' <<< "$config")
