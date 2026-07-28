@@ -96,7 +96,7 @@ jobs:
         
         update_other_package "${OTHER_PACKAGE_ROOT}"
         
-    - name: update coolsnowwolf packages
+    - name: update remote packages
       run: |
         REMOTE_PACKAGE_ROOT="${GITHUB_WORKSPACE}/remotepackage"
         
