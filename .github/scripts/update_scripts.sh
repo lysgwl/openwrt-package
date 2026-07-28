@@ -129,6 +129,7 @@ _export_repo_config()
 	# 配置是否启用
 	[[ "$enabled" == "true" ]] || return 0
 	
+	echo "$repo_name"
 	# 默认目标目录
 	local target_name=$(jq -r '.target // empty' <<< "$config")
 	

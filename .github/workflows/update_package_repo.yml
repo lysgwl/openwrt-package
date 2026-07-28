@@ -15,7 +15,7 @@ on:
   workflow_dispatch:
   
 env:
-  REPO_OTHER_COND: 1
+  REPO_OTHER_COND: 0
   REPO_REMOTE_COND: 1
   SCRIPT_NAME: update_scripts.sh
   SYSTEM_DIR: system-utils
@@ -99,6 +99,7 @@ jobs:
     - name: Update remote packages
       if: env.REPO_REMOTE_COND != 0 && !cancelled()
       run: |
+        echo "=== UPDATE REMOTE REPOSITORIES ==="
         REMOTE_PACKAGE_ROOT="${GITHUB_WORKSPACE}/remotepackage"
         
          # 加载更新脚本
