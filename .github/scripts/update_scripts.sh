@@ -157,17 +157,22 @@ update_other_package()
 	return 0
 }
 
-# 更新 coolsnowwolf 仓库
-update_coolsnowwolf_repo()
+# 更新 remote 仓库
+update_remote_repo()
 {
 	local package_path="$1"
 	
-	git_export_repo_contents \
-		"https://github.com/coolsnowwolf/luci.git?ref=master#applications" \
-		"origin" \
-		"${package_path}/coolsnowwolf"
+	#git_export_repo_contents \
+	#	"https://github.com/coolsnowwolf/luci.git?ref=master#applications" \
+	#	"origin" \
+	#	"${package_path}/coolsnowwolf"
 	
-	ls -al "${package_path}/coolsnowwolf"
+	git_export_branches
+		"https://github.com/shidahuilang/openwrt-package.git" \
+		"Official" \
+		"$package_path/shidahuilang"
+	
+	ls -al "${package_path}/shidahuilang"
 	return 0
 }
 
