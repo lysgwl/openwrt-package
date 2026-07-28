@@ -126,6 +126,7 @@ _export_repo_config()
 		return 1
 	fi
 	
+	echo "$repo_name $enabled"
 	# 配置是否启用
 	[[ "$enabled" == "true" ]] || return 0
 	
