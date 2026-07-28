@@ -117,7 +117,14 @@ _export_repo_config()
 	local type=$(jq -r '.type // empty' <<< "$config")
 	local ref=$(jq -r '.ref // empty' <<< "$config")
 	local path=$(jq -r '.path // empty' <<< "$config")
-	local enabled=$(jq -r '.enabled // true' <<< "$config")
+	
+	local enabled=$(jq -r '
+		if has("enabled") then
+			.enabled
+		else
+			true
+		end
+	' <<< "$config")
 	
 	if [[ -z "$url" ||
 		  -z "$type" ||
