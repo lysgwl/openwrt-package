@@ -15,8 +15,8 @@ on:
   workflow_dispatch:
   
 env:
-  REPO_OTHER_COND: 0
-  REPO_REMOTE_COND: 1
+  REPO_OTHER_COND: 1
+  REPO_REMOTE_COND: 0
   SCRIPT_NAME: update_scripts.sh
   SYSTEM_DIR: system-utils
   SCRIPT_ROOT: ${{ github.workspace }}/.github/scripts
@@ -97,6 +97,7 @@ jobs:
         update_other_package "${OTHER_PACKAGE_ROOT}"
         
     - name: update remote packages
+      if: env.REPO_REMOTE_COND != 0 && !cancelled()
       run: |
         REMOTE_PACKAGE_ROOT="${GITHUB_WORKSPACE}/remotepackage"
         
