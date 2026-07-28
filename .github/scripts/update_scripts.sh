@@ -129,7 +129,6 @@ _export_repo_config()
 	# 配置是否启用
 	[[ "$enabled" == "true" ]] || return 0
 	
-	echo "$repo_name"
 	# 默认目标目录
 	local target_name=$(jq -r '.target // empty' <<< "$config")
 	
@@ -213,7 +212,7 @@ update_remote_repo()
 	
 	local repo_name
 	for repo_name in "${!REMOTE_REPO_CONFIG[@]}"; do
-		local json_config="${OTHER_REPO_CONFIG[$repo_name]}"
+		local json_config="${REMOTE_REPO_CONFIG[$repo_name]}"
 		[[ -n "$json_config" ]] || continue
 		
 		_export_repo_config \
