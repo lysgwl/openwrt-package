@@ -267,8 +267,11 @@ COMMENT_BLOCK
 		fi
 	done
 	
-	echo "test1"
-	(( failed == 0 ))
+	if (( failed == 0 )); then
+		return 0
+	else
+		return 1
+	fi
 }
 
 # 更新 other 仓库
