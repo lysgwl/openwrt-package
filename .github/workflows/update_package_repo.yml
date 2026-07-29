@@ -115,5 +115,4 @@ jobs:
         
         check_git_commit \
             "Auto update packages [skip ci]" \
-            "otherpackage" \
             "remotepackage"
