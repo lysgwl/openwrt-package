@@ -206,11 +206,11 @@ check_git_commit()
 		log_console "INFO" "处理Git仓库: $repo_dir"
 		
 		# 检查仓库
-		local -A repo_info
+		local -A repo_info=()
 		
 		if ! git_check_repo repo_info "$repo_dir"; then
 			log_console "ERROR" "无效Git仓库: $repo_dir"
-			((failed++))
+			failed=$((failed+1))
 			continue
 		fi
 		
@@ -220,11 +220,11 @@ check_git_commit()
 		log_console "INFO" "仓库信息: branch=$branch remote=$remote"
 		
 		# 检查变化
-		local changes
+		local changes=""
 		
 		if ! git_check_changes changes "$repo_dir"; then
 			log_console "ERROR" "检查Git状态失败: $repo_dir"
-			((failed++))
+			failed=$((failed+1))
 			continue
 		fi
 		
@@ -241,23 +241,24 @@ check_git_commit()
 		done <<< "$changes"
 		
 		# 执行提交
-		local -A commit_info
+		local -A commit_info=()
 		
 		if ! git_commit_changes commit_info \
 				"$repo_dir" \
 				"$remote" \
 				"$message"; then
 			log_console "ERROR" "提交失败: $repo_dir"
-			((failed++))
+			failed=$((failed+1))
 			continue
 		fi
 		
-		((success++))
+		success=$((success+1))
 		
 		log_console "INFO" "提交成功: ${commit_info[hash]}"
 		log_console "INFO" "推送目标: ${commit_info[remote]}/${commit_info[branch]}"
 	done
 	
+	echo "test1"
 	(( failed == 0 ))
 }
 
