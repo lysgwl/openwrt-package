@@ -258,7 +258,6 @@ check_git_commit()
 		log_console "INFO" "推送目标: ${commit_info[remote]}/${commit_info[branch]}"
 	done
 	
-	echo "test1"
 	(( failed == 0 ))
 }
 
