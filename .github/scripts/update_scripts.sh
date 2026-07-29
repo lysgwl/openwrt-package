@@ -255,10 +255,16 @@ COMMENT_BLOCK
 			continue
 		fi
 		
-		success=$((success+1))
+		local state="${commit_info[state]}"
 		
-		log_console "INFO" "提交成功: ${commit_info[hash]}"
-		log_console "INFO" "推送目标: ${commit_info[remote]}/${commit_info[branch]}"
+		if [[ "$state" == "skipped" ]]; then
+			log_console "INFO" "无变化，跳过提交: $repo_dir"
+		elif [[ "$state" == "committed" ]]; then
+			success=$((success+1))
+			
+			log_console "INFO" "提交成功: ${commit_info[hash]}"
+			log_console "INFO" "推送目标: ${commit_info[remote]}/${commit_info[branch]}"
+		fi
 	done
 	
 	(( failed == 0 ))
