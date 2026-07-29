@@ -133,7 +133,6 @@ _export_repo_config()
 		return 1
 	fi
 	
-	echo "$repo_name $enabled"
 	# 配置是否启用
 	[[ "$enabled" == "true" ]] || return 0
 	
@@ -178,6 +177,88 @@ _export_repo_config()
 	esac
 	
 	return $?
+}
+
+# 检查并提交 Git 仓库
+check_git_commit()
+{
+	local message="$1"
+	shift
+	
+	local -a repo_dirs=("$@")
+	
+	if (( ${#repo_dirs[@]} == 0 )); then
+		log_console "ERROR" "未提供Git仓库目录!"
+		return 1
+	fi
+	
+	# 自动提交信息
+	if [[ -z "$message" ]]; then
+		message="Auto update packages $(date '+%Y-%m-%d %H:%M:%S') [skip ci]"
+	fi
+	
+	local success=0
+	local failed=0
+	
+	local repo_dir
+	for repo_dir in "${repo_dirs[@]}"; do
+		log_console "INFO" "================================"
+		log_console "INFO" "处理Git仓库: $repo_dir"
+		
+		# 检查仓库
+		local -A repo_info
+		
+		if ! git_check_repo repo_info "$repo_dir"; then
+			log_console "ERROR" "无效Git仓库: $repo_dir"
+			((failed++))
+			continue
+		fi
+		
+		local branch="${repo_info[branch]}"
+		local remote="${repo_info[remote]}"
+		
+		log_console "INFO" "仓库信息: branch=$branch remote=$remote"
+		
+		# 检查变化
+		local changes
+		
+		if ! git_check_changes changes "$repo_dir"; then
+			log_console "ERROR" "检查Git状态失败: $repo_dir"
+			((failed++))
+			continue
+		fi
+		
+		if [[ -z "$changes" ]]; then
+			log_console "INFO" "检测无变化，跳过提交: $repo_dir"
+			continue
+		fi
+		
+		log_console "INFO" "检测到文件变化:"
+		
+		while read -r line; do
+			[[ -n "$line" ]] &&
+				log_console "INFO" "  $line"
+		done <<< "$changes"
+		
+		# 执行提交
+		local -A commit_info
+		
+		if ! git_commit_changes commit_info \
+				"$repo_dir" \
+				"$remote" \
+				"$message"; then
+			log_console "ERROR" "提交失败: $repo_dir"
+			((failed++))
+			continue
+		fi
+		
+		((success++))
+		
+		log_console "INFO" "提交成功: ${commit_info[hash]}"
+		log_console "INFO" "推送目标: ${commit_info[remote]}/${commit_info[branch]}"
+	done
+	
+	(( failed == 0 ))
 }
 
 # ============================================================================

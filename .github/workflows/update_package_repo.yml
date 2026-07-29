@@ -106,3 +106,14 @@ jobs:
         source "${UPDATE_SCRIPT}"
         
         update_remote_repo "${REMOTE_PACKAGE_ROOT}"
+    - name: Commit and push repository
+      run: |
+        echo "=== Commit AND PUSHING CHANGES ==="
+        
+        # 加载更新脚本
+        source "${UPDATE_SCRIPT}"
+        
+        check_git_commit \
+            "Auto update packages [skip ci]" \
+            "otherpackage" \
+            "remotepackage"
