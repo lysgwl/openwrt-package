@@ -206,6 +206,8 @@ check_git_commit()
 		log_console "INFO" "================================"
 		log_console "INFO" "处理Git仓库: $repo_dir"
 		
+		[[ -d "$repo_dir" ]] || continue
+		
 		# 检查仓库
 		local -A repo_info=()
 		
@@ -267,12 +269,10 @@ COMMENT_BLOCK
 		fi
 	done
 	
-	echo "test1"
 	if (( failed > 0 )); then
-		echo "test2"
 		return 1
 	fi
-	echo "test3"
+	
 	return 0
 }
 
