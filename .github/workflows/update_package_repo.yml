@@ -121,6 +121,7 @@ jobs:
             "Auto update packages [skip ci]" \
             "otherpackage" \
             "remotepackage"
+        echo "$?"
             
     - name: Delete workflow runs
       if: always()

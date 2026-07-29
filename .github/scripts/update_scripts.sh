@@ -267,6 +267,7 @@ COMMENT_BLOCK
 		fi
 	done
 	
+	echo "test1"
 	(( failed == 0 ))
 }
 
