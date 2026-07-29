@@ -18,7 +18,7 @@ permissions:
   contents: write
   
 env:
-  REPO_OTHER_COND: 0
+  REPO_OTHER_COND: 1
   REPO_REMOTE_COND: 1
   SCRIPT_NAME: update_scripts.sh
   SYSTEM_DIR: system-utils
