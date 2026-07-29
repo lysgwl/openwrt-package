@@ -269,9 +269,10 @@ COMMENT_BLOCK
 	
 	echo "test1"
 	if (( failed > 0 )); then
+		echo "test2"
 		return 1
 	fi
-	echo "test2"
+	echo "test3"
 	return 0
 }
 
