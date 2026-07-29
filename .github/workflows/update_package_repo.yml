@@ -109,6 +109,7 @@ jobs:
         source "${UPDATE_SCRIPT}"
         
         update_remote_repo "${REMOTE_PACKAGE_ROOT}"
+        
     - name: Commit and push repository
       run: |
         echo "=== Commit AND PUSHING CHANGES ==="
@@ -118,4 +119,5 @@ jobs:
         
         check_git_commit \
             "Auto update packages [skip ci]" \
+            "otherpackage" \
             "remotepackage"

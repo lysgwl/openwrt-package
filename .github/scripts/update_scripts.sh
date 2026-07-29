@@ -179,6 +179,7 @@ _export_repo_config()
 	return $?
 }
 
+# ============================================================================
 # 检查并提交 Git 仓库
 check_git_commit()
 {
@@ -233,13 +234,15 @@ check_git_commit()
 			continue
 		fi
 		
+: <<COMMENT_BLOCK
 		log_console "INFO" "检测到文件变化:"
 		
 		while read -r line; do
 			[[ -n "$line" ]] &&
 				log_console "INFO" "  $line"
 		done <<< "$changes"
-		
+COMMENT_BLOCK
+
 		# 执行提交
 		local -A commit_info=()
 		
@@ -261,7 +264,6 @@ check_git_commit()
 	(( failed == 0 ))
 }
 
-# ============================================================================
 # 更新 other 仓库
 update_other_package()
 {
