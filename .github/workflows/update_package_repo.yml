@@ -19,7 +19,7 @@ permissions:
   
 env:
   REPO_OTHER_COND: 1
-  REPO_REMOTE_COND: 1
+  REPO_REMOTE_COND: 0
   SCRIPT_NAME: update_scripts.sh
   SYSTEM_DIR: system-utils
   SCRIPT_ROOT: ${{ github.workspace }}/.github/scripts
@@ -121,3 +121,12 @@ jobs:
             "Auto update packages [skip ci]" \
             "otherpackage" \
             "remotepackage"
+            
+    - name: Delete workflow runs
+      if: always()
+      uses: Mattraks/delete-workflow-runs@v2  # main
+      with:
+        token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+        repository: ${{ github.repository }}
+        retain_days: 0          # 全部删除只留正在跑的一条
+        keep_minimum_runs: 0    # 全部删除只留正在跑的一条
