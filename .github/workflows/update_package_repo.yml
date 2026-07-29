@@ -120,8 +120,7 @@ jobs:
         check_git_commit \
             "Auto update packages [skip ci]" \
             "otherpackage" \
-            "remotepackage"
-        echo "test3"
+            "remotepackage" || true
             
     - name: Delete workflow runs
       if: always()
