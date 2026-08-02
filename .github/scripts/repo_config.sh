@@ -7,7 +7,7 @@ declare -gA OTHER_REPO_CONFIG=(
 		"url":"https://github.com/sirpdboy/luci-app-ddns-go.git",
 		"type":"repo",
 		"ref":"main",
-		"enabled":true
+		"enabled":false
 	}'
 	[luci-app-partexp]='{
 		"url":"https://github.com/sirpdboy/luci-app-partexp.git",
