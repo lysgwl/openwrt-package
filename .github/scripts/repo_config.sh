@@ -43,7 +43,7 @@ declare -gA OTHER_REPO_CONFIG=(
 		"url":"https://github.com/destan19/OpenAppFilter.git",
 		"type":"repo",
 		"ref":"master",
-		"enabled":true
+		"enabled":false
 	}'
 	[luci-app-diskman]='{
 		"url":"https://github.com/lisaac/luci-app-diskman.git",
